@@ -702,13 +702,50 @@ namespace Public_Bot
                 return u;
             }
             else
+            {
                 if (Context.Guild.Users.Any(x => x.Username.StartsWith(user)))
-                return Context.Guild.Users.First(x => x.Username.Contains(user));
-            else
-                    if (Context.Guild.Users.Any(x => x.Nickname != null && x.Nickname.StartsWith(user)))
-                return Context.Guild.Users.First(x => x.Nickname.StartsWith(user));
-            else
-                return null;
+                {
+                    return Context.Guild.Users.First(x => x.Username.StartsWith(user));
+                }
+                else if (Context.Guild.Users.Any(x => x.ToString().StartsWith(user)))
+                {
+                    return Context.Guild.Users.First(x => x.ToString().StartsWith(user));
+                }
+                else if (Context.Guild.Users.Any(x => x.Nickname != null && x.Nickname.StartsWith(user)))
+                {
+                    return Context.Guild.Users.First(x => x.Nickname != null && x.Nickname.StartsWith(user));
+                }
+                else
+                    return null;
+            }
+        }
+        public OverwritePermissions GetOP(ChannelPermission cp, PermValue pv)
+        {
+            var eop = new OverwritePermissions();
+            var x = cp switch
+            {
+                ChannelPermission.AddReactions => eop.Modify(addReactions: pv),
+                ChannelPermission.AttachFiles => eop.Modify(attachFiles: pv),
+                ChannelPermission.Connect => eop.Modify(connect: pv),
+                ChannelPermission.CreateInstantInvite => eop.Modify(createInstantInvite: pv),
+                ChannelPermission.DeafenMembers => eop.Modify(deafenMembers: pv),
+                ChannelPermission.EmbedLinks => eop.Modify(embedLinks: pv),
+                ChannelPermission.ManageChannels => eop.Modify(manageChannel: pv),
+                ChannelPermission.ManageMessages => eop.Modify(manageMessages: pv),
+                ChannelPermission.ManageRoles => eop.Modify(manageRoles: pv),
+                ChannelPermission.ManageWebhooks => eop.Modify(manageWebhooks: pv),
+                ChannelPermission.MentionEveryone => eop.Modify(mentionEveryone: pv),
+                ChannelPermission.MoveMembers => eop.Modify(moveMembers: pv),
+                ChannelPermission.MuteMembers => eop.Modify(muteMembers: pv),
+                ChannelPermission.ReadMessageHistory => eop.Modify(readMessageHistory: pv),
+                ChannelPermission.ReadMessages or ChannelPermission.ViewChannel => eop.Modify(viewChannel: pv),
+                ChannelPermission.SendMessages => eop.Modify(sendMessages: pv),
+                ChannelPermission.SendTTSMessages => eop.Modify(sendTTSMessages: pv),
+                ChannelPermission.Speak => eop.Modify(speak: pv),
+                ChannelPermission.UseExternalEmojis => eop.Modify(useExternalEmojis: pv),
+                ChannelPermission.UseVAD => eop.Modify(useVoiceActivation: pv)
+            };
+            return x;
         }
         public Discord.GuildPermissions EditPerm(SocketRole roleA, GuildPermission perm, bool add = true)
         {

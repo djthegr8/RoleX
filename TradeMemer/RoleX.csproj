@@ -8,6 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="avatar.JPG" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="bin\Debug\netcoreapp3.1\rolex.db" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Discord.NET" Version="2.2.0" />
     <PackageReference Include="DiscordBotsList.Api" Version="1.4.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="3.1.5" />
