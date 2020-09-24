@@ -710,12 +710,116 @@ namespace Public_Bot
             else
                 return null;
         }
+        public Discord.GuildPermissions EditPerm(SocketRole roleA, GuildPermission perm, bool add = true)
+        {
+            Console.WriteLine(roleA.Name);
+            Console.WriteLine(perm);
+            Console.WriteLine(add);
+            var gp = perm switch
+            {
+                GuildPermission.AddReactions => roleA.Permissions.Modify(addReactions: add),
+                GuildPermission.Administrator => roleA.Permissions.Modify(administrator: add),
+                 GuildPermission.AttachFiles=>
+                    roleA.Permissions.Modify(attachFiles: add)
+                    ,
+                 GuildPermission.BanMembers=>
+                    roleA.Permissions.Modify(banMembers: add)
+                    ,
+                 GuildPermission.ChangeNickname=>
+                    roleA.Permissions.Modify(changeNickname: add)
+                    ,
+                 GuildPermission.Connect=>
+                    roleA.Permissions.Modify(connect: add)
+                    ,
+                 GuildPermission.CreateInstantInvite=>
+                    roleA.Permissions.Modify(createInstantInvite: add)
+                    ,
+                 GuildPermission.DeafenMembers=>
+                    roleA.Permissions.Modify(deafenMembers: add)
+                    ,
+                 GuildPermission.EmbedLinks=>
+                    roleA.Permissions.Modify(embedLinks: add)
+                    ,
+                 GuildPermission.KickMembers=>
+                    roleA.Permissions.Modify(kickMembers: add)
+                    ,
+                 GuildPermission.ManageChannels=>
+                    roleA.Permissions.Modify(manageChannels: add)
+                    ,
+                 GuildPermission.ManageEmojis=>
+                    roleA.Permissions.Modify(manageEmojis: add)
+                    ,
+                 GuildPermission.ManageGuild=>
+                    roleA.Permissions.Modify(manageGuild: add)
+                    ,
+                 GuildPermission.ManageMessages=>
+                    roleA.Permissions.Modify(manageMessages: add)
+                    ,
+                 GuildPermission.ManageNicknames=>
+                    roleA.Permissions.Modify(manageNicknames: add)
+                    ,
+                 GuildPermission.ManageRoles=>
+                    roleA.Permissions.Modify(manageRoles: add)
+                    ,
+                 GuildPermission.ManageWebhooks=>
+                    roleA.Permissions.Modify(manageWebhooks: add)
+                    ,
+                 GuildPermission.MentionEveryone=>
+                    roleA.Permissions.Modify(mentionEveryone: add)
+                    ,
+                 GuildPermission.MoveMembers=>
+                    roleA.Permissions.Modify(moveMembers: add)
+                    ,
+                 GuildPermission.MuteMembers=>
+                    roleA.Permissions.Modify(muteMembers: add)
+                    ,
+                 GuildPermission.PrioritySpeaker=>
+                    roleA.Permissions.Modify(prioritySpeaker: add)
+                    ,
+                 GuildPermission.ReadMessageHistory=>
+                    roleA.Permissions.Modify(readMessageHistory: add)
+                    ,
+                 GuildPermission.ReadMessages or GuildPermission.ViewChannel=>
+                    roleA.Permissions.Modify(viewChannel: add)
+                    ,
+                 GuildPermission.SendMessages=>
+                    roleA.Permissions.Modify(sendMessages: add)
+                    ,
+                 GuildPermission.SendTTSMessages=>
+                    roleA.Permissions.Modify(sendTTSMessages: add)
+                    ,
+                 GuildPermission.Speak=>
+                    roleA.Permissions.Modify(speak: add)
+                    ,
+                 GuildPermission.Stream=>
+                    roleA.Permissions.Modify(stream: add)
+                    ,
+                 GuildPermission.UseExternalEmojis=>
+                    roleA.Permissions.Modify(useExternalEmojis: add)
+                    ,
+                 GuildPermission.UseVAD=>
+                    roleA.Permissions.Modify(useVoiceActivation: add)
+                    ,
+                 GuildPermission.ViewAuditLog=>
+                    roleA.Permissions.Modify(viewAuditLog: add),
+                    
+            };
+            return gp;
+        }
         public Tuple<GuildPermission,bool> GetPermission(string perm)
         {
             if (Enum.TryParse(perm, true, out GuildPermission Gp)){
                 return new Tuple<GuildPermission, bool>(Gp, true);
             }
             else return new Tuple<GuildPermission, bool>(GuildPermission.AddReactions, false);
+        }
+        public Tuple<ChannelPermission, bool> GetChannelPermission (string perm)
+        {
+            if ( Enum.TryParse(perm, true, out ChannelPermission Gp))
+            {
+                return new Tuple<ChannelPermission, bool>(Gp, true);
+            }
+            else return new Tuple<ChannelPermission, bool>(ChannelPermission.AddReactions, false);
         }
         public SocketRole GetRole(string role)
         {

@@ -7,6 +7,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using System.IO;
 using TradeMemer.modules;

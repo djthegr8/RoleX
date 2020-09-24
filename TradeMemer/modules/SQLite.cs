@@ -23,7 +23,7 @@ namespace TradeMemer.modules
             cmd.CommandText = $"select Prefix from prefixes where guildid = {GuilID}";
             var read = await cmd.ExecuteReaderAsync();
             await read.ReadAsync();
-            if (!read.HasRows) return "!";
+            if (!read.HasRows) return "role-";
             var pref = read.GetString(0);
             await read.CloseAsync();
             await con.CloseAsync();
