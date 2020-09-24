@@ -16,7 +16,7 @@ namespace TradeMemer.modules
         public async Task Ping(params string[] argz)
         {
             await Context.Channel.TriggerTypingAsync();
-            await ReplyAsync($"RoleX enters the Discord Universe in {Context.Client.Latency} miliseconds");
+            await ReplyAsync($"***RoleX enters the Discord Universe in {Context.Client.Latency} miliseconds***");
         }
         [GuildPermissions(GuildPermission.ManageGuild)]
         [DiscordCommand("prefix", commandHelp ="prefix <newprefix>", description ="Changes the prefix!", example ="prefix !")]
@@ -66,6 +66,8 @@ namespace TradeMemer.modules
                 .AddField("General Commands","`" + string.Join("`\n`",GCS) + "`",true)
                 .AddField("Role Editor Commands", "`" + string.Join("`\n`",GCS1) + "`",true)
                 .AddField("Channel Overwrite Commands", "`" + string.Join("\n",GCS2) + "`")
+                .WithAuthor("RoleX",Context.Client.CurrentUser.GetAvatarUrl())
+                .WithFooter("Made by DJ001#0007 (ID: 701029647760097361)")
                 .AddField("Need more help?", $"For command-wise help, do `{await SqliteClass.PrefixGetter(Context.Guild.Id)}help <commandname>`")
                 .WithCurrentTimestamp().Build());
                 return;
