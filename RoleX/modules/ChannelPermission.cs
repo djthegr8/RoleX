@@ -9,10 +9,108 @@ using Discord;
 using GuildPermissions = Public_Bot.GuildPermissions;
 namespace TradeMemer.modules
 {
-    [DiscordCommandClass("Channel Permission","Edit Channel-wise perms of a Role using these commands!")]
+    [DiscordCommandClass("Channel Editor","Edit Channel-wise perms of a Role using these commands!")]
     class ChannelPermission: CommandModuleBase
     {
+        /*[GuildPermissions(GuildPermission.ManageChannels)]
+        [DiscordCommand("categoryrename",commandHelp ="categoryrename <old-category-name> <new-category-name>",description ="Renames given category",example ="categoryrename Trading Xtreme Trading")]
+        public async Task CatRename(params string[] args)
+        {
+            if (args.Length < 2)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "Insufficient Parameters!",
+                    Description = $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}categoryrename <old-category-name> <new-category-name>`",
+                    Color = Color.Red
+                }.WithCurrentTimestamp().Build());
+                return;
+            }
+        }*/
         [GuildPermissions(GuildPermission.ManageChannels)]
+        [DiscordCommand("chrename", commandHelp ="chrename <#channel> <multi-word-string>")]
+        [Alt("channelrename")]
+        public async Task RenameChannel(params string[] args)
+        {
+            if (args.Length == 0 || args.Length == 1)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "Insufficient Parameters!",
+                    Description = $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}channelrename <#channel> <new-channel-name>`",
+                    Color = Color.Red
+                }.WithCurrentTimestamp().Build());
+                return;
+            }
+            if (GetChannel(args[0]) == null)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "Invalid channel",
+                    Description = $"`{args[0]}` could not be parsed as channel!",
+                    Color = Color.Red
+                }.WithCurrentTimestamp().Build());
+                return;
+            }
+            var bchname = string.Join('-', args.Skip(1));
+            if (!System.Text.RegularExpressions.Regex.IsMatch(bchname,"[a-z0-9-_]{2,100}")) {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "Invalid channel re-name",
+                    Description = $"`{bchname}` is an invalid channel name, as it either ~ \n1) Contains non-allowed characters\n 2) Is too long",
+                    Color = Color.Red
+                }.WithCurrentTimestamp().Build());
+                return;
+            }
+            var cha = GetChannel(args[0]);
+            await cha.ModifyAsync(i => i.Name = bchname);
+            await ReplyAsync("", false, new EmbedBuilder
+            {
+                Title = "Channel Name Updated!!",
+                Description = $"<#{cha.Id}> is now set!!!",
+                Color = Blurple
+            }.WithCurrentTimestamp().Build());
+            return;
+        }
+        [GuildPermissions(GuildPermission.ManageChannels)]
+        [DiscordCommand("chdesc", commandHelp = "chdesc <#channel> <multi-word-string>")]
+        [Alt("chtopic")]
+        [Alt("channeldescription")]
+        public async Task ReDescChannel(params string[] args)
+        {
+            if (args.Length == 0 || args.Length == 1)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "Insufficient Parameters!",
+                    Description = $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}channeldesc <#channel> <new-channel-name>`",
+                    Color = Color.Red
+                }.WithCurrentTimestamp().Build());
+                return;
+            }
+            if (GetChannel(args[0]) == null)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "Invalid channel",
+                    Description = $"`{args[0]}` could not be parsed as channel!",
+                    Color = Color.Red
+                }.WithCurrentTimestamp().Build());
+                return;
+            }
+            var bchname = string.Join(' ', args.Skip(1));
+            var cha = GetChannel(args[0]);
+            await (cha as SocketTextChannel).ModifyAsync(d => d.Topic = bchname);
+            await ReplyAsync("", false, new EmbedBuilder
+            {
+                Title = "Channel Description Updated!!",
+                Description = $"<#{cha.Id}> is now set with its new topic!!!",
+                Color = Blurple
+            }.WithCurrentTimestamp().Build());
+            return;
+        }
+        [GuildPermissions(GuildPermission.ManageChannels)]
+        [Alt("chperms")]
         
         [DiscordCommand("channelperms",commandHelp ="channelperms <#channel> <@role/@user> <Permission> <yes,no,inherit>",description ="Edits the Channel-wise perms of the given Role or Member",example ="channelperms @Moderator viewChannel no")]
         public async Task ChannelPermEdit(params string[] args)
@@ -64,7 +162,7 @@ namespace TradeMemer.modules
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
-                    Title = "Multiple Possibilities :O",
+                    Title = "Multiple Possibilities :open_mouth:",
                     Description = $"Given `{args[1]}`, we found both a Role and a User.\n**Role Found:**\n{srl.Mention}\n**User Found**\n{sus.Mention}\nPlease use a mention instead of a search query!",
                     Color = Color.Red
                 }.WithCurrentTimestamp().Build());

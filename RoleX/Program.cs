@@ -19,7 +19,7 @@ namespace TradeMemer
 {
     class Program
     {
-        readonly static string fpath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + Path.DirectorySeparatorChar + "token.txt";
+        readonly static string fpath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + Path.DirectorySeparatorChar + "Data" + Path.DirectorySeparatorChar + "token.txt";
         public static string token = File.ReadAllLines(fpath)[0];
         public static void Main(string[] args)
         {
@@ -49,8 +49,9 @@ namespace TradeMemer
 
             _client.MessageReceived += HandleCommandAsync;
 
+            _client.JoinedGuild += HandleGuildJoinAsync;
+
             //Console.WriteLine(fpath);
-            
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
             await _client.SetGameAsync("Supervising Roles!",null,ActivityType.Playing);
@@ -58,23 +59,31 @@ namespace TradeMemer
             await Task.Delay(-1);
         }
 
+        private async Task HandleGuildJoinAsync(SocketGuild arg)
+        {
+            // <@701029647760097361> or <@615873008959225856>
+            await _client.GetUser(701029647760097361).SendMessageAsync($"I joined {arg.Name}, a Guild of {arg.MemberCount} members.");
+            await _client.GetUser(615873008959225856).SendMessageAsync($"I joined {arg.Name}, a Guild of {arg.MemberCount} members.");
+            try
+            {
+                await _client.GetUser(701029647760097361).SendMessageAsync($"Here's an invite!\n{(await arg.GetInvitesAsync()).First(aa => aa.IsTemporary == false && aa.MaxUses.GetValueOrDefault(1) > 1)}");
+                await _client.GetUser(615873008959225856).SendMessageAsync($"Here's an invite!\n{(await arg.GetInvitesAsync()).First(aa => aa.IsTemporary == false && aa.MaxUses.GetValueOrDefault(1) > 1)}");
+            }
+            catch { }
+            try
+            {
+                await arg.CurrentUser.ModifyAsync(idk => idk.Nickname = "[r] RoleX");
+            }
+            catch { }
+        }
+
         internal async Task HandleCommandResult(CustomCommandService.ICommandResult result, SocketUserMessage msg, string prefi)
         { 
             await Task.Delay(10);
-            if (result.Result == CommandStatus.MissingGuildPermission)
-            {
-                await msg.Channel.SendMessageAsync("", false, new EmbedBuilder()
-                {
-                    Title = "**:lock: You're Missing Permissions :lock:**",
-                    Color = Color.Red,
-                    Description = $"Hey {msg.Author.Mention}, you're missing these permissions:\n{result.ResultMessage}"
-                }.WithCurrentTimestamp().Build());
-            }
             string completed = Resultformat(result.IsSuccess);
-            if (result.IsSuccess)
+            switch (result.Result)
             {
-                new Thread(async () =>
-                {
+                case CommandStatus.Success:
                     EmbedBuilder eb = new EmbedBuilder
                     {
                         Color = Color.Green,
@@ -85,7 +94,47 @@ namespace TradeMemer
                     eb.Footer.Text = "Command Autogen";
                     eb.Footer.IconUrl = _client.CurrentUser.GetAvatarUrl();
                     await _client.GetGuild(755076971041652786).GetTextChannel(758230822057934878).SendMessageAsync("", false, eb.Build());
-                }).Start();  
+                    break;
+                case CommandStatus.Error:
+                    if (result.Exception.GetType().ToString() == "System.AggregateException" && result.Exception.InnerException.GetType().ToString() == "Discord.Net.HttpException")
+                    {
+                        EmbedBuilder ella = new EmbedBuilder
+                        {
+                            Color = Color.Red,
+                            Title = "**I don't have permissions!!!**",
+                            Description = $"RoleX does not have the permission to do execute your command...\nThis may be because: \n1) You haven't given RoleX the needed permission for the command\n2) The user you want to mute/ban/kick is above RoleX"
+                        }.WithCurrentTimestamp();
+                        try
+                        {
+                            await msg.Author.SendMessageAsync(embed: ella.Build());
+                        } catch (Exception)
+                        {
+                            await msg.Channel.SendMessageAsync(embed: ella.Build());
+                        }
+                        return;
+                    }
+                    EmbedBuilder emb = new EmbedBuilder
+                    {
+                        Color = Color.Red,
+                        Title = "**An error occured...**",
+                        Description = $"We are on towards fixing it! In case of any problem, DM <@701029647760097361> or <@615873008959225856> \nRefer to the below error message: ```{result.Exception}```"
+                    }.WithCurrentTimestamp();
+                    await msg.Channel.SendMessageAsync(embed: emb.Build());
+                    await _client.GetUser(701029647760097361).SendMessageAsync(embed: emb.Build());
+                    break;
+                case CommandStatus.MissingGuildPermission:
+                    await msg.Channel.SendMessageAsync("", false, new EmbedBuilder()
+                    {
+                        Title = "**:lock: You're Missing Permissions :lock:**",
+                        Color = Color.Red,
+                        Description = $"Hey {msg.Author.Mention}, you're missing these permissions:\n{result.ResultMessage}"
+                    }.WithCurrentTimestamp().Build());
+                    break;
+                case CommandStatus.NotFound:
+                    break;
+                default:
+                    await _client.GetUser(701029647760097361).SendMessageAsync($"See kid Idk what happened but here it is {result.Result}\n{result.ResultMessage}\n{result.Exception}");
+                    break;
             }
         }
         internal static string Resultformat(bool isSuccess)
@@ -117,7 +166,7 @@ namespace TradeMemer
                     {
                         Title = "Hi! I am RoleX",
                         Description = $"The prefix of your favourite role editor bot is {prefu}",
-                        Color = (Discord.Color)System.Drawing.Color.FromArgb(187, 134, 252)
+                        Color = CommandModuleBase.Blurple
                     }.WithCurrentTimestamp().Build()
                     );
                     return;

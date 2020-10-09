@@ -689,35 +689,45 @@ namespace Public_Bot
             if (ulong.TryParse(name, out var res))
                 return Context.Guild.Channels.Any(x => x.Id == res) ? Context.Guild.Channels.First(x => x.Id == res) : null;
             else
-                return Context.Guild.Channels.Any(x => x.Name == name) ? Context.Guild.Channels.First(x => x.Name == name) : null;
+                return Context.Guild.Channels.Any(x => x.Name.ToLower().StartsWith(name.ToLower())) ? Context.Guild.Channels.First(x => x.Name.ToLower().StartsWith(name.ToLower())) : null;
 
 
         }
         public SocketGuildUser GetUser(string user)
         {
-            var regex = new Regex(@"(\d{18}|\d{17})");
-            if (regex.IsMatch(user))
-            {
-                var u = Context.Guild.GetUser(ulong.Parse(regex.Match(user).Groups[1].Value));
-                return u;
-            }
-            else
-            {
-                if (Context.Guild.Users.Any(x => x.Username.StartsWith(user)))
+                var regex = new Regex(@"(\d{18}|\d{17})");
+                if (regex.IsMatch(user))
                 {
-                    return Context.Guild.Users.First(x => x.Username.StartsWith(user));
-                }
-                else if (Context.Guild.Users.Any(x => x.ToString().StartsWith(user)))
-                {
-                    return Context.Guild.Users.First(x => x.ToString().StartsWith(user));
-                }
-                else if (Context.Guild.Users.Any(x => x.Nickname != null && x.Nickname.StartsWith(user)))
-                {
-                    return Context.Guild.Users.First(x => x.Nickname != null && x.Nickname.StartsWith(user));
+                    var u = Context.Guild.GetUser(ulong.Parse(regex.Match(user).Groups[1].Value));
+                    return u;
                 }
                 else
-                    return null;
+                {
+                    if (Context.Guild.Users.Any(x => x.Username.StartsWith(user)))
+                    {
+                        return Context.Guild.Users.First(x => x.Username.StartsWith(user));
+                    }
+                    else if (Context.Guild.Users.Any(x => x.ToString().StartsWith(user)))
+                    {
+                        return Context.Guild.Users.First(x => x.ToString().StartsWith(user));
+                    }
+                    else if (Context.Guild.Users.Any(x => x.Nickname != null && x.Nickname.StartsWith(user)))
+                    {
+                        return Context.Guild.Users.First(x => x.Nickname != null && x.Nickname.StartsWith(user));
+                    }
+                    else
+                        return null;
+                }
+        }
+        public async Task<IUser> GetBannedUser(string uname)
+        {
+            var alr = await Context.Guild.GetBansAsync();
+            var regex = new Regex(@"(\d{18}|\d{17})");
+            if (regex.IsMatch(uname))
+            {
+                return alr.First(aa => aa.User.Id == ulong.Parse(uname)).User;
             }
+            return alr.First(x => x.User.Username.ToLower().Contains(uname.ToLower())).User;
         }
         public OverwritePermissions GetOP(ChannelPermission cp, PermValue pv)
         {
