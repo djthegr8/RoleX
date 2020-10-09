@@ -164,7 +164,7 @@ namespace TradeMemer.modules
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
-                    Title = "Multiple Possibilities :open_mouth:",
+                    Title = "Multiple Possibilities Detected",
                     Description = $"Given `{args[1]}`, we found both a Role and a User.\n**Role Found:**\n{srl.Mention}\n**User Found**\n{sus.Mention}\nPlease use a mention instead of a search query!",
                     Color = Color.Red
                 }.WithCurrentTimestamp().Build());
@@ -296,7 +296,7 @@ namespace TradeMemer.modules
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
-                    Title = "Multiple Possibilities :O",
+                    Title = "Multiple Possibilities Detected",
                     Description = $"Given `{args[1]}`, we found both a Role and a User.\n**Role Found:**\n{srl.Mention}\n**User Found**\n{sus.Mention}\nPlease use a mention instead of a search query!",
                     Color = Color.Red
                 }.WithCurrentTimestamp().Build());
