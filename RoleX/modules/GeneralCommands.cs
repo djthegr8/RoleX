@@ -22,7 +22,7 @@ namespace TradeMemer.modules
             }
             if (test >= Context.Guild.MemberCount)
             {
-                await Context.Channel.SendMessageAsync("You dont even have so many users :rofl:");
+                await Context.Channel.SendMessageAsync("This guild does not have the specified amount of users");
                 return;
             }
             var yus = Context.Guild.Users;
@@ -44,7 +44,7 @@ namespace TradeMemer.modules
             cty += "```";
             var mmbed = new EmbedBuilder
             {
-                Title = "Youngest Users!",
+                Title = "Youngest Users in {Context.Guild.Name}",
                 Description = cty,
                 Color = Blurple
             }.WithCurrentTimestamp().Build();
@@ -93,12 +93,12 @@ namespace TradeMemer.modules
             await SqliteClass.PrefixAdder(Context.Guild.Id, args[0]);
             await ReplyAsync("", false, new EmbedBuilder
             {
-                Title = "Prefix Changed!",
+                Title = "Prefix Updated",
                 Description = $"The updated prefix is `{await SqliteClass.PrefixGetter(Context.Guild.Id)}`",
                 Color = Blurple,
                 Footer = new EmbedFooterBuilder
                 {
-                    Text = "Bot nickname changed to reflect prefix changes!"
+                    Text = "Bot nickname updated to reflect prefix changes"
                 }
             }.WithCurrentTimestamp().Build());
             await Context.Guild.CurrentUser.ModifyAsync(async dood => dood.Nickname = $"[{await SqliteClass.PrefixGetter(Context.Guild.Id)}] RoleX");
@@ -138,7 +138,7 @@ namespace TradeMemer.modules
                     {
                         await ReplyAsync("", false, new EmbedBuilder
                         {
-                            Title = "Theres no such command or module :rofl:",
+                            Title = "Theres no such command or module",
                             Description = $"`{args[0]}` isnt a command or a module!",
                             Color = Color.Red
                         }.WithCurrentTimestamp().Build());
