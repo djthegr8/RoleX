@@ -88,7 +88,7 @@ namespace TradeMemer.modules
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "What user?",
-                        Description = "That user isn't on Discord which world r u in? :(",
+                        Description = "Could not find specified user on Discord",
                         Color = Color.Red
                     }.WithCurrentTimestamp().Build());
                     return;
@@ -122,7 +122,7 @@ namespace TradeMemer.modules
             }
         }
         [GuildPermissions(GuildPermission.KickMembers)]
-        [DiscordCommand("kick", commandHelp = "kick <@user> <reason>", example = "kick @Scammer Scamming me friend", description = "Kicks the specified user")]
+        [DiscordCommand("kick", commandHelp = "kick <@user> <reason>", example = "kick @NotAScammer Scamming my friend", description = "Kicks the specified user")]
         public async Task Kicker(params string[] args)
         {
             if (args.Length == 0)
@@ -249,7 +249,7 @@ namespace TradeMemer.modules
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "What user?",
-                    Description = $"`{args[0]}` isn't a past banned user!?",
+                    Description = $"`{args[0]}` isn't a previously banned user!?",
                     Color = Color.Red
                 }.WithCurrentTimestamp().Build());
                 return;
@@ -258,7 +258,7 @@ namespace TradeMemer.modules
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = $"{bu.Username}#{bu.Discriminator} unbanned succesfully!",
-                Description = $"Unban done! Welcome him back :tada:",
+                Description = $"Unban successful! Welcome them back :tada:",
                 Color = Blurple
             }.WithCurrentTimestamp().Build());
         }
