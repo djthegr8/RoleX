@@ -12,7 +12,7 @@ namespace TradeMemer.modules
     [DiscordCommandClass("Channel Editor","Edit Channel-wise perms of a Role using these commands!")]
     class ChannelPermission: CommandModuleBase
     {
-        /*[GuildPermissions(GuildPermission.ManageChannels)]
+        [GuildPermissions(GuildPermission.ManageChannels)]
         [DiscordCommand("categoryrename",commandHelp ="categoryrename <old-category-name> <new-category-name>",description ="Renames given category",example ="categoryrename Trading Xtreme Trading")]
         public async Task CatRename(params string[] args)
         {
@@ -26,7 +26,9 @@ namespace TradeMemer.modules
                 }.WithCurrentTimestamp().Build());
                 return;
             }
-        }*/
+            var alf = GetCategory(args[0]);
+
+        }
         [GuildPermissions(GuildPermission.ManageChannels)]
         [DiscordCommand("chrename", commandHelp ="chrename <#channel> <multi-word-string>")]
         [Alt("channelrename")]

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Discord;
+﻿using Discord;
 using System.Net;
 using Public_Bot;
 using System.Linq;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using System.IO;

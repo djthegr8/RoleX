@@ -5,11 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Net.Mail;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
@@ -693,6 +689,21 @@ namespace Public_Bot
 
 
         }
+        public SocketCategoryChannel GetCategory(string name)
+        {
+            var regex = new Regex(@"(\d{18}|\d{17})");
+            if (regex.IsMatch(name))
+            {
+                var u = Context.Guild.GetCategoryChannel(ulong.Parse(regex.Match(name).Groups[1].Value));
+                return u;
+            }
+            if (ulong.TryParse(name, out var res))
+                return Context.Guild.CategoryChannels.Any(x => x.Id == res) ? Context.Guild.CategoryChannels.First(x => x.Id == res) : null;
+            else
+                return Context.Guild.CategoryChannels.Any(x => x.Name.ToLower().StartsWith(name.ToLower())) ? Context.Guild.CategoryChannels.First(x => x.Name.ToLower().StartsWith(name.ToLower())) : null;
+
+
+        }
         public SocketGuildUser GetUser(string user)
         {
                 var regex = new Regex(@"(\d{18}|\d{17})");
@@ -703,17 +714,17 @@ namespace Public_Bot
                 }
                 else
                 {
-                    if (Context.Guild.Users.Any(x => x.Username.StartsWith(user)))
+                    if (Context.Guild.Users.Any(x => x.Username.ToLower().StartsWith(user.ToLower())))
                     {
-                        return Context.Guild.Users.First(x => x.Username.StartsWith(user));
+                        return Context.Guild.Users.First(x => x.Username.ToLower().StartsWith(user.ToLower()));
                     }
-                    else if (Context.Guild.Users.Any(x => x.ToString().StartsWith(user)))
+                    else if (Context.Guild.Users.Any(x => x.ToString().ToLower().StartsWith(user.ToLower())))
                     {
-                        return Context.Guild.Users.First(x => x.ToString().StartsWith(user));
+                        return Context.Guild.Users.First(x => x.ToString().ToLower().StartsWith(user.ToLower()));
                     }
-                    else if (Context.Guild.Users.Any(x => x.Nickname != null && x.Nickname.StartsWith(user)))
+                    else if (Context.Guild.Users.Any(x => x.Nickname != null && x.Nickname.ToLower().StartsWith(user.ToLower())))
                     {
-                        return Context.Guild.Users.First(x => x.Nickname != null && x.Nickname.StartsWith(user));
+                        return Context.Guild.Users.First(x => x.Nickname != null && x.Nickname.ToLower().StartsWith(user.ToLower()));
                     }
                     else
                         return null;
@@ -877,11 +888,11 @@ namespace Public_Bot
                 return u;
             }
             else
-                if (Context.Guild.Roles.Any(x => x.Name.StartsWith(role)))
-                return Context.Guild.Roles.First(x => x.Name.StartsWith(role));
+                if (Context.Guild.Roles.Any(x => x.Name.ToLower().StartsWith(role.ToLower())))
+                return Context.Guild.Roles.First(x => x.Name.ToLower().StartsWith(role.ToLower()));
             else
-                    if (Context.Guild.Roles.Any(x => x.Name.StartsWith(role)))
-                return Context.Guild.Roles.First(x => x.Name.StartsWith(role));
+                    if (Context.Guild.Roles.Any(x => x.Name.ToLower().StartsWith(role.ToLower())))
+                return Context.Guild.Roles.First(x => x.Name.ToLower().StartsWith(role.ToLower()));
             else
                 return null;
         }

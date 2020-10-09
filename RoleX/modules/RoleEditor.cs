@@ -21,7 +21,7 @@ namespace TradeMemer.modules
     public class RoleEditor: CommandModuleBase
     {
         [GuildPermissions(GuildPermission.ManageRoles)]
-        [DiscordCommand("color",description ="Changes the color of role", commandHelp ="color <@role> <hex>", example ="color @LightPurple #bb86fc")]
+        [DiscordCommand("color",description ="Changes the color of role", commandHelp ="color <@role> <hex/None>", example ="color @LightPurple #bb86fc")]
         public async Task ChangeRole(params string[] args)
         {
             if (args.Length < 2)
@@ -55,13 +55,25 @@ namespace TradeMemer.modules
                 }.WithCurrentTimestamp().Build());
                 return;
             }
+            if (args[1].ToLower() == "none" || args[1].ToLower() == "invisible")
+            {
+                await role.ModifyAsync(x => x.Color = new Color());
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "Done!!",
+                    Description = $"The role {role.Name}'s color is removed!",
+                    Color = Blurple
+                }.WithCurrentTimestamp().Build());
+                return;
+            }
             System.Drawing.ColorConverter c = new System.Drawing.ColorConverter();
             System.Drawing.Color col = new System.Drawing.Color();
             bool hasC = false;
-            if (Regex.IsMatch(args[1], "^(#[0-9A-Fa-f]{3})$|^(#[0-9A-Fa-f]{6})$"))
+            var hArgs1 = args[1][0] != '#' ? $"#{args[1]}" : args[1];
+            if (Regex.IsMatch(hArgs1, "^(#[0-9A-Fa-f]{3})$|^(#[0-9A-Fa-f]{6})$"))
             {
 
-                col = (System.Drawing.Color)c.ConvertFromString(args[1]);
+                col = (System.Drawing.Color)c.ConvertFromString(hArgs1);
                 hasC = true;
             }
             else
@@ -90,8 +102,8 @@ namespace TradeMemer.modules
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "Done!!",
-                Description = $"Couldn't parse `{args[1]}` as a color!",
-                Color = Color.Red
+                Description = $"The role {role.Name} is now set to the color of this embed!",
+                Color = new Color(col.R, col.G, col.B) == new Color(255,255,255) ? new Color(254,254,254) : new Color(col.R, col.G, col.B)
             }.WithCurrentTimestamp().Build());
             return;
         }
