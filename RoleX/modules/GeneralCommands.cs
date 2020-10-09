@@ -44,7 +44,7 @@ namespace TradeMemer.modules
             cty += "```";
             var mmbed = new EmbedBuilder
             {
-                Title = "Youngest Users in {Context.Guild.Name}",
+                Title = $"Youngest Users in {Context.Guild.Name}",
                 Description = cty,
                 Color = Blurple
             }.WithCurrentTimestamp().Build();
