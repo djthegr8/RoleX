@@ -176,12 +176,21 @@ namespace RoleX.modules
                     await weh.ModifyAsync(x => x.Image = new Image(pfp));
                 } catch { }
             }
-            await (await Context.User.GetOrCreateDMChannelAsync()).SendMessageAsync($"https://discordapp.com/api/webhooks/{weh.Id}/{weh.Token}");
-            await ReplyAsync("", false, new EmbedBuilder
+            await (await Context.User.GetOrCreateDMChannelAsync()).SendMessageAsync("", false, new EmbedBuilder
+            {
+               Title=$"New Webhook Creation Successful",
+               Description = $"**Name:** {weh.Name}\n**Channel:** <#{weh.ChannelId}>\n**Link:** [Click here or on the title](https://discordapp.com/api/webhooks/{weh.Id}/{weh.Token})",
+               Url=$"https://discordapp.com/api/webhooks/{weh.Id}/{weh.Token}",
+               ImageUrl = weh.GetAvatarUrl(),
+               Color = Blurple
+            }.WithCurrentTimestamp()
+            .Build()
+            );
+            await ReplyAsync(Context.User.Mention, false, new EmbedBuilder
             {
                 Title = "Created Webhook Successfully!",
-                Description = $"{Context.User.Mention} I have DMed you with the Url!",
-                Color = Color.Red
+                Description = $"I have DMed you with the Url!",
+                Color = Blurple
             }.WithCurrentTimestamp().Build());
             return;
         }

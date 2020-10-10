@@ -13,6 +13,7 @@ namespace TradeMemer.modules
     class ChannelPermission: CommandModuleBase
     {
         [GuildPermissions(GuildPermission.ManageChannels)]
+        [Alt("catrename")]
         [DiscordCommand("categoryrename",commandHelp ="categoryrename <old-category-name> <new-category-name>",description ="Renames given category",example ="categoryrename Trading Xtreme Trading")]
         public async Task CatRename(params string[] args)
         {
@@ -27,7 +28,49 @@ namespace TradeMemer.modules
                 return;
             }
             var alf = GetCategory(args[0]);
-
+            if (alf == null)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "Invalid category",
+                    Description = $"`{args[0]}` could not be parsed as category!",
+                    Color = Color.Red
+                }.WithCurrentTimestamp().Build());
+                return;
+            }
+            await alf.ModifyAsync(x => x.Name = string.Join(' ',args.Skip(1)));
+            await ReplyAsync("", false, new EmbedBuilder
+            {
+                Title = "Rename successful!",
+                Description = $"Your category was renamed to `{string.Join(' ',args.Skip(1))}`",
+                Color = Blurple
+            }.WithCurrentTimestamp().Build());
+            return;
+        }
+        [GuildPermissions(GuildPermission.ManageChannels)]
+        [Alt("catdelete")]
+        [DiscordCommand("categorydelete", commandHelp = "categoryrdelete <category-name>", description = "Deletes given category", example = "categorydelete Useless")]
+        public async Task CatDel(string aa)
+        {
+            var alf = GetCategory(aa);
+            if (alf == null)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "Invalid category",
+                    Description = $"`{aa}` could not be parsed as category!",
+                    Color = Color.Red
+                }.WithCurrentTimestamp().Build());
+                return;
+            }
+            await alf.DeleteAsync();
+            await ReplyAsync("", false, new EmbedBuilder
+            {
+                Title = "Delete successful!",
+                Description = $"Your category was deleted along with all its channels",
+                Color = Blurple
+            }.WithCurrentTimestamp().Build());
+            return;
         }
         [GuildPermissions(GuildPermission.ManageChannels)]
         [DiscordCommand("chrename", commandHelp ="chrename <#channel> <multi-word-string>")]

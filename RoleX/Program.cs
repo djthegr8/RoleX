@@ -130,6 +130,15 @@ namespace TradeMemer
                         Description = $"Hey {msg.Author.Mention}, you're missing these permissions:\n{result.ResultMessage}"
                     }.WithCurrentTimestamp().Build());
                     break;
+                case CommandStatus.NotEnoughParams or CommandStatus.InvalidParams:
+                    var pref = await SqliteClass.PrefixGetter((msg.Channel as SocketGuildChannel).Guild.Id);
+                    await msg.Channel.SendMessageAsync("", false, new EmbedBuilder()
+                    {
+                        Title = "**That isn't how to use that command**",
+                        Color = Color.Red,
+                        Description = $"Do `{pref}{msg.Content.Split(' ')[0].Replace(pref,"")}` to know how!"
+                    }.WithCurrentTimestamp().Build());
+                    break;
                 case CommandStatus.NotFound:
                     break;
                 default:
