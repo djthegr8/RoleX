@@ -49,7 +49,7 @@ namespace TradeMemer.modules
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
-                    Title = "Not gonna happen kid",
+                    Title = "Oops!",
                     Description = "You're below the role you want to edit!",
                     Color = Color.Red
                 }.WithCurrentTimestamp().Build());
@@ -117,7 +117,7 @@ namespace TradeMemer.modules
                 case 0 or 1:
                     await ReplyAsync("", false, new EmbedBuilder
                     {
-                        Title = "U need to give the Role to be duplicated, and to be placed above",
+                        Title = "Insufficient Parameters",
                         Description = $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}duplicate <@role-to-be-duplicated> <@role-to-be-placed-above>`",
                         Color = Color.Red
                     }.WithCurrentTimestamp().Build());
@@ -139,7 +139,7 @@ namespace TradeMemer.modules
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
-                    Title = "Not gonna happen kid",
+                    Title = "Oops!",
                     Description = "You're below the roles you want to duplicate and place!",
                     Color = Color.Red
                 }.WithCurrentTimestamp().Build());
@@ -196,7 +196,7 @@ namespace TradeMemer.modules
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
-                    Title = "Not gonna happen kid",
+                    Title = "Oops!",
                     Description = "You're below the role you want to delete!",
                     Color = Color.Red
                 }.WithCurrentTimestamp().Build());
@@ -256,7 +256,7 @@ namespace TradeMemer.modules
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
-                    Title = "Not gonna happen kid",
+                    Title = "Oops!",
                     Description = "You're below the role you want to edit!",
                     Color = Color.Red
                 }.WithCurrentTimestamp().Build());
@@ -292,7 +292,7 @@ namespace TradeMemer.modules
                 case 0 or 1:
                     await ReplyAsync("", false, new EmbedBuilder
                     {
-                        Title = "U need to give the Role and Permission",
+                        Title = "Insufficient Parameters",
                         Description = $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}removeperms <@role/id> <Permission>`",
                         Color = Color.Red
                     }.WithCurrentTimestamp().Build());
@@ -323,7 +323,7 @@ namespace TradeMemer.modules
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
-                    Title = "Not gonna happen kid",
+                    Title = "Oops!",
                     Description = "You're below the role you want to edit!",
                     Color = Color.Red
                 }.WithCurrentTimestamp().Build());
@@ -452,7 +452,7 @@ namespace TradeMemer.modules
                 {
                     await ReplyAsync("", false, new EmbedBuilder
                     {
-                        Title = "Multiple Possibilities :open_mouth:",
+                        Title = "Multiple Possibilities Detected",
                         Description = $"Given {(GetUser(args[0]) == null? args[1] : args[0])}\n**Role Found:**\n{(GetRole(args[0]) == null ? GetRole(args[1]).Mention : GetRole(args[0]).Mention)}\n**User Found**\n{(GetUser(args[0]) == null ? GetUser(args[1]).Mention : GetUser(args[0]).Mention)}\nPlease use a mention instead of a search query!",
                         Color = Color.Red
                     }.WithCurrentTimestamp().Build());
@@ -472,7 +472,7 @@ namespace TradeMemer.modules
                 {
                     await ReplyAsync("", false, new EmbedBuilder
                     {
-                        Title = "U aren't mighty enough!",
+                        Title = "Could not add role",
                         Description = $"Your highest role, **{(Context.User as SocketGuildUser).Roles.Max().Name}** is below the role you wish to give, **{role.Name}**",
                         Color = Color.Red
                     }.WithCurrentTimestamp().Build());
@@ -482,7 +482,7 @@ namespace TradeMemer.modules
                 {
                     await ReplyAsync("", false, new EmbedBuilder
                     {
-                        Title = "Hey, thats above me",
+                        Title = "Specified role is above me!",
                         Description = $"The bot's highest role => {Context.Guild.CurrentUser.Roles.Max().Name}\nThe role you wish to add => {role.Name}",
                         Color = Color.Red
                     }.WithCurrentTimestamp().Build());
