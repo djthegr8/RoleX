@@ -10,9 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/TradeMemer/bin/Debug/netcoreapp3.1/TradeMemer.dll",
+            "program": "${workspaceFolder}/RoleX/bin/Debug/netcoreapp3.1/RoleX.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/TradeMemer",
+            "cwd": "${workspaceFolder}/RoleX/",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "internalConsole",
             "stopAtEntry": false

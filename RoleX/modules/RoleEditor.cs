@@ -7,15 +7,14 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Linq;
 using System.Threading.Tasks;
-using TradeMemer.modules;
+using RoleX.modules;
 using Newtonsoft.Json;
 using System.IO;
 using Public_Bot;
 using GuildPermissions = Public_Bot.GuildPermissions;
-using System.Security.Cryptography.X509Certificates;
 
 
-namespace TradeMemer.modules
+namespace RoleX.modules
 {
     [DiscordCommandClass("Role Editor","Class for editing of Roles")]
     public class RoleEditor: CommandModuleBase

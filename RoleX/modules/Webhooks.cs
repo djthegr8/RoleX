@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Discord.WebSocket;
 using System.IO;
 using GuildPermissions = Public_Bot.GuildPermissions;
-using TradeMemer.modules;
+using RoleX.modules;
 
 namespace RoleX.modules
 {

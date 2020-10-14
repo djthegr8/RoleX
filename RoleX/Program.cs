@@ -10,19 +10,20 @@ using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using System.IO;
-using TradeMemer.modules;
+using RoleX.modules;
 using System.Collections.Generic;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 
-namespace TradeMemer
+namespace RoleX
 {
     class Program
     {
-        readonly static string fpath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + Path.DirectorySeparatorChar + "Data" + Path.DirectorySeparatorChar + "token.txt";
+        readonly static string fpath = string.Join(Path.DirectorySeparatorChar,Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location).Split(Path.DirectorySeparatorChar).SkipLast(1)) + Path.DirectorySeparatorChar + "Data" + Path.DirectorySeparatorChar + "token.txt";
         public static string token = File.ReadAllLines(fpath)[0];
         public static void Main(string[] args)
         {
+
             new Program().MainAsync().GetAwaiter().GetResult();
         }
         private Task Log(LogMessage msg)
@@ -64,6 +65,7 @@ namespace TradeMemer
             // <@701029647760097361> or <@615873008959225856>
             await _client.GetUser(701029647760097361).SendMessageAsync($"I joined {arg.Name}, a Guild of {arg.MemberCount} members.");
             await _client.GetUser(615873008959225856).SendMessageAsync($"I joined {arg.Name}, a Guild of {arg.MemberCount} members.");
+            //try block so no errors :)
             try
             {
                 await _client.GetUser(701029647760097361).SendMessageAsync($"Here's an invite!\n{(await arg.GetInvitesAsync()).First(aa => aa.IsTemporary == false && aa.MaxUses.GetValueOrDefault(1) > 1)}");
@@ -72,7 +74,7 @@ namespace TradeMemer
             catch { }
             try
             {
-                await arg.CurrentUser.ModifyAsync(idk => idk.Nickname = "[r] RoleX");
+                await arg.CurrentUser.ModifyAsync(async idk => idk.Nickname = $"[{await SqliteClass.PrefixGetter(arg.Id)}] RoleX");
             }
             catch { }
         }
@@ -88,7 +90,7 @@ namespace TradeMemer
                     {
                         Color = Color.Green,
                         Title = "**Command Log**",
-                        Description = $"The Command {msg.Content.Substring(prefi.Length)} was used in {msg.Channel.Name} of {(msg.Channel as SocketTextChannel).Guild.Name} by {msg.Author.Username + "#" + msg.Author.Discriminator} \n\n **Full Message** \n `{msg.Content}`\n\n **Result** \n {completed}",
+                        Description = $"The Command {msg.Content.Substring(prefi.Length)} was used in {msg.Channel.Name} of {(msg.Channel as SocketTextChannel).Guild.Name} by {msg.Author.Username + "#" + msg.Author.Discriminator}",
                         Footer = new EmbedFooterBuilder()
                     };
                     eb.Footer.Text = "Command Autogen";
@@ -196,6 +198,9 @@ namespace TradeMemer
                             catch (Discord.Net.HttpException)
                             {
                                 await context.Guild.Owner.SendMessageAsync("I do not have perms!!! Please give them to me!");
+                            } catch (Exception)
+                            {
+                                await _client.GetUser(701029647760097361).SendMessageAsync($"There was an error in {(msg.Channel as SocketGuildChannel).Guild.Name}\n");
                             }
                         }).Start();
                     }
@@ -204,7 +209,6 @@ namespace TradeMemer
             catch (Exception e)
             {
                 Console.WriteLine($"We have encountered an error {e}");
-                await msg.Channel.SendMessageAsync("Uhh there was an error. I have DMed my creator, DJ001 and he will solve this as soon as possible.");
                 await _client.GetUser(701029647760097361).SendMessageAsync($"There was an error in {(msg.Channel as SocketGuildChannel).Guild.Name}\n{e}");
                 await Task.Delay(2000);
             }

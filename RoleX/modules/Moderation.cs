@@ -1,26 +1,231 @@
-using static Public_Bot.CustomCommandService;
 using Discord;
-using Discord.Commands;
 using Discord.WebSocket;
 using System;
 using Discord.Rest;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Linq;
 using System.Threading.Tasks;
-using TradeMemer.modules;
-using Newtonsoft.Json;
-using System.IO;
-using static TradeMemer.modules.SqliteClass;
+using System.Timers;
+using static RoleX.modules.SqliteClass;
 using Public_Bot;
 using GuildPermissions = Public_Bot.GuildPermissions;
-using System.Security.Cryptography.X509Certificates;
 
-namespace TradeMemer.modules
+namespace RoleX.modules
 {
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Moderator : CommandModuleBase
     {
+        [GuildPermissions(GuildPermission.ManageGuild)]
+        [DiscordCommand("modlogs",commandHelp ="modlogs <@user>",description ="Shows all modlogs of a user",example ="modlogs @WeirdMan")]
+        public async Task MLogs(params string[] aa)
+        {
+            if (aa.Length == 0)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "What user?",
+                    Description = "Mention the user you wish to get modlogs of",
+                    Color = Color.Red
+                }.WithCurrentTimestamp().Build());
+                return;
+            }
+            IUser user;
+            if (GetUser(aa[0]) == null)
+            {
+                var regex = new Regex(@"(\d{18}|\d{17})");
+                if (regex.IsMatch(aa[0]))
+                {
+                    var aadrc = new DiscordRestClient();
+                    await aadrc.LoginAsync(TokenType.Bot, Program.token);
+                    var aala = await aadrc.GetUserAsync(ulong.Parse(regex.Match(aa[0]).Groups[1].Value));
+                    if (aala == null)
+                    {
+                        await ReplyAsync("", false, new EmbedBuilder
+                        {
+                            Title = "What user?",
+                            Description = "That user isn't valid :(",
+                            Color = Color.Red
+                        }.WithCurrentTimestamp().Build());
+                        return;
+                    }
+                    user = aala;
+                }
+                else
+                {
+                    await ReplyAsync("", false, new EmbedBuilder
+                    {
+                        Title = "What user?",
+                        Description = "That user isn't valid :(",
+                        Color = Color.Red
+                    }.WithCurrentTimestamp().Build());
+                    return;
+                }
+            } else
+            {
+                user = GetUser(aa[0]);
+            }
+            EmbedBuilder eb = new EmbedBuilder
+            {
+                Title = $"Modlogs for user {user.Username}#{user.Discriminator}",
+                Color = Blurple,
+                ThumbnailUrl = user.GetAvatarUrl(size: 64)
+            };
+
+            foreach (Infraction i in await GetUserModlogs(Context.Guild.Id, user.Id))
+            {
+                eb.AddField($"{Infraction.GetPunishment(i.Punishment)}", $"**Mod:** <@{i.ModeratorID}>\n**Date:** {i.Time.ToUniversalTime().ToShortDateString()}\n**Time: **{(i.Time.ToUniversalTime().TimeOfDay.Hours <= 12 ? i.Time.ToUniversalTime().TimeOfDay.Hours : i.Time.ToUniversalTime().TimeOfDay.Hours - 12)}:{i.Time.ToUniversalTime().TimeOfDay.Minutes} {(i.Time.ToUniversalTime().TimeOfDay.Hours < 12 ? "AM" : "PM")}\n**Reason:** {i.Reason}",true);
+            }
+            if (eb.Fields.Count == 0)
+            {
+                eb.Description = "They've been a good boye! No modlogs :)";
+            }
+            await ReplyAsync(embed: eb.WithCurrentTimestamp().Build());
+        }
+        [GuildPermissions(GuildPermission.ManageGuild)]
+        [DiscordCommand("mute",description ="Mutes the given user",example ="mute @Dumbkid 5m For trying to ping everyone",commandHelp ="mute <@user> <time> <reason>")]
+        public async Task Mute(params string[] args)
+        {
+            if (await MutedRoleIDGetter(Context.Guild.Id) == 0)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "No muted role set :|",
+                    Description = $"Set muted role by running `{await PrefixGetter(Context.Guild.Id)}mutedrole <create/@Role>`",
+                    Color = Color.Red
+                }.WithCurrentTimestamp().Build());
+                return;
+            }
+            bool isValidTime = false;
+            TimeSpan ts;
+            if (args.Length == 0)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "What user?",
+                    Description = "Mention the user you wish to mute",
+                    Color = Color.Red
+                }.WithCurrentTimestamp().Build());
+                return;
+            }
+            if (args.Length >= 2)
+            {
+                isValidTime = args[1].Last() switch
+                {
+                    'h' or 'H' or 'm' or 'M' or 'd' or 'D' or 'Y' or 'y' or 's' or 'S' => true,
+                    _ => false
+                } && int.TryParse(string.Join("", args[1].SkipLast(1)), out int _);
+                if (!isValidTime)
+                {
+                    await ReplyAsync("", false, new EmbedBuilder
+                    {
+                        Title = "The time parameter is invalid",
+                        Description = $"Couldn't parse `{args[1]}` as time, see key below\n```s => seconds\nm => minutes\nh => hours\nd => days\ny => years```",
+                        Color = Color.Red
+                    }.WithCurrentTimestamp().Build());
+                    return;
+                }
+                else if (int.TryParse(string.Join("", args[1].SkipLast(1)), out int timezar))
+                {
+                    ts = args[1].Last() switch
+                    {
+                        'h' or 'H' => new TimeSpan(timezar, 0, 0),
+                        'm' or 'M' => new TimeSpan(0, timezar, 0),
+                        's' or 'S' => new TimeSpan(0, 0, timezar),
+                        'd' or 'D' => new TimeSpan(timezar, 0, 0, 0),
+                        'y' or 'Y' => new TimeSpan(timezar * 365, 0, 0, 0),
+                         //Non possible outcome but IDE is boss
+                        _ => new TimeSpan()
+                    };
+                } else {
+                    ts = TimeSpan.Zero;
+                }
+            } else
+            {
+                ts = TimeSpan.Zero;
+            }
+            if (GetUser(args[0]) != null)
+            {
+                var gUser = GetUser(args[0]);
+                if (gUser.Hierarchy < (Context.User as SocketGuildUser).Hierarchy)
+                {
+                    await ReplyAsync("", false, new EmbedBuilder
+                    {
+                        Title = $"{gUser.Username}#{gUser.Discriminator} Muted {(isValidTime ? $"for {ts.Days}d, {ts.Minutes}m and {ts.Seconds}s" : "indefinitely" )}!",
+                        Description = $"Reason: {(args.Length > 2 ? string.Join(' ', args.Skip(2)) : $"Requested by { Context.User.Username }#{Context.User.Discriminator}")}",
+                        Color = Blurple
+                    }.WithCurrentTimestamp().Build());
+                    try
+                    {
+                        await gUser.SendMessageAsync("", false, new EmbedBuilder
+                        {
+                            Title = "Oops, you were muted!",
+                            Description = $"You were muted {(isValidTime ? $"for {ts.Days} days, {ts.Minutes} minutes and {ts.Seconds} seconds" : "indefinitely")} from **{Context.Guild.Name}** by {Context.User.Mention} {(args.Length > 1 ? $"Reason:{args[1]}" : "")}\n[Click here to appeal]({(await AppealGetter(Context.Guild.Id) == "" ? "" : await AppealGetter(Context.Guild.Id))})",
+                            Color = Color.Red
+                        }.WithCurrentTimestamp().Build());
+                    }
+                    catch { }
+                    string guildName = Context.Guild.Name;
+                    await AddToModlogs(Context.Guild.Id, gUser.Id, Context.User.Id, Punishment.Mute, DateTime.Now, args.Length > 2 ? string.Join(' ', args.Skip(2)) : "");
+                    await gUser.AddRoleAsync(Context.Guild.GetRole(await MutedRoleIDGetter(Context.Guild.Id)));
+                    if (!isValidTime)
+                    {
+                        return;
+                    }
+                    Timer tmr = new Timer()
+                    {
+                        AutoReset = false,
+                        Interval = ts.TotalMilliseconds
+                    };
+                    tmr.Elapsed += async (object send, ElapsedEventArgs arg) =>
+                    {
+                        try
+                        {
+                            await gUser.RemoveRoleAsync(Context.Guild.GetRole(await MutedRoleIDGetter(Context.Guild.Id)));
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex);
+                        }
+                        try
+                        {
+                            await gUser.SendMessageAsync($"**You have been unmuted on {guildName}**");
+                        }
+                        catch { }
+                    };
+                    return;
+                }
+                else if (gUser.Hierarchy == (Context.User as SocketGuildUser).Hierarchy)
+                {
+                    await ReplyAsync("", false, new EmbedBuilder
+                    {
+                        Title = $"Seriously??",
+                        Color = Color.Red,
+                        ImageUrl = "https://cdn.discordapp.com/attachments/758922634749542420/760180089870090320/unknown.png"
+                    }.WithCurrentTimestamp().Build());
+                    return;
+                }
+                else
+                {
+                    await ReplyAsync("", false, new EmbedBuilder
+                    {
+                        Title = "Not gonna happen",
+                        Description = "That person is above you!?",
+                        Color = Color.Red
+                    }.WithCurrentTimestamp().Build());
+                    return;
+                }
+            }
+            else
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "What user?",
+                    Description = "That user isn't valid :(",
+                    Color = Color.Red
+                }.WithCurrentTimestamp().Build());
+                return;
+            }
+        }
         [GuildPermissions(GuildPermission.BanMembers)]
         [DiscordCommand("ban",commandHelp ="ban <@user> <reason>", example ="ban @Scammer Scamming me friend", description ="Bans the specified user")]
         public async Task Banner(params string[] args)
@@ -38,8 +243,19 @@ namespace TradeMemer.modules
             if (GetUser(args[0]) != null)
             {
                 var gUser = GetUser(args[0]);
+                
                 if (gUser.Hierarchy < (Context.User as SocketGuildUser).Hierarchy)
                 {
+                    if (gUser.Hierarchy >= Context.Guild.CurrentUser.Hierarchy)
+                    {
+                        await ReplyAsync("", false, new EmbedBuilder
+                        {
+                            Title = "Oops, that person is above me :(",
+                            Description = $"I don't have perms to ban them :/",
+                            Color = Color.Red
+                        }.WithCurrentTimestamp().Build());
+                        return;
+                    }
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = $"{gUser.Username}#{gUser.Discriminator} Banned Successfully!",
@@ -51,12 +267,13 @@ namespace TradeMemer.modules
                         await gUser.SendMessageAsync("", false, new EmbedBuilder
                         {
                             Title = "Oops, you were banned!",
-                            Description = $"You were banned from **{Context.Guild.Name}** by {Context.User.Mention} {(args.Length > 1 ? $"Reason:{args[1]}" : "")}\n{(await AppealGetter(Context.Guild.Id) == "" ? "" : await AppealGetter(Context.Guild.Id))}",
+                            Description = $"You were banned from **{Context.Guild.Name}** by {Context.User.Mention} {(args.Length > 1 ? $"Reason:{args[1]}" : "")}\n[Click here to appeal]({(await AppealGetter(Context.Guild.Id) == "" ? "" : await AppealGetter(Context.Guild.Id))})",
                             Color = Color.Red
                         }.WithCurrentTimestamp().Build());
                     }
                     catch { }
                     await gUser.BanAsync(7, args.Length > 1 ? string.Join(' ', args.Skip(1)) : $"Requested by {Context.User.Username}#{Context.User.Discriminator}");
+                    await AddToModlogs(Context.Guild.Id, gUser.Id, Context.User.Id, Punishment.Ban, DateTime.Now, args.Length > 1 ? string.Join(' ', args.Skip(1)) : $"");
                     return;
                 } else if (gUser.Hierarchy == (Context.User as SocketGuildUser).Hierarchy)
                 {
@@ -109,6 +326,7 @@ namespace TradeMemer.modules
                     }.WithCurrentTimestamp().Build());
                 } catch { }
                 await Context.Guild.AddBanAsync(aa, 7, args.Length > 1 ? string.Join(' ', args.Skip(1)) : $"Requested by {Context.User.Username}#{Context.User.Discriminator}");
+                await AddToModlogs(Context.Guild.Id, aa.Id, Context.User.Id, Punishment.Ban, DateTime.Now, args.Length > 1 ? string.Join(' ', args.Skip(1)) : "");
                 return;
             } else
             {
@@ -140,6 +358,16 @@ namespace TradeMemer.modules
                 var gUser = GetUser(args[0]);
                 if (gUser.Hierarchy < (Context.User as SocketGuildUser).Hierarchy)
                 {
+                    if (gUser.Hierarchy >= Context.Guild.CurrentUser.Hierarchy)
+                    {
+                        await ReplyAsync("", false, new EmbedBuilder
+                        {
+                            Title = "Oops, that person is above me :(",
+                            Description = $"I don't have perms to kick them :/",
+                            Color = Color.Red
+                        }.WithCurrentTimestamp().Build());
+                        return;
+                    }
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = $"{gUser.Username}#{gUser.Discriminator} Kicked Successfully!",
@@ -157,6 +385,7 @@ namespace TradeMemer.modules
                     }
                     catch { }
                     await gUser.KickAsync(args.Length > 1 ? string.Join(' ', args.Skip(1)) : $"Requested by {Context.User.Username}#{Context.User.Discriminator}");
+                    await AddToModlogs(Context.Guild.Id, gUser.Id, Context.User.Id, Punishment.Kick, DateTime.Now, args.Length > 1 ? string.Join(' ', args.Skip(1)) : $"");
                     return;
                 }
                 else if (gUser.Hierarchy == (Context.User as SocketGuildUser).Hierarchy)
@@ -192,7 +421,7 @@ namespace TradeMemer.modules
         }
         [GuildPermissions(GuildPermission.ManageGuild)]
         [DiscordCommand("setappeal", commandHelp ="setappeal <link>", example ="setappeal https://gforms.com/bah", description ="Sets the appeal link sent to punished members")]
-        public async Task setappeal(params string[] args)
+        public async Task Setappeal(params string[] args)
         {
             if (args.Length == 0)
             {
@@ -255,6 +484,7 @@ namespace TradeMemer.modules
                 return;
             }
             await Context.Guild.RemoveBanAsync(bu);
+            await AddToModlogs(Context.Guild.Id, bu.Id, Context.User.Id, Punishment.Unban, DateTime.Now);
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = $"{bu.Username}#{bu.Discriminator} unbanned succesfully!",
@@ -297,6 +527,16 @@ namespace TradeMemer.modules
                 var gUser = GetUser(args[0]);
                 if (gUser.Hierarchy < (Context.User as SocketGuildUser).Hierarchy)
                 {
+                    if (gUser.Hierarchy >= Context.Guild.CurrentUser.Hierarchy)
+                    {
+                        await ReplyAsync("", false, new EmbedBuilder
+                        {
+                            Title = "Oops, that person is above me :(",
+                            Description = $"I don't have perms to ban them :/",
+                            Color = Color.Red
+                        }.WithCurrentTimestamp().Build());
+                        return;
+                    }
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = $"{gUser.Username}#{gUser.Discriminator} Softbanned Successfully!",
@@ -316,6 +556,7 @@ namespace TradeMemer.modules
                     var gUID = gUser.Id;
                     await gUser.BanAsync(args.Length == 1 ? 7 : (ulong.TryParse(args[1], out ulong ak47) ? Convert.ToInt32(ak47) : 7));
                     await Context.Guild.RemoveBanAsync(gUID);
+                    await AddToModlogs(Context.Guild.Id, gUser.Id, Context.User.Id, Punishment.Softban, DateTime.Now);
                     return;
                 }
                 else if (gUser.Hierarchy == (Context.User as SocketGuildUser).Hierarchy)
@@ -371,6 +612,8 @@ namespace TradeMemer.modules
                 }
                 catch { }
                 await Context.Guild.AddBanAsync(aa, args.Length == 1 ? 7 : (ulong.TryParse(args[1], out ulong ak47) ? Convert.ToInt32(ak47) : 7));
+                await Context.Guild.RemoveBanAsync(aa);
+                await AddToModlogs(Context.Guild.Id, aa.Id, Context.User.Id, Punishment.Softban, DateTime.Now, "");
                 return;
             }
             else
@@ -386,7 +629,7 @@ namespace TradeMemer.modules
         }
         [GuildPermissions(GuildPermission.BanMembers)]
         [DiscordCommand("bans",commandHelp ="bans",description ="Shows the bans in the server")]
-        public async Task Bans()
+        public async Task Bans(params string[] _)
         {
             await ReplyAsync("", false, new EmbedBuilder
             {
@@ -397,8 +640,8 @@ namespace TradeMemer.modules
             );
         }
         [GuildPermissions(GuildPermission.ManageChannels)]
-        [DiscordCommand("lock", RequiredPermission = true, commandHelp = "lock <#channel>", description = "locks the mentioned channel", example ="lock #heistchan")]
-        public async Task lockchan(params string[] args)
+        [DiscordCommand("lock", commandHelp = "lock <#channel>", description = "locks the mentioned channel", example ="lock #heistchan")]
+        public async Task Lockchan(params string[] args)
         {
             SocketGuildChannel lockchnl;
             if (args.Length == 0)
@@ -445,7 +688,7 @@ namespace TradeMemer.modules
         }
         [GuildPermissions(GuildPermission.ManageChannels)]
         [DiscordCommand("unlock", commandHelp = "unlock <#channel>", description = "Unlocks the mentioned channel", example="unlock #heistchan")]
-        public async Task unlock(params string[] args)
+        public async Task Unlock(params string[] args)
         {
             SocketGuildChannel lockchnl;
             if (args.Length == 0)
@@ -489,6 +732,256 @@ namespace TradeMemer.modules
                 alfa.Color = Blurple;
             }
             await Context.Channel.SendMessageAsync("", false, alfa.Build());
+        }
+        [GuildPermissions(GuildPermission.ManageGuild)]
+        [DiscordCommand("mutedrole", commandHelp = "mutedrole <create/role>", description = "Sets the roles for mutes", example = "mutedrole create`\n`mutedrole @Muted")]
+        public async Task SMutedRole(params string[] args)
+        {
+            if (args.Length == 0)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "The current muted role",
+                    Description = $"{(await MutedRoleIDGetter(Context.Guild.Id) == 0 ? "No muted role set" : $"<@&{await MutedRoleIDGetter(Context.Guild.Id)}")}>\n",
+                    Color = Blurple,
+                    Footer = new EmbedFooterBuilder
+                    {
+                        Text = $"To change it, do `{await PrefixGetter(Context.Guild.Id)}muted <@MutedRole>`, and do `{await PrefixGetter(Context.Guild.Id)}muted create` to create a novel one"
+                    }
+                }.WithCurrentTimestamp().Build());
+                return;
+            }
+            else
+            {
+                if (args[0].ToLower() == "create")
+                {
+                    var msg = await ReplyAsync("", false, new EmbedBuilder
+                    {
+                        Title = "Creating muted role.......",
+                        Color = Blurple
+                    }.WithCurrentTimestamp().Build());
+                    var rl = await Context.Guild.CreateRoleAsync("Muted by RoleX", new Discord.GuildPermissions(), new Color(0, 0, 0),false,null);
+                    foreach(var chnl in Context.Guild.Channels)
+                    {
+                        await chnl.AddPermissionOverwriteAsync(rl, new OverwritePermissions(sendMessages: PermValue.Deny, speak: PermValue.Deny));
+                    }
+                    args[0] = rl.Id.ToString();
+                    await msg.DeleteAsync();
+                }
+                if (GetRole(args[0]) == null)
+                {
+                    await ReplyAsync("", false, new EmbedBuilder
+                    {
+                        Title = "What role?",
+                        Description = $"Couldn't parse `{args[0]}` as role :(",
+                        Color = Color.Red
+                    }.WithCurrentTimestamp().Build());
+                    return;
+                }
+                await MutedRoleIDAdder(Context.Guild.Id, GetRole(args[0]).Id);
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "The updated Muted Role!",
+                    Description = $"The muted role is now <@&{await MutedRoleIDGetter(Context.Guild.Id)}>",
+                    Color = Blurple,
+                    Footer = new EmbedFooterBuilder
+                    {
+                        Text = $"To change it yet again, do `{await PrefixGetter(Context.Guild.Id)}mutedrole <@Role>`"
+                    }
+                }.WithCurrentTimestamp().Build());
+            }
+        }
+        [GuildPermissions(GuildPermission.ManageGuild)]
+        [DiscordCommand("unmute", commandHelp = "unmute <@user>", example = "unmute @RegretfulMan", description = "Unmutes given user")]
+        public async Task Unmute(params string[] args)
+        {
+            if (args.Length == 0)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "What user?",
+                    Description = "Mention the user you wish to unmute",
+                    Color = Color.Red
+                }.WithCurrentTimestamp().Build());
+                return;
+            }
+            else if (GetUser(args[0]) == null)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "What user?",
+                    Description = $"Couldn't parse `{args[0]}` as user",
+                    Color = Color.Red
+                }.WithCurrentTimestamp().Build());
+                return;
+            }
+            else
+            {
+                try
+                {
+                    await GetUser(args[0]).RemoveRoleAsync(Context.Guild.GetRole(await MutedRoleIDGetter(Context.Guild.Id)));
+                }
+                catch { }
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "User unmuted successfully!",
+                    Description = $"{GetUser(args[0])} was successfully unmuted :)",
+                    Color = Blurple
+                }.WithCurrentTimestamp().Build());
+                return;
+            }
+        }
+        [GuildPermissions(GuildPermission.ManageGuild)]
+        [DiscordCommand("hardmute", description = "Mutes the given user after removing all roles", example = "hardmute @Dumbkid 5m For trying to ping everyone", commandHelp = "hardmute <@user> <time> <reason>")]
+        public async Task HardMute(params string[] args)
+        {
+            if (await MutedRoleIDGetter(Context.Guild.Id) == 0)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "No muted role set :|",
+                    Description = $"Set muted role by running `{await PrefixGetter(Context.Guild.Id)}mutedrole <create/@Role>`",
+                    Color = Color.Red
+                }.WithCurrentTimestamp().Build());
+                return;
+            }
+            bool isValidTime = false;
+            TimeSpan ts;
+            if (args.Length == 0)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "What user?",
+                    Description = "Mention the user you wish to hardmute",
+                    Color = Color.Red
+                }.WithCurrentTimestamp().Build());
+                return;
+            }
+            if (args.Length >= 2)
+            {
+                isValidTime = args[1].Last() switch
+                {
+                    'h' or 'H' or 'm' or 'M' or 'd' or 'D' or 'Y' or 'y' or 's' or 'S' => true,
+                    _ => false
+                } && int.TryParse(string.Join("", args[1].SkipLast(1)), out int _);
+                if (!isValidTime)
+                {
+                    await ReplyAsync("", false, new EmbedBuilder
+                    {
+                        Title = "The time parameter is invalid",
+                        Description = $"Couldn't parse `{args[1]}` as time, see key below\n```s => seconds\nm => minutes\nh => hours\nd => days\ny => years```",
+                        Color = Color.Red
+                    }.WithCurrentTimestamp().Build());
+                    return;
+                }
+                else if (int.TryParse(string.Join("", args[1].SkipLast(1)), out int timezar))
+                {
+                    ts = args[1].Last() switch
+                    {
+                        'h' or 'H' => new TimeSpan(timezar, 0, 0),
+                        'm' or 'M' => new TimeSpan(0, timezar, 0),
+                        's' or 'S' => new TimeSpan(0, 0, timezar),
+                        'd' or 'D' => new TimeSpan(timezar, 0, 0, 0),
+                        'y' or 'Y' => new TimeSpan(timezar * 365, 0, 0, 0),
+                        //Non possible outcome but IDE is boss
+                        _ => new TimeSpan()
+                    };
+                }
+                else
+                {
+                    ts = TimeSpan.Zero;
+                }
+            }
+            else
+            {
+                ts = TimeSpan.Zero;
+            }
+            if (GetUser(args[0]) != null)
+            {
+                var gUser = GetUser(args[0]);
+                if (gUser.Hierarchy < (Context.User as SocketGuildUser).Hierarchy)
+                {
+                    await ReplyAsync("", false, new EmbedBuilder
+                    {
+                        Title = $"{gUser.Username}#{gUser.Discriminator} Hardmuted {(isValidTime ? $"for {ts.Days}d, {ts.Minutes}m and {ts.Seconds}s" : "indefinitely")}!",
+                        Description = $"Reason: {(args.Length > 2 ? string.Join(' ', args.Skip(2)) : $"Requested by { Context.User.Username }#{Context.User.Discriminator}")}",
+                        Color = Blurple
+                    }.WithCurrentTimestamp().Build());
+                    try
+                    {
+                        await gUser.SendMessageAsync("", false, new EmbedBuilder
+                        {
+                            Title = "Oops, you were muted!",
+                            Description = $"You were muted {(isValidTime ? $"for {ts.Days} days, {ts.Minutes} minutes and {ts.Seconds} seconds" : "indefinitely")} from **{Context.Guild.Name}** by {Context.User.Mention} {(args.Length > 1 ? $"Reason:{args[1]}" : "")}\n[Click here to appeal]({(await AppealGetter(Context.Guild.Id) == "" ? "" : await AppealGetter(Context.Guild.Id))})",
+                            Color = Color.Red
+                        }.WithCurrentTimestamp().Build());
+                    }
+                    catch { }
+                    string guildName = Context.Guild.Name;
+                    await AddToModlogs(Context.Guild.Id, gUser.Id, Context.User.Id, Punishment.HardMute, DateTime.Now, args.Length > 2 ? string.Join(' ', args.Skip(2)) : "");
+                    var formerroles = gUser.Roles.ToList();
+                    formerroles.Remove(Context.Guild.EveryoneRole);
+                    await gUser.RemoveRolesAsync(formerroles);
+                    await gUser.AddRoleAsync(Context.Guild.GetRole(await MutedRoleIDGetter(Context.Guild.Id)));
+                    if (!isValidTime)
+                    {
+                        return;
+                    }
+                    Timer tmr = new Timer()
+                    {
+                        AutoReset = false,
+                        Interval = ts.TotalMilliseconds
+                    };
+                    tmr.Elapsed += async (object send, ElapsedEventArgs arg) =>
+                    {
+                        try
+                        {
+                            await gUser.RemoveRoleAsync(Context.Guild.GetRole(await MutedRoleIDGetter(Context.Guild.Id)));
+                            await gUser.AddRolesAsync(formerroles);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex);
+                        }
+                        try
+                        {
+                            await gUser.SendMessageAsync($"**You have been unmuted on {guildName}**");
+                        }
+                        catch { }
+                    };
+                    return;
+                }
+                else if (gUser.Hierarchy == (Context.User as SocketGuildUser).Hierarchy)
+                {
+                    await ReplyAsync("", false, new EmbedBuilder
+                    {
+                        Title = $"Seriously??",
+                        Color = Color.Red,
+                        ImageUrl = "https://cdn.discordapp.com/attachments/758922634749542420/760180089870090320/unknown.png"
+                    }.WithCurrentTimestamp().Build());
+                    return;
+                }
+                else
+                {
+                    await ReplyAsync("", false, new EmbedBuilder
+                    {
+                        Title = "Not gonna happen",
+                        Description = "That person is above you!?",
+                        Color = Color.Red
+                    }.WithCurrentTimestamp().Build());
+                    return;
+                }
+            }
+            else
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "What user?",
+                    Description = "That user isn't valid :(",
+                    Color = Color.Red
+                }.WithCurrentTimestamp().Build());
+                return;
+            }
         }
     }
 }

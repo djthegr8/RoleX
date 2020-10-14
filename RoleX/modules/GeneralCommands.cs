@@ -7,11 +7,27 @@ using System.Threading.Tasks;
 using Discord.WebSocket;
 using Discord;
 using GuildPermissions = Public_Bot.GuildPermissions;
-namespace TradeMemer.modules
+namespace RoleX.modules
 {
     [DiscordCommandClass("General","General Commands for all")]
     class General: CommandModuleBase
     {
+        [Alt("hoomans")]
+        [DiscordCommand("humans",description ="Shows number of users in server",commandHelp ="humans")]
+        public async Task hmans()
+        {
+            await ReplyAsync("", false, new EmbedBuilder
+            {
+                Title = $"There are {Context.Guild.MemberCount} users in {Context.Guild.Name}!",
+                Description = $"Wow nice server guys!",
+                Color = Blurple,
+                Footer = new EmbedFooterBuilder()
+                {
+                    Text = $"Hehe!"
+                }
+            }.WithCurrentTimestamp().Build());
+            return;
+        }
         [DiscordCommand("altidentify", commandHelp = "altidentify <number-of-alts>", description = "Finds the x users newest to Discord and most probable alts")]
         public async Task Yu(params string[] argz)
         {
@@ -20,9 +36,15 @@ namespace TradeMemer.modules
             {
                 test = retest;
             }
-            if (test >= Context.Guild.MemberCount)
+            if (test > Context.Guild.MemberCount)
             {
-                await Context.Channel.SendMessageAsync("This guild does not have the specified amount of users");
+                await Context.Channel.SendMessageAsync(embed:new EmbedBuilder
+                {
+                    Title="This guild does not have the specified amount of users",
+                    Description=$"You asked for {test} youngest users, while your server has only {Context.Guild.MemberCount}",
+                    Color = Blurple
+                }.WithCurrentTimestamp().Build()
+                );
                 return;
             }
             var yus = Context.Guild.Users;
@@ -133,7 +155,7 @@ namespace TradeMemer.modules
                 var commandSelected = Commands.FirstOrDefault(x => (x.CommandName.ToLower() == cmd.ToLower() || x.Alts.Any(x => x.ToLower() == cmd.ToLower())) && x.CommandDescription != "");
                 if (commandSelected == null)
                 {
-                    var modSelected = CustomCommandService.Modules.Keys.First(x => x.ToLower().Contains(cmd.ToLower()));
+                    var modSelected = CustomCommandService.Modules.Keys.FirstOrDefault(x => x.ToLower().Contains(cmd.ToLower()));
                     if (modSelected == null)
                     {
                         await ReplyAsync("", false, new EmbedBuilder

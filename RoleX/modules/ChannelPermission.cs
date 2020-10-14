@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Discord.WebSocket;
 using Discord;
 using GuildPermissions = Public_Bot.GuildPermissions;
-namespace TradeMemer.modules
+namespace RoleX.modules
 {
     [DiscordCommandClass("Channel Editor","Edit Channel-wise perms of a Role using these commands!")]
     class ChannelPermission: CommandModuleBase
@@ -49,7 +49,8 @@ namespace TradeMemer.modules
         }
         [GuildPermissions(GuildPermission.ManageChannels)]
         [Alt("catdelete")]
-        [DiscordCommand("categorydelete", commandHelp = "categoryrdelete <category-name>", description = "Deletes given category", example = "categorydelete Useless")]
+        [Alt("catdel")]
+        [DiscordCommand("categorydelete", commandHelp = "categorydelete <category-name>", description = "Deletes given category and all its channels", example = "categorydelete Useless")]
         public async Task CatDel(string aa)
         {
             var alf = GetCategory(aa);
