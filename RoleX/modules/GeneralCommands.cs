@@ -12,7 +12,7 @@ namespace TradeMemer.modules
     [DiscordCommandClass("General","General Commands for all")]
     class General: CommandModuleBase
     {
-        [DiscordCommand("altidentify", commandHelp = "altidentify <number-of-alts>", description = "Finds the x users newest to Discord and most probable alts")]
+        [DiscordCommand("altidentify", commandHelp = "altidentify <number-of-alts>", description = "Displays the youngest users in the guild")]
         public async Task Yu(params string[] argz)
         {
             var test = 10;
@@ -66,7 +66,7 @@ namespace TradeMemer.modules
                 Color = Blurple
             }.WithCurrentTimestamp().Build());
         }
-        [DiscordCommand("ping",commandHelp ="ping", description ="Finds the latency!")]
+        [DiscordCommand("ping",commandHelp ="ping", description =" Displays the latency of the bot. The more the latency, the more laggy the bot will be")]
         public async Task Ping(params string[] argz)
         {
             await Context.Channel.TriggerTypingAsync();
