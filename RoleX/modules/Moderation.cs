@@ -30,7 +30,7 @@ namespace RoleX.modules
                 return;
             }
             IUser user;
-            if (GetUser(aa[0]) == null)
+            if (await GetUser(aa[0]) == null)
             {
                 var regex = new Regex(@"(\d{18}|\d{17})");
                 if (regex.IsMatch(aa[0]))
@@ -50,6 +50,10 @@ namespace RoleX.modules
                     }
                     user = aala;
                 }
+                else if (Context.Message.MentionedUsers.Any())
+                {
+                    user = Context.Message.MentionedUsers.First();
+                }
                 else
                 {
                     await ReplyAsync("", false, new EmbedBuilder
@@ -62,7 +66,7 @@ namespace RoleX.modules
                 }
             } else
             {
-                user = GetUser(aa[0]);
+                user = await GetUser(aa[0]);
             }
             EmbedBuilder eb = new EmbedBuilder
             {
@@ -143,9 +147,13 @@ namespace RoleX.modules
             {
                 ts = TimeSpan.Zero;
             }
-            if (GetUser(args[0]) != null)
+            if (await GetUser(args[0]) != null || Context.Message.MentionedUsers.Any())
             {
-                var gUser = GetUser(args[0]);
+                var gUser = await GetUser(args[0]);
+                if (gUser == null)
+                {
+                    gUser = Context.Message.MentionedUsers.First() as SocketGuildUser;
+                }
                 if (gUser.Hierarchy < (Context.User as SocketGuildUser).Hierarchy)
                 {
                     await ReplyAsync("", false, new EmbedBuilder
@@ -181,13 +189,6 @@ namespace RoleX.modules
                         try
                         {
                             await gUser.RemoveRoleAsync(Context.Guild.GetRole(await MutedRoleIDGetter(Context.Guild.Id)));
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex);
-                        }
-                        try
-                        {
                             await gUser.SendMessageAsync($"**You have been unmuted on {guildName}**");
                         }
                         catch { }
@@ -240,10 +241,13 @@ namespace RoleX.modules
                 }.WithCurrentTimestamp().Build());
                 return;
             }
-            if (GetUser(args[0]) != null)
+            if (await GetUser(args[0]) != null || Context.Message.MentionedUsers.Any())
             {
-                var gUser = GetUser(args[0]);
-                
+                var gUser = await GetUser(args[0]);
+                if (gUser == null)
+                {
+                    gUser = Context.Message.MentionedUsers.First() as SocketGuildUser;
+                }
                 if (gUser.Hierarchy < (Context.User as SocketGuildUser).Hierarchy)
                 {
                     if (gUser.Hierarchy >= Context.Guild.CurrentUser.Hierarchy)
@@ -353,9 +357,13 @@ namespace RoleX.modules
                 }.WithCurrentTimestamp().Build());
                 return;
             }
-            if (GetUser(args[0]) != null)
+            if (await GetUser(args[0]) != null || Context.Message.MentionedUsers.Any())
             {
-                var gUser = GetUser(args[0]);
+                var gUser = await GetUser(args[0]);
+                if (gUser == null)
+                {
+                    gUser = Context.Message.MentionedUsers.First() as SocketGuildUser;
+                }
                 if (gUser.Hierarchy < (Context.User as SocketGuildUser).Hierarchy)
                 {
                     if (gUser.Hierarchy >= Context.Guild.CurrentUser.Hierarchy)
@@ -522,9 +530,13 @@ namespace RoleX.modules
                     }
                 }
             }
-            if (GetUser(args[0]) != null)
+            if (await GetUser(args[0]) != null || Context.Message.MentionedUsers.Any())
             {
-                var gUser = GetUser(args[0]);
+                var gUser = await GetUser(args[0]);
+                if (gUser == null)
+                {
+                    gUser = Context.Message.MentionedUsers.First() as SocketGuildUser;
+                }
                 if (gUser.Hierarchy < (Context.User as SocketGuildUser).Hierarchy)
                 {
                     if (gUser.Hierarchy >= Context.Guild.CurrentUser.Hierarchy)
@@ -668,7 +680,15 @@ namespace RoleX.modules
             if (lockMSGchnl == null)
             {
                 var lockVOICE = lockchnl as SocketVoiceChannel;
-                var xyz = new OverwritePermissions(connect: PermValue.Deny);
+                var prvo = lockchnl.GetPermissionOverwrite(Context.Guild.EveryoneRole);
+                OverwritePermissions xyz;
+                if (prvo.HasValue)
+                {
+                    xyz = prvo.Value.Modify(connect: PermValue.Deny);
+                } else
+                {
+                    xyz = new OverwritePermissions(connect: PermValue.Deny);
+                }
                 await lockVOICE.AddPermissionOverwriteAsync(Context.Guild.EveryoneRole, xyz);
                 alfa.Title = $"Locked Voice Channel {lockVOICE.Name}";
                 alfa.Description = "The aforementioned voice channel has been locked.";
@@ -677,8 +697,17 @@ namespace RoleX.modules
             }
             else
             {
-                var sry = new OverwritePermissions(sendMessages: PermValue.Deny);
-                await lockchnl.AddPermissionOverwriteAsync(Context.Guild.EveryoneRole, sry);
+                var prvo = lockchnl.GetPermissionOverwrite(Context.Guild.EveryoneRole);
+                OverwritePermissions xyz;
+                if (prvo.HasValue)
+                {
+                    xyz = prvo.Value.Modify(sendMessages: PermValue.Deny);
+                }
+                else
+                {
+                    xyz = new OverwritePermissions(sendMessages: PermValue.Deny);
+                }
+                await lockchnl.AddPermissionOverwriteAsync(Context.Guild.EveryoneRole, xyz);
                 alfa.Title = $"Locked Text Channel {lockMSGchnl.Name}";
                 alfa.Description = $"{lockMSGchnl.Mention} has been locked";
                 alfa.Color = Blurple;
@@ -715,7 +744,16 @@ namespace RoleX.modules
             if (lockMSGchnl == null)
             {
                 var lockVOICE = lockchnl as SocketVoiceChannel;
-                var xyz = new OverwritePermissions(connect: PermValue.Inherit);
+                var prvo = lockchnl.GetPermissionOverwrite(Context.Guild.EveryoneRole);
+                OverwritePermissions xyz;
+                if (prvo.HasValue)
+                {
+                    xyz = prvo.Value.Modify(connect: PermValue.Inherit);
+                }
+                else
+                {
+                    xyz = new OverwritePermissions(connect: PermValue.Inherit);
+                }
                 await lockVOICE.AddPermissionOverwriteAsync(Context.Guild.EveryoneRole, xyz);
                 alfa.Title = $"Unlocked Voice Channel {lockVOICE.Name}";
                 alfa.Description = "The aforementioned voice channel has been unlocked.";
@@ -724,8 +762,17 @@ namespace RoleX.modules
             }
             else
             {
-                var sry = new OverwritePermissions(sendMessages: PermValue.Inherit);
-                await lockchnl.AddPermissionOverwriteAsync(Context.Guild.EveryoneRole, sry);
+                var prvo = lockchnl.GetPermissionOverwrite(Context.Guild.EveryoneRole);
+                OverwritePermissions xyz;
+                if (prvo.HasValue)
+                {
+                    xyz = prvo.Value.Modify(sendMessages: PermValue.Inherit);
+                }
+                else
+                {
+                    xyz = new OverwritePermissions(sendMessages: PermValue.Inherit);
+                }
+                await lockchnl.AddPermissionOverwriteAsync(Context.Guild.EveryoneRole, xyz);
                 alfa.Title = $"Unlocked Text Channel {lockMSGchnl.Name}";
                 alfa.Description = $"{lockMSGchnl.Mention} has been unlocked";
                 alfa.WithCurrentTimestamp();
@@ -805,7 +852,7 @@ namespace RoleX.modules
                 }.WithCurrentTimestamp().Build());
                 return;
             }
-            else if (GetUser(args[0]) == null)
+            else if (await GetUser(args[0]) == null)
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
@@ -819,13 +866,13 @@ namespace RoleX.modules
             {
                 try
                 {
-                    await GetUser(args[0]).RemoveRoleAsync(Context.Guild.GetRole(await MutedRoleIDGetter(Context.Guild.Id)));
+                    await (await GetUser(args[0])).RemoveRoleAsync(Context.Guild.GetRole(await MutedRoleIDGetter(Context.Guild.Id)));
                 }
                 catch { }
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "User unmuted successfully!",
-                    Description = $"{GetUser(args[0])} was successfully unmuted :)",
+                    Description = $"{await GetUser(args[0])} was successfully unmuted :)",
                     Color = Blurple
                 }.WithCurrentTimestamp().Build());
                 return;
@@ -896,9 +943,13 @@ namespace RoleX.modules
             {
                 ts = TimeSpan.Zero;
             }
-            if (GetUser(args[0]) != null)
+            if (await GetUser(args[0]) != null || Context.Message.MentionedUsers.Any())
             {
-                var gUser = GetUser(args[0]);
+                var gUser = await GetUser(args[0]);
+                if (gUser == null)
+                {
+                    gUser = Context.Message.MentionedUsers.First() as SocketGuildUser;
+                }
                 if (gUser.Hierarchy < (Context.User as SocketGuildUser).Hierarchy)
                 {
                     await ReplyAsync("", false, new EmbedBuilder
@@ -938,13 +989,6 @@ namespace RoleX.modules
                         {
                             await gUser.RemoveRoleAsync(Context.Guild.GetRole(await MutedRoleIDGetter(Context.Guild.Id)));
                             await gUser.AddRolesAsync(formerroles);
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex);
-                        }
-                        try
-                        {
                             await gUser.SendMessageAsync($"**You have been unmuted on {guildName}**");
                         }
                         catch { }

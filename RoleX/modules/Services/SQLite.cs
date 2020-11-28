@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.WindowsRuntime;
 using static Public_Bot.Punishment;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using Public_Bot;
 using System.Collections.Generic;
 using System.Linq;
+using Discord.Rest;
+
 namespace RoleX.modules
 {
     class SqliteClass
@@ -52,7 +53,15 @@ namespace RoleX.modules
             public string Reason { get; set; }
             public Infraction() { }
         }
-            
+        public class Invite
+        {
+            public ulong GuildID { get; set; }
+            public ulong CreatorID { get; set; }
+            public DateTime Created { get; set; }
+            public short JoinedNum { get; set; }
+            public string Code { get; set; }
+            public Invite() { }
+        }
         /*public static SqliteCommand Connect()
         {
             
@@ -156,13 +165,15 @@ namespace RoleX.modules
             return Convert.ToUInt64(ii);
         }
         public static async Task MutedRoleIDAdder(ulong GuildID, ulong MutedRoleID) => await NonQueryFunctionCreator($"replace into prefixes (guildid,Prefix,appeal,MutedRoleID) values ({GuildID},\"{await PrefixGetter(GuildID)}\",\"{await AppealGetter(GuildID)}\",{MutedRoleID});");
-        public static async Task PrefixAdder(ulong GuLDID, string prefix) => await NonQueryFunctionCreator($"replace into prefixes (guildid,Prefix,appeal,MutedRoleID) values ({GuLDID},\"{prefix}\",\"{await AppealGetter(GuLDID)}\",{MutedRoleIDGetter(GuLDID)});");
+        public static async Task PrefixAdder(ulong GuLDID, string prefix)
+        {
+            await NonQueryFunctionCreator($"replace into prefixes (guildid,Prefix,appeal,MutedRoleID) values ({GuLDID},\"{prefix}\",\"{await AppealGetter(GuLDID)}\",{await MutedRoleIDGetter(GuLDID)});");
+        }
         public static async Task AppealAdder(ulong GuLDID, string appeallink) => await NonQueryFunctionCreator($"replace into prefixes (guildid,Prefix,appeal,MutedRoleID) values ({GuLDID},\"{await PrefixGetter(GuLDID)}\",\"{appeallink}\");");
         public static async Task AddToModlogs(ulong GuildID, ulong UserID, ulong ModeratorID, Punishment punishment, DateTime time, string Reason = "") {
             await NonQueryFunctionCreator($"insert into modlogs (UserID,GuildID,Punishment,ModeratorID,Time{(Reason == "" ? "" : ",Reason")}) values ({UserID},{GuildID},\"{Enum.GetName(typeof(Punishment), punishment)}\",{ModeratorID},\"{time:o}\"{(Reason == "" ? "" : $",\"{Reason}\"")});");
         }
         public static async Task<List<Infraction>> GetUserModlogs(ulong GuildID, ulong UserID) => await GetInfractions($"select * from modlogs where GuildID = {GuildID} and UserID = {UserID};");
-
 
     }
 }

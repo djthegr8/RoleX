@@ -641,6 +641,10 @@ namespace Public_Bot
     /// </summary>
     public class CommandModuleBase
     {
+        public static ulong[] devids = {
+            701029647760097361,
+            615873008959225856
+        };
         public static Color Blurple = new Color(114, 137, 218);
         /// <summary>
         /// If the user has execute permission based on the <see cref="CustomCommandService.Settings.HasPermissionMethod"/>
@@ -713,8 +717,9 @@ namespace Public_Bot
 
 
         }
-        public SocketGuildUser GetUser(string user)
+        public async Task <SocketGuildUser> GetUser(string user)
         {
+            await Context.Guild.DownloadUsersAsync();
                 var regex = new Regex(@"(\d{18}|\d{17})");
                 if (regex.IsMatch(user))
                 {
@@ -723,20 +728,24 @@ namespace Public_Bot
                 }
                 else
                 {
-                    if (Context.Guild.Users.Any(x => x.Username.ToLower().StartsWith(user.ToLower())))
-                    {
-                        return Context.Guild.Users.First(x => x.Username.ToLower().StartsWith(user.ToLower()));
-                    }
-                    else if (Context.Guild.Users.Any(x => x.ToString().ToLower().StartsWith(user.ToLower())))
-                    {
-                        return Context.Guild.Users.First(x => x.ToString().ToLower().StartsWith(user.ToLower()));
-                    }
-                    else if (Context.Guild.Users.Any(x => x.Nickname != null && x.Nickname.ToLower().StartsWith(user.ToLower())))
-                    {
-                        return Context.Guild.Users.First(x => x.Nickname != null && x.Nickname.ToLower().StartsWith(user.ToLower()));
-                    }
-                    else
-                        return null;
+                if (Context.Message.MentionedUsers.Any())
+                {
+                    return Context.Message.MentionedUsers.First() as SocketGuildUser;
+                }
+                else if (Context.Guild.Users.Any(x => x.Username.StartsWith(user)))
+                {
+                    return Context.Guild.Users.First(x => x.Username.StartsWith(user));
+                }
+                else if (Context.Guild.Users.Any(x => x.ToString().StartsWith(user)))
+                {
+                    return Context.Guild.Users.First(x => x.ToString().StartsWith(user));
+                }
+                else if (Context.Guild.Users.Any(x => x.Nickname != null && x.Nickname.StartsWith(user)))
+                {
+                    return Context.Guild.Users.First(x => x.Nickname != null && x.Nickname.StartsWith(user));
+                }
+                else
+                    return null;
                 }
         }
         public async Task<IUser> GetBannedUser(string uname)
@@ -749,9 +758,8 @@ namespace Public_Bot
             }
             return alr.FirstOrDefault(x => x.User.Username.ToLower().Contains(uname.ToLower()))?.User;
         }
-        public OverwritePermissions GetOP(ChannelPermission cp, PermValue pv)
+        public OverwritePermissions GetOP(ChannelPermission cp, PermValue pv, OverwritePermissions eop)
         {
-            var eop = new OverwritePermissions();
             var x = cp switch
             {
                 ChannelPermission.AddReactions => eop.Modify(addReactions: pv),

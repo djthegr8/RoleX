@@ -28,50 +28,54 @@ namespace RoleX.modules
             }.WithCurrentTimestamp().Build());
             return;
         }
-        [DiscordCommand("altidentify", commandHelp = "altidentify <number-of-alts>", description = "Finds the x users newest to Discord and most probable alts")]
-        public async Task Yu(params string[] argz)
-        {
-            var test = 10;
-            if (int.TryParse(argz.FirstOrDefault(), out int retest))
-            {
-                test = retest;
-            }
-            if (test > Context.Guild.MemberCount)
-            {
-                await Context.Channel.SendMessageAsync(embed:new EmbedBuilder
-                {
-                    Title="This guild does not have the specified amount of users",
-                    Description=$"You asked for {test} youngest users, while your server has only {Context.Guild.MemberCount}",
-                    Color = Blurple
-                }.WithCurrentTimestamp().Build()
-                );
-                return;
-            }
-            var yus = Context.Guild.Users;
-            string cty = "```";
-            var tenYoungestUsers = yus.ToList();
-            tenYoungestUsers.RemoveAll(x => x.IsBot);
-            try
-            {
-                tenYoungestUsers.Sort((prev, next) => DateTimeOffset.Compare(prev.CreatedAt, next.CreatedAt));
-            }
-            catch
-            {
-                tenYoungestUsers.Sort((prev, next) => 0);
-            }
-            tenYoungestUsers.Reverse();
-            var current = tenYoungestUsers.GetRange(0, test);
-            var pr = current.Max(rx => rx.Username.Length) + '\t';
-            current.ForEach(x => cty += (x.Username.PadRight(pr) + $"{x.CreatedAt.Month}/{x.CreatedAt.Day}/{x.CreatedAt.Year}" + '\n'));
-            cty += "```";
-            var mmbed = new EmbedBuilder
-            {
-                Title = $"Youngest Users in {Context.Guild.Name}",
-                Description = cty,
-                Color = Blurple
-            }.WithCurrentTimestamp().Build();
-            await Context.Channel.SendMessageAsync("", false, mmbed);
-        }
+        //[Alt("alt")]
+        //[DiscordCommand("altidentify", commandHelp = "altidentify <number-of-alts>", description = "Finds the x users newest to Discord and most probable alts")]
+        //public async Task Yu(params string[] argz)
+        //{
+        //    var test = 10;
+        //    if (int.TryParse(argz.FirstOrDefault(), out int retest))
+        //    {
+        //        test = retest;
+        //    }
+        //    if (test > Context.Guild.MemberCount)
+        //    {
+        //        await Context.Channel.SendMessageAsync(embed:new EmbedBuilder
+        //        {
+        //            Title="This guild does not have the specified amount of users",
+        //            Description=$"You asked for {test} youngest users, while your server has only {Context.Guild.MemberCount}",
+        //            Color = Blurple
+        //        }.WithCurrentTimestamp().Build()
+        //        );
+        //        return;
+        //    }
+        //    await ReplyAsync("wait a sec, im getting all the users..");
+        //    await Context.Guild.DownloadUsersAsync();
+        //    await ReplyAsync("Done i guess");
+        //    var yus = Context.Guild.Users;
+        //    string cty = "```";
+        //    var tenYoungestUsers = yus.ToList();
+        //    tenYoungestUsers.RemoveAll(x => x.IsBot);
+        //    try
+        //    {
+        //        tenYoungestUsers.Sort((prev, next) => DateTimeOffset.Compare(prev.CreatedAt, next.CreatedAt));
+        //    }
+        //    catch
+        //    {
+        //        tenYoungestUsers.Sort((prev, next) => 0);
+        //    }
+        //    tenYoungestUsers.Reverse();
+        //    var current = tenYoungestUsers.GetRange(0, test);
+        //    var pr = current.Max(rx => (rx.Username + "#" + rx.Discriminator + $"({rx.Id})").Length) + '\t';
+        //    current.ForEach(x => cty += ((x.Username + "#" + x.Discriminator + $"({x.Id})").PadRight(pr) + $"{x.CreatedAt.Month}/{x.CreatedAt.Day}/{x.CreatedAt.Year}" + '\n'));
+        //    cty += "```";
+        //    var mmbed = new EmbedBuilder
+        //    {
+        //        Title = $"Youngest Users in {Context.Guild.Name}",
+        //        Description = cty,
+        //        Color = Blurple
+        //    }.WithCurrentTimestamp().Build();
+        //    await Context.Channel.SendMessageAsync("", false, mmbed);
+        //}
     
     [DiscordCommand("invite",description ="Invite RoleX to your server!!", commandHelp ="invite")]
         public async Task Invite(params string[] args)
@@ -126,6 +130,37 @@ namespace RoleX.modules
             await Context.Guild.CurrentUser.ModifyAsync(async dood => dood.Nickname = $"[{await SqliteClass.PrefixGetter(Context.Guild.Id)}] RoleX");
             return;
         }
+        [DiscordCommand("setup", commandHelp ="setup", description ="Helps set the bot up!")]
+        public async Task Setup(params string[] args)
+        {
+            string x = "";
+            x += $"Admin:        {(Context.Guild.CurrentUser.GuildPermissions.Administrator ? "✅" : "❌")}\n";
+            x += $"Kick:         {(Context.Guild.CurrentUser.GuildPermissions.KickMembers ? "✅" : "❌")}\n";
+            x += $"Ban:          {(Context.Guild.CurrentUser.GuildPermissions.BanMembers ? "✅" : "❌")}\n";
+            x += $"Mention:      {(Context.Guild.CurrentUser.GuildPermissions.MentionEveryone ? "✅" : "❌")}\n";
+            x += $"Manage Guild: {(Context.Guild.CurrentUser.GuildPermissions.ManageGuild ? "✅" : "❌")}\n";
+            x += $"Messages:     {(Context.Guild.CurrentUser.GuildPermissions.ManageMessages ? "✅" : "❌")}\n";
+            x += $"Channels:     {(Context.Guild.CurrentUser.GuildPermissions.ManageChannels ? "✅" : "❌")}\n";
+            x += $"Roles:        {(Context.Guild.CurrentUser.GuildPermissions.ManageRoles ? "✅" : "❌")}\n";
+            x += $"Webhooks:     {(Context.Guild.CurrentUser.GuildPermissions.ManageWebhooks ? "✅" : "❌")}\n";
+            await ReplyAsync("", false, new EmbedBuilder
+            {
+                Title = "Setting Up RoleX",
+                ThumbnailUrl = Context.Client.CurrentUser.GetAvatarUrl(),
+                Description = "RoleX is a bot that requires various permissions to do various tasks.",
+                Fields = {new EmbedFieldBuilder()
+                {
+                    Name = "Permissions",
+                    Value = $"```{x}```"
+                } },
+                Color = Context.Guild.CurrentUser.GuildPermissions.Administrator ? Color.Green : (x.Count(k => k == '✅') == 7 ? Color.Green : Color.Red),
+                Footer = new EmbedFooterBuilder
+                {
+                    Text = "Command Inspired from LuminousBot (ID: 722435272532426783)"
+                }
+            }.WithCurrentTimestamp().Build()
+            );
+        }
         [DiscordCommand("help",commandHelp ="help <command>", description ="Shows the Help Message")]
         public async Task HelpC(params string[] args)
         {
@@ -138,13 +173,14 @@ namespace RoleX.modules
                     Color = Blurple
                 }
                 .WithAuthor("RoleX", Context.Client.CurrentUser.GetAvatarUrl())
-                .WithFooter("Made by DJ001#0007 (ID: 701029647760097361)")
+                .WithFooter("Made by DJ001 (ID: 701029647760097361) and SLENDER (ID: 615873008959225856)")
                 .WithCurrentTimestamp();
                 foreach( var aa in CustomCommandService.Modules)
                 {
+                    if (aa.Key == "Developer") continue;
                     helpAuto.AddField(aa.Key, aa.Value);
                 }
-                helpAuto.AddField("Need more help?", $"For command-wise help, do `{await SqliteClass.PrefixGetter(Context.Guild.Id)}help <commandname/modulename>`");
+                helpAuto.AddField("Need more help?", $"See our Well-Created documentation [here](https://rolex.gitbook.io/rolex/).\nFor command-wise help, do `{await SqliteClass.PrefixGetter(Context.Guild.Id)}help <commandname/modulename>`");
                 await ReplyAsync(embed: helpAuto.Build());
                 return;
             }

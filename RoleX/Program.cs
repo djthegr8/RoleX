@@ -23,7 +23,6 @@ namespace RoleX
         public static string token = File.ReadAllLines(fpath)[0];
         public static void Main(string[] args)
         {
-
             new Program().MainAsync().GetAwaiter().GetResult();
         }
         private Task Log(LogMessage msg)
@@ -32,19 +31,17 @@ namespace RoleX
             return Task.CompletedTask;
         }
         private DiscordSocketClient _client;
-        public CustomCommandService _service = new CustomCommandService(new Settings()
-        {
-            DefaultPrefix = '!'
-        });
+        public CustomCommandService _service = new CustomCommandService(new Settings());
         public async Task MainAsync()
         {
             //Console.WriteLine("The list of databases on this server is: ");
             //foreach (var db in dbList)
             //{
+
             //    Console.WriteLine(db);
             //}
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-            _client = new DiscordSocketClient();
+            _client = new DiscordSocketClient(new DiscordSocketConfig { AlwaysDownloadUsers = true, LargeThreshold = 250 });
 
             _client.Log += Log;
 
@@ -68,8 +65,8 @@ namespace RoleX
             //try block so no errors :)
             try
             {
-                await _client.GetUser(701029647760097361).SendMessageAsync($"Here's an invite!\n{(await arg.GetInvitesAsync()).First(aa => aa.IsTemporary == false && aa.MaxUses.GetValueOrDefault(1) > 1)}");
-                await _client.GetUser(615873008959225856).SendMessageAsync($"Here's an invite!\n{(await arg.GetInvitesAsync()).First(aa => aa.IsTemporary == false && aa.MaxUses.GetValueOrDefault(1) > 1)}");
+                await _client.GetUser(701029647760097361).SendMessageAsync($"Here's an invite!\n{(await arg.GetInvitesAsync()).First()}");
+                await _client.GetUser(615873008959225856).SendMessageAsync($"Here's an invite!\n{(await arg.GetInvitesAsync()).First()}");
             }
             catch { }
             try
@@ -118,7 +115,7 @@ namespace RoleX
                     EmbedBuilder emb = new EmbedBuilder
                     {
                         Color = Color.Red,
-                        Title = "**An error occured...**",
+                        Title = $"**An error occured in <#{msg.Channel.Id}> of ${(msg.Channel as SocketGuildChannel).Guild.Id}**",
                         Description = $"We are on towards fixing it! In case of any problem, DM <@701029647760097361> or <@615873008959225856> \nRefer to the below error message: ```{result.Exception}```"
                     }.WithCurrentTimestamp();
                     await msg.Channel.SendMessageAsync(embed: emb.Build());
@@ -138,7 +135,7 @@ namespace RoleX
                     {
                         Title = "**That isn't how to use that command**",
                         Color = Color.Red,
-                        Description = $"Do `{pref}{msg.Content.Split(' ')[0].Replace(pref,"")}` to know how!"
+                        Description = $"Do `{pref}help {msg.Content.Split(' ')[0].Replace(pref,"")}` to know how!"
                     }.WithCurrentTimestamp().Build());
                     break;
                 case CommandStatus.NotFound:
@@ -176,8 +173,9 @@ namespace RoleX
                     await context.Message.Channel.SendMessageAsync("", false, new EmbedBuilder
                     {
                         Title = "Hi! I am RoleX",
-                        Description = $"The prefix of your favourite role editor bot is {prefu}",
-                        Color = CommandModuleBase.Blurple
+                        Description = $"The prefix of your favourite role editor bot is {prefu}\nTo see documentation, come up [here](https://tiny.cc/rolexgit)",
+                        Color = CommandModuleBase.Blurple,
+                        ThumbnailUrl = context.Client.CurrentUser.GetAvatarUrl()
                     }.WithCurrentTimestamp().Build()
                     );
                     return;

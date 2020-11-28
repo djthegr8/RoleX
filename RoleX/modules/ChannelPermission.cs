@@ -1,20 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using Public_Bot;
-using System.Threading.Tasks;
+﻿using Discord;
 using Discord.WebSocket;
-using Discord;
+using Public_Bot;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using GuildPermissions = Public_Bot.GuildPermissions;
 namespace RoleX.modules
 {
-    [DiscordCommandClass("Channel Editor","Edit Channel-wise perms of a Role using these commands!")]
-    class ChannelPermission: CommandModuleBase
+    [DiscordCommandClass("Channel Editor", "Edit Channel-wise perms of a Role using these commands!")]
+    class ChannelPermission : CommandModuleBase
     {
         [GuildPermissions(GuildPermission.ManageChannels)]
+        [Alt("chdelete")]
+        [Alt("chdel")]
+        [DiscordCommand("channeldelete", description = "Deletes given channel", example = "channeldelete #WeirdChan", commandHelp = "channeldelete <#channel>")]
+        public async Task Cdel(string ags)
+        {
+            var aaa = GetChannel(ags);
+            if (aaa == null)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "Invalid channel",
+                    Description = $"`{aaa}` could not be parsed as channel!",
+                    Color = Color.Red
+                }.WithCurrentTimestamp().Build());
+                return;
+            }
+            else
+            {
+                await aaa.DeleteAsync();
+                await ReplyAsync(embed: new EmbedBuilder
+                {
+                    Title = "Deleted Channel Successfully",
+                    Description = $"Channel `#{aaa.Name}` was deleted!",
+                    Color = Blurple
+                }.WithCurrentTimestamp()
+                .Build());
+            }
+        }
+        [GuildPermissions(GuildPermission.ManageChannels)]
         [Alt("catrename")]
-        [DiscordCommand("categoryrename",commandHelp ="categoryrename <old-category-name> <new-category-name>",description ="Renames given category",example ="categoryrename Trading Xtreme Trading")]
+        [DiscordCommand("categoryrename", commandHelp = "categoryrename <old-category-name> <new-category-name>", description = "Renames given category", example = "categoryrename Trading Xtreme Trading")]
         public async Task CatRename(params string[] args)
         {
             if (args.Length < 2)
@@ -38,11 +65,11 @@ namespace RoleX.modules
                 }.WithCurrentTimestamp().Build());
                 return;
             }
-            await alf.ModifyAsync(x => x.Name = string.Join(' ',args.Skip(1)));
+            await alf.ModifyAsync(x => x.Name = string.Join(' ', args.Skip(1)));
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "Rename successful!",
-                Description = $"Your category was renamed to `{string.Join(' ',args.Skip(1))}`",
+                Description = $"Your category was renamed to `{string.Join(' ', args.Skip(1))}`",
                 Color = Blurple
             }.WithCurrentTimestamp().Build());
             return;
@@ -64,6 +91,10 @@ namespace RoleX.modules
                 }.WithCurrentTimestamp().Build());
                 return;
             }
+            foreach (var ch in alf.Channels)
+            {
+                await ch.DeleteAsync();
+            }
             await alf.DeleteAsync();
             await ReplyAsync("", false, new EmbedBuilder
             {
@@ -74,7 +105,7 @@ namespace RoleX.modules
             return;
         }
         [GuildPermissions(GuildPermission.ManageChannels)]
-        [DiscordCommand("chrename", commandHelp ="chrename <#channel> <multi-word-string>")]
+        [DiscordCommand("chrename", commandHelp = "chrename <#channel> <multi-word-string>")]
         [Alt("channelrename")]
         public async Task RenameChannel(params string[] args)
         {
@@ -99,7 +130,8 @@ namespace RoleX.modules
                 return;
             }
             var bchname = string.Join('-', args.Skip(1));
-            if (!System.Text.RegularExpressions.Regex.IsMatch(bchname,"[a-z0-9-_]{2,100}")) {
+            if (!System.Text.RegularExpressions.Regex.IsMatch(bchname, "[a-z0-9-_]{2,100}"))
+            {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Invalid channel re-name",
@@ -124,7 +156,7 @@ namespace RoleX.modules
         [Alt("channeldescription")]
         public async Task ReDescChannel(params string[] args)
         {
-            if (args.Length == 0 || args.Length == 1)
+            if (args.Length == 0)
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
@@ -134,18 +166,15 @@ namespace RoleX.modules
                 }.WithCurrentTimestamp().Build());
                 return;
             }
-            if (GetChannel(args[0]) == null)
+            var cha = GetChannel(args[0]);
+            if (cha == null)
             {
-                await ReplyAsync("", false, new EmbedBuilder
-                {
-                    Title = "Invalid channel",
-                    Description = $"`{args[0]}` could not be parsed as channel!",
-                    Color = Color.Red
-                }.WithCurrentTimestamp().Build());
-                return;
+                cha = Context.Channel as SocketGuildChannel;
+                var argsL = args.ToList();
+                argsL.Insert(0,"");
+                args = argsL.ToArray();
             }
             var bchname = string.Join(' ', args.Skip(1));
-            var cha = GetChannel(args[0]);
             await (cha as SocketTextChannel).ModifyAsync(d => d.Topic = bchname);
             await ReplyAsync("", false, new EmbedBuilder
             {
@@ -157,14 +186,30 @@ namespace RoleX.modules
         }
         [GuildPermissions(GuildPermission.ManageChannels)]
         [Alt("chperms")]
-        
-        [DiscordCommand("channelperms",commandHelp ="channelperms <#channel> <@role/@user> <Permission> <yes,no,inherit>",description ="Edits the Channel-wise perms of the given Role or Member",example ="channelperms @Moderator viewChannel no")]
+
+        [DiscordCommand("channelperms", commandHelp = "channelperms <#channel> <@role/@user> <Permission> <yes,no,inherit>", description = "Edits the Channel-wise perms of the given Role or Member", example = "channelperms @Moderator viewChannel no")]
         public async Task ChannelPermEdit(params string[] args)
         {
             bool roleOrNot;
             PermValue ovr;
             SocketRole srl;
             SocketUser sus;
+            
+            var channe = GetChannel(args[0]);
+            if (channe == null)
+            {
+                /*await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "Invalid channel name",
+                    Description = $"`{args[0]}` could not be parsed as channel!",
+                    Color = Color.Red
+                }.WithCurrentTimestamp().Build());
+                return;*/
+                channe = Context.Channel as SocketGuildChannel;
+                var argsL = args.ToList();
+                argsL.Insert(0, "");
+                args = argsL.ToArray();
+            }
             switch (args.Length)
             {
                 case 0 or 1 or 2 or 3:
@@ -176,35 +221,27 @@ namespace RoleX.modules
                     }.WithCurrentTimestamp().Build());
                     return;
             }
-            var channe = GetChannel(args[0]);
-            if (channe == null)
-            {
-                await ReplyAsync("", false, new EmbedBuilder
-                {
-                    Title = "Invalid channel name",
-                    Description = $"`{args[0]}` could not be parsed as channel!",
-                    Color = Color.Red
-                }.WithCurrentTimestamp().Build());
-                return;
-            }
-            sus = GetUser(args[1]);
+            sus = await GetUser(args[1]);
             srl = GetRole(args[1]);
             if (sus == null && srl == null)
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Invalid Role/User",
-                    Description = $"We couldn't find any role or user from `{args[2]}`",
+                    Description = $"We couldn't find any role or user from `{args[1]}`",
                     Color = Color.Red
                 }.WithCurrentTimestamp().Build());
                 return;
-            } else if (sus == null)
+            }
+            else if (sus == null)
             {
                 roleOrNot = true;
-            } else if (srl == null)
+            }
+            else if (srl == null)
             {
                 roleOrNot = false;
-            } else
+            }
+            else
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
@@ -240,7 +277,7 @@ namespace RoleX.modules
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "That permission is invalid",
-                    Description = $"The list of permissions is ~ ```{string.Join('\n', Enum.GetNames(typeof(ChannelPermissions)))}```",
+                    Description = $"The list of permissions is ~ ```{string.Join('\n', Enum.GetNames(typeof(Discord.ChannelPermission)))}```",
                     Color = Color.Red
                 }.WithCurrentTimestamp().Build());
                 return;
@@ -268,33 +305,34 @@ namespace RoleX.modules
                     }.WithCurrentTimestamp().Build());
                     return;
             }
-            var op = GetOP(prm, ovr);
+            var op = new OverwritePermissions();
             if (roleOrNot)
             {
+                op = channe.GetPermissionOverwrite(srl) != null ? (OverwritePermissions)channe.GetPermissionOverwrite(srl) : new OverwritePermissions();
+                op = GetOP(prm, ovr, op);
                 await channe.AddPermissionOverwriteAsync(srl, op);
-            } else
+            }
+            else
             {
+                op = channe.GetPermissionOverwrite(sus) != null ? (OverwritePermissions)channe.GetPermissionOverwrite(sus) : new OverwritePermissions(); ;
+                op = GetOP(prm, ovr, op);
                 await channe.AddPermissionOverwriteAsync(sus, op);
             }
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "Overwrite added successfully!",
                 Description = $"Channel Overwrite added for <#{channe.Id}>",
-                Color = Color.Red
-            }.AddField("Overwrite Details",$"For: {(roleOrNot ? srl.Mention : sus.Mention)}\nPermission: {prm}\nValue: {ovr}")
+                Color = Blurple
+            }.AddField("Overwrite Details", $"For: {(roleOrNot ? srl.Mention : sus.Mention)}\nPermission: {prm}\nValue: {ovr}")
             .WithCurrentTimestamp().Build());
             return;
         }
         [GuildPermissions(GuildPermission.ManageChannels)]
 
-        [DiscordCommand("overwrites", commandHelp = "overwrites <#channel> <@role/@user>", description = "Shows the Channel-wise overwrites of the given Role or Member", example = "overwrites @Moderator")]
+        [DiscordCommand("overwrites", commandHelp = "overwrites <#channel>", description = "Shows the Channel-wise overwrites", example = "overwrites #channel")]
         public async Task Os(params string[] args)
         {
-            bool roleOrNot;
-            SocketUser sus;
-            SocketRole srl;
-            string pos;
-            switch (args.Length)
+            /*switch (args.Length)
             {
                 case 0 or 1:
                     await ReplyAsync("", false, new EmbedBuilder
@@ -304,79 +342,45 @@ namespace RoleX.modules
                         Color = Color.Red
                     }.WithCurrentTimestamp().Build());
                     return;
-            }
-            var channe = GetChannel(args[0]);
-            if (channe == null)
+            }*/
+            if (args.Length == 0)
             {
-                await ReplyAsync("", false, new EmbedBuilder
+                var Embed = new EmbedBuilder
                 {
-                    Title = "Invalid channel name",
-                    Description = $"`{args[0]}` could not be parsed as channel!",
-                    Color = Color.Red
-                }.WithCurrentTimestamp().Build());
-                return;
-            }
-            sus = GetUser(args[1]);
-            srl = GetRole(args[1]);
-            if (sus == null && srl == null)
-            {
-                await ReplyAsync("", false, new EmbedBuilder
-                {
-                    Title = "Invalid Role/User",
-                    Description = $"We couldn't find any role or user from `{args[1]}`",
-                    Color = Color.Red
-                }.WithCurrentTimestamp().Build());
-                return;
-            }
-            else if (sus == null)
-            {
-                roleOrNot = true;
-            }
-            else if (srl == null)
-            {
-                roleOrNot = false;
+                    Title = $"Overwrites for <#{Context.Channel.Id}>",
+                    Color = Blurple,
+
+                };
             }
             else
             {
+                var channe = Context.Channel as SocketGuildChannel;
+                var channez = GetChannel(args[0]);
+                if (channez != null) channe = channez;
+                var pos = channe.PermissionOverwrites;
+                string rpos = "```";
+                foreach (var ov in pos.Where(x => x.TargetType == PermissionTarget.Role))
+                {
+                    rpos += $"<@&{ov.TargetId}>\n";
+                    rpos += ov.Permissions.ToAllowList().Count > 0 ? "✅ " : "" + string.Join("\n✅", ov.Permissions.ToAllowList()) + "\n" + (ov.Permissions.ToDenyList().Count > 0 ? "❌ " : "") + string.Join("\n❌ ", ov.Permissions.ToDenyList());
+                }
+                rpos += "```";
+                string upos = "```";
+                foreach(var ov in pos.Where(x => x.TargetType == PermissionTarget.User))
+                {
+                    upos += $"<@{ov.TargetId}>\n";
+                    upos += ov.Permissions.ToAllowList().Count > 0 ? "✅ " : "" + string.Join("\n✅", ov.Permissions.ToAllowList()) + "\n" + (ov.Permissions.ToDenyList().Count > 0 ? "❌ " : "") + string.Join("\n❌ ", ov.Permissions.ToDenyList());
+                }
+                upos += "```";
                 await ReplyAsync("", false, new EmbedBuilder
                 {
-                    Title = "Multiple Possibilities Detected",
-                    Description = $"Given `{args[1]}`, we found both a Role and a User.\n**Role Found:**\n{srl.Mention}\n**User Found**\n{sus.Mention}\nPlease use a mention instead of a search query!",
-                    Color = Color.Red
-                }.WithCurrentTimestamp().Build());
-                return;
+                    Title = "Permission Overwrites",
+                    Color = Blurple
+                }.AddField("Channel", $"<#{channe.Id}>")
+                .AddField("Role Overwrites", rpos)
+                .AddField("User Overwrites", upos)
+                .WithCurrentTimestamp().Build());
             }
-            if (roleOrNot)
-            {
-                var po = channe.GetPermissionOverwrite(srl);
-                if (po == null)
-                {
-                    pos = $"There are no permission overwrites for {srl.Mention} in <#{channe.Id}>";
-                } else
-                {
-                    pos = po.Value.ToAllowList().Count > 0 ? "✅ " : "" + string.Join("\n✅", po.Value.ToAllowList()) + "\n" + "❌ " + string.Join("\n❌ ", po.Value.ToDenyList());
-                }
-            } else
-            {
-                var po = channe.GetPermissionOverwrite(sus);
-                if (po == null)
-                {
-                    pos = $"There are no permission overwrites for {sus.Mention} in <#{channe.Id}>";
-                }
-                else
-                {
-                    pos = po.Value.ToAllowList().Count > 0 ? "✅ ": "" + string.Join("\n✅", po.Value.ToAllowList()) + "\n" + (po.Value.ToDenyList().Count > 0 ? "❌ ": "") + string.Join("\n❌ ", po.Value.ToDenyList());
-                }
-            }
-            Console.WriteLine(pos);
-            await ReplyAsync("", false, new EmbedBuilder
-            {
-                Title = "Permission Overwrites",
-                Color = Blurple
-            }.AddField("Channel",$"<#{channe.Id}>")
-            .AddField(roleOrNot ? "Role": "User",roleOrNot ? srl.Mention : sus.Mention)
-            .AddField("Overwrites",$"```{pos}```")
-            .WithCurrentTimestamp().Build());
         }
     }
 }
