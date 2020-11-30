@@ -12,6 +12,7 @@ using System.Reflection;
 using System.IO;
 using RoleX.modules;
 using System.Collections.Generic;
+using Bot.Utilities.Collector;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 
@@ -30,7 +31,7 @@ namespace RoleX
             Console.WriteLine(msg.ToString());
             return Task.CompletedTask;
         }
-        private DiscordSocketClient _client;
+        public static DiscordSocketClient Client;
         public CustomCommandService _service = new CustomCommandService(new Settings());
         public async Task MainAsync()
         {
@@ -41,21 +42,20 @@ namespace RoleX
             //    Console.WriteLine(db);
             //}
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-            _client = new DiscordSocketClient(new DiscordSocketConfig { AlwaysDownloadUsers = true, LargeThreshold = 250 });
+            Client = new DiscordSocketClient(new DiscordSocketConfig { AlwaysDownloadUsers = true, LargeThreshold = 250 });
 
-            _client.Log += Log;
+            Client.Log += Log;
 
-            _client.MessageReceived += HandleCommandAsync;
+            Client.MessageReceived += HandleCommandAsync;
 
-            _client.JoinedGuild += HandleGuildJoinAsync;
+            Client.JoinedGuild += HandleGuildJoinAsync;
 
             _client.Ready += HandleReadyAsync;
 
             //Console.WriteLine(fpath);
-            await _client.LoginAsync(TokenType.Bot, token);
-            await _client.StartAsync();
-            await _client.SetGameAsync("Supervising Roles!",null,ActivityType.Playing);
-
+            await Client.LoginAsync(TokenType.Bot, token);
+            await Client.StartAsync();
+            await Client.SetGameAsync("Supervising Roles!",null,ActivityType.Playing);
             //await _client.StopAsync();
             await Task.Delay(-1);
         }
@@ -68,13 +68,13 @@ namespace RoleX
         private async Task HandleGuildJoinAsync(SocketGuild arg)
         {
             // <@701029647760097361> or <@615873008959225856>
-            await _client.GetUser(701029647760097361).SendMessageAsync($"I joined {arg.Name}, a Guild of {arg.MemberCount} members.");
-            await _client.GetUser(615873008959225856).SendMessageAsync($"I joined {arg.Name}, a Guild of {arg.MemberCount} members.");
+            await Client.GetUser(701029647760097361).SendMessageAsync($"I joined {arg.Name}, a Guild of {arg.MemberCount} members.");
+            await Client.GetUser(615873008959225856).SendMessageAsync($"I joined {arg.Name}, a Guild of {arg.MemberCount} members.");
             //try block so no errors :)
             try
             {
-                await _client.GetUser(701029647760097361).SendMessageAsync($"Here's an invite!\n{(await arg.GetInvitesAsync()).First()}");
-                await _client.GetUser(615873008959225856).SendMessageAsync($"Here's an invite!\n{(await arg.GetInvitesAsync()).First()}");
+                await Client.GetUser(701029647760097361).SendMessageAsync($"Here's an invite!\n{(await arg.GetInvitesAsync()).First()}");
+                await Client.GetUser(615873008959225856).SendMessageAsync($"Here's an invite!\n{(await arg.GetInvitesAsync()).First()}");
             }
             catch { }
             try
@@ -99,8 +99,8 @@ namespace RoleX
                         Footer = new EmbedFooterBuilder()
                     };
                     eb.Footer.Text = "Command Autogen";
-                    eb.Footer.IconUrl = _client.CurrentUser.GetAvatarUrl();
-                    await _client.GetGuild(755076971041652786).GetTextChannel(758230822057934878).SendMessageAsync("", false, eb.Build());
+                    eb.Footer.IconUrl = Client.CurrentUser.GetAvatarUrl();
+                    await Client.GetGuild(755076971041652786).GetTextChannel(758230822057934878).SendMessageAsync("", false, eb.Build());
                     break;
                 case CommandStatus.BotMissingPermissions:
                     await msg.Channel.SendMessageAsync("", false, new EmbedBuilder
@@ -137,7 +137,7 @@ namespace RoleX
                         Description = $"We are on towards fixing it! In case of any problem, DM <@701029647760097361> or <@615873008959225856> \nRefer to the below error message: ```{result.Exception}```"
                     }.WithCurrentTimestamp();
                     await msg.Channel.SendMessageAsync(embed: emb.Build());
-                    await _client.GetUser(701029647760097361).SendMessageAsync(embed: emb.Build());
+                    await Client.GetUser(701029647760097361).SendMessageAsync(embed: emb.Build());
                     break;
                 case CommandStatus.MissingGuildPermission:
                     await msg.Channel.SendMessageAsync("", false, new EmbedBuilder()
@@ -159,7 +159,7 @@ namespace RoleX
                 case CommandStatus.NotFound:
                     break;
                 default:
-                    await _client.GetUser(701029647760097361).SendMessageAsync($"See kid Idk what happened but here it is {result.Result}\n{result.ResultMessage}\n{result.Exception}");
+                    await Client.GetUser(701029647760097361).SendMessageAsync($"See kid Idk what happened but here it is {result.Result}\n{result.ResultMessage}\n{result.Exception}");
                     break;
             }
         }
@@ -184,9 +184,9 @@ namespace RoleX
                 }
                 var ca = msg.Content.ToCharArray();
                 if (ca.Length == 0) return;
-                var context = new SocketCommandContext(_client, msg);
+                var context = new SocketCommandContext(Client, msg);
                 var prefu = await SqliteClass.PrefixGetter(context.Guild.Id);
-                if (msg.MentionedUsers.Any(x => x.Id == _client.CurrentUser.Id))
+                if (msg.MentionedUsers.Any(x => x.Id == Client.CurrentUser.Id))
                 {
                     await context.Message.Channel.SendMessageAsync("", false, new EmbedBuilder
                     {
@@ -213,7 +213,7 @@ namespace RoleX
                             }
                             catch (Exception ex)
                             {
-                                await _client.GetUser(701029647760097361).SendMessageAsync($"There was an error in {(msg.Channel as SocketGuildChannel).Guild.Name}\n{ex}");
+                                await Client.GetUser(701029647760097361).SendMessageAsync($"There was an error in {(msg.Channel as SocketGuildChannel).Guild.Name}\n{ex}");
                             }
                         }).Start();
                     }
@@ -222,7 +222,7 @@ namespace RoleX
             catch (Exception e)
             {
                 Console.WriteLine($"We have encountered an error {e}");
-                await _client.GetUser(701029647760097361).SendMessageAsync($"There was an error in {(msg.Channel as SocketGuildChannel).Guild.Name}\n{e}");
+                await Client.GetUser(701029647760097361).SendMessageAsync($"There was an error in {(msg.Channel as SocketGuildChannel).Guild.Name}\n{e}");
                 await Task.Delay(2000);
             }
         }
