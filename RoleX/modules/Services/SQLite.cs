@@ -169,7 +169,7 @@ namespace RoleX.modules
         {
             await NonQueryFunctionCreator($"replace into prefixes (guildid,Prefix,appeal,MutedRoleID) values ({GuLDID},\"{prefix}\",\"{await AppealGetter(GuLDID)}\",{await MutedRoleIDGetter(GuLDID)});");
         }
-        public static async Task AppealAdder(ulong GuLDID, string appeallink) => await NonQueryFunctionCreator($"replace into prefixes (guildid,Prefix,appeal,MutedRoleID) values ({GuLDID},\"{await PrefixGetter(GuLDID)}\",\"{appeallink}\");");
+        public static async Task AppealAdder(ulong GuLDID, string appeallink) => await NonQueryFunctionCreator($"replace into prefixes (guildid,Prefix,appeal,MutedRoleID) values ({GuLDID},\"{await PrefixGetter(GuLDID)}\",\"{appeallink}\", {await MutedRoleIDGetter(GuLDID)});");
         public static async Task AddToModlogs(ulong GuildID, ulong UserID, ulong ModeratorID, Punishment punishment, DateTime time, string Reason = "") {
             await NonQueryFunctionCreator($"insert into modlogs (UserID,GuildID,Punishment,ModeratorID,Time{(Reason == "" ? "" : ",Reason")}) values ({UserID},{GuildID},\"{Enum.GetName(typeof(Punishment), punishment)}\",{ModeratorID},\"{time:o}\"{(Reason == "" ? "" : $",\"{Reason}\"")});");
         }

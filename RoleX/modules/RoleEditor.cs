@@ -1,32 +1,85 @@
-﻿using static Public_Bot.CustomCommandService;
-using Discord;
-using Discord.Commands;
+﻿using Discord;
 using Discord.WebSocket;
+using Public_Bot;
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using RoleX.modules;
-using Newtonsoft.Json;
-using System.IO;
-using Public_Bot;
 using GuildPermissions = Public_Bot.GuildPermissions;
 
 
 namespace RoleX.modules
 {
-    [DiscordCommandClass("Role Editor","Class for editing of Roles")]
-    public class RoleEditor: CommandModuleBase
+    [DiscordCommandClass("Role Editor", "Class for editing of Roles")]
+    public class RoleEditor : CommandModuleBase
     {
+        [Alt("ts")]
+        [DiscordCommand("toggleshow", commandHelp = "toggleshow @Role", example = "toggleshow @WeirdRoleThatWasHidden", description = "Toggles the given role's visibility in the list")]
+        public async Task ShowRole(params string[] args)
+        {
+            if (args.Length == 0)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "Invalid Parameters",
+                    Description = "You need to provide a role, I can't read your mind (yet)",
+                    Color = Color.Red
+                }.WithCurrentTimestamp()
+                .Build()
+                );
+                return;
+            }
+            var x = GetRole(args[0]);
+            if (x == null)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "Invalid Role",
+                    Description = $"Couldn't parse `{args[0]}` as role",
+                    Color = Color.Red
+                }.WithCurrentTimestamp()
+                .Build()
+                );
+                return;
+            }
+            if ((Context.User as SocketGuildUser).Roles.Max().Position <= x.Position && Context.Guild.OwnerId != Context.User.Id && Context.User.Id != 701029647760097361 && Context.User.Id != 615873008959225856)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "Oops!",
+                    Description = "You're below the role you want to edit!",
+                    Color = Color.Red
+                }.WithCurrentTimestamp().Build());
+                return;
+            }
+            if (x.Id == Context.Guild.EveryoneRole.Id)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "Oops!",
+                    Description = "Can't do that to the everyone role...",
+                    Color = Color.Red
+                }.WithCurrentTimestamp().Build());
+                return;
+            }
+            await x.ModifyAsync(xdot => xdot.Hoist = !x.IsHoisted);
+            await ReplyAsync("", false, new EmbedBuilder
+            {
+                Title = "Set.",
+                Description = $"The role {x.Name} will now {(x.IsHoisted == false ? "" : "not ")} be shown in the list",
+                Color = Blurple
+            }.WithCurrentTimestamp().Build());
+        }
+        [RequiredBotPermission(GuildPermission.ManageRoles)]
         [GuildPermissions(GuildPermission.ManageRoles)]
         [DiscordCommand("allroles", description = "Gets all roles", commandHelp = "allroles", example = "allroles")]
         public async Task AllRoles(params string[] _)
         {
-            string rlx = "```" + string.Join('\n',Context.Guild.Roles.OrderBy(x => x.Position).Select(x => $"{x.Name} ID: {x.Id}")) + "```";
+            string rlx = "```" + string.Join('\n', Context.Guild.Roles.OrderBy(x => x.Position).Select(x => $"{x.Name} ID: {x.Id}")) + "```";
             await ReplyAsync(embed: new EmbedBuilder
             {
-                Title=$"All roles in {Context.Guild.Name}",
+                Title = $"All roles in {Context.Guild.Name}",
                 Description = rlx,
                 Color = Blurple
             }.WithCurrentTimestamp()
@@ -34,17 +87,17 @@ namespace RoleX.modules
             );
         }
         [GuildPermissions(GuildPermission.ManageRoles)]
-        [DiscordCommand("color",description ="Changes the color of role", commandHelp ="color <@role> <hex/None>", example ="color @LightPurple #bb86fc")]
+        [DiscordCommand("color", description = "Changes the color of role", commandHelp = "color <@role> <hex/None>", example = "color @LightPurple #bb86fc")]
         public async Task ChangeRole(params string[] args)
         {
             if (args.Length < 2)
             {
-                    await ReplyAsync("", false, new EmbedBuilder
-                    {
-                        Title = "Insufficient Parameters",
-                        Description = $"The way to use the command is `{await SqliteClass.PrefixGetter(Context.Guild.Id)}color <@role> <color>`",
-                        Color = Color.Red
-                    }.WithCurrentTimestamp().Build());
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "Insufficient Parameters",
+                    Description = $"The way to use the command is `{await SqliteClass.PrefixGetter(Context.Guild.Id)}color <@role> <color>`",
+                    Color = Color.Red
+                }.WithCurrentTimestamp().Build());
                 return;
             }
             var role = GetRole(args[0]);
@@ -111,18 +164,18 @@ namespace RoleX.modules
                 }.WithCurrentTimestamp().Build());
                 return;
             }
-            await role.ModifyAsync(x => x.Color = new Color(col.R,col.G,col.B));
+            await role.ModifyAsync(x => x.Color = new Color(col.R, col.G, col.B));
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "Done!!",
                 Description = $"The role {role.Name} is now set to the color of this embed!",
-                Color = new Color(col.R, col.G, col.B) == new Color(255,255,255) ? new Color(254,254,254) : new Color(col.R, col.G, col.B)
+                Color = new Color(col.R, col.G, col.B) == new Color(255, 255, 255) ? new Color(254, 254, 254) : new Color(col.R, col.G, col.B)
             }.WithCurrentTimestamp().Build());
             return;
         }
         [Alt("dup")]
         [GuildPermissions(GuildPermission.ManageRoles)]
-        [DiscordCommand("duplicate",commandHelp ="duplicate <@role-to-be-duplicated> <@role-to-be-placed-above>",description ="Duplicates a role and places it above the given second role", example ="duplicate @Admin @Moderator")]
+        [DiscordCommand("duplicate", commandHelp = "duplicate <@role-to-be-duplicated> <@role-to-be-placed-above>", description = "Duplicates a role and places it above the given second role", example = "duplicate @Admin @Moderator")]
         public async Task CreateRole(params string[] args)
         {
             switch (args.Length)
@@ -158,7 +211,7 @@ namespace RoleX.modules
                 }.WithCurrentTimestamp().Build());
                 return;
             }
-            var newlyMadeRole = await Context.Guild.CreateRoleAsync(rlD.Name + "~ 1", rlD.Permissions, rlD.Color, rlD.IsHoisted, rlD.IsMentionable);
+            var newlyMadeRole = await Context.Guild.CreateRoleAsync(rlD.Name + "~1", rlD.Permissions, rlD.Color, rlD.IsHoisted, rlD.IsMentionable);
             await Context.Guild.ReorderRolesAsync(new List<ReorderRoleProperties>() { new ReorderRoleProperties(newlyMadeRole.Id, rlA.Position) });
             await ReplyAsync("", false, new EmbedBuilder
             {
@@ -170,7 +223,7 @@ namespace RoleX.modules
         }
         [GuildPermissions(GuildPermission.ManageRoles)]
         [Alt("del")]
-        [DiscordCommand("delete",commandHelp ="delete <@role/id>", description ="Deletes the mentioned role",example ="delete @DumbRole")]
+        [DiscordCommand("delete", commandHelp = "delete <@role/id>", description = "Deletes the mentioned role", example = "delete @DumbRole")]
         public async Task DelRole(params string[] args)
         {
             SocketRole DeleteRole;
@@ -230,7 +283,7 @@ namespace RoleX.modules
 
         [Alt("addpermission")]
         [GuildPermissions(GuildPermission.ManageRoles)]
-        [DiscordCommand("addperms",commandHelp ="addperms <@role/id> <Permission>",description ="Adds the given permission to the requested role")]
+        [DiscordCommand("addperms", commandHelp = "addperms <@role/id> <Permission>", description = "Adds the given permission to the requested role")]
         public async Task AddPerms(params string[] args)
         {
             switch (args.Length)
@@ -407,7 +460,8 @@ namespace RoleX.modules
                     }.WithCurrentTimestamp().Build());
                     return;
                 }
-            } else if (Context.Message.MentionedRoles.Any())
+            }
+            else if (Context.Message.MentionedRoles.Any())
             {
                 role = Context.Message.MentionedRoles.First();
                 short aa;
@@ -430,7 +484,8 @@ namespace RoleX.modules
                     }.WithCurrentTimestamp().Build());
                     return;
                 }
-            } else
+            }
+            else
             {
                 if (await GetUser(args[0]) != null && GetRole(args[0]) == null)
                 {
@@ -444,7 +499,7 @@ namespace RoleX.modules
                             Description = $"We couldn't parse `{args[1]}` as role!?",
                             Color = Color.Red
                         }.WithCurrentTimestamp().Build());
-                        return; 
+                        return;
                     }
                 }
                 else if (GetRole(args[0]) != null && await GetUser(args[0]) == null)
@@ -461,13 +516,14 @@ namespace RoleX.modules
                         }.WithCurrentTimestamp().Build());
                         return;
                     }
-                } else if ((GetRole(args[0]) != null && await GetUser(args[0]) != null) || (GetRole(args[1]) != null && await GetUser(args[1]) != null))
+                }
+                else if ((GetRole(args[0]) != null && await GetUser(args[0]) != null) || (GetRole(args[1]) != null && await GetUser(args[1]) != null))
                 {
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "Multiple Possibilities Detected",
-                        Description = $"Given {(await GetUser(args[0]) == null? args[1] : args[0])}\n**Role Found:**\n{(GetRole(args[0]) == null ? GetRole(args[1]).Mention : GetRole(args[0]).Mention)}\n**User Found**\n{((await GetUser(args[0])) == null ? (await GetUser(args[1])).Mention : (await GetUser(args[0])).Mention)}\nPlease use a mention instead of a search query!",
-                        Color = Color.Red
+                        Description = $"Given {(await GetUser(args[0]) == null ? args[1] : args[0])}\n**Role Found:**\n{(GetRole(args[0]) == null ? GetRole(args[1]).Mention : GetRole(args[0]).Mention)}\n**User Found**\n{((await GetUser(args[0])) == null ? (await GetUser(args[1])).Mention : (await GetUser(args[0])).Mention)}\nPlease use a mention instead of a search query, or put # after the user's name so we can find them!!",
+                        Color = Color.Red,
                     }.WithCurrentTimestamp().Build());
                     return;
                 }
@@ -510,7 +566,7 @@ namespace RoleX.modules
                 }.WithCurrentTimestamp().Build());
                 return;
             }
-            
+
         }
     }
 }
