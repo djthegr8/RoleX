@@ -130,6 +130,7 @@ namespace RoleX.modules
             await Context.Guild.CurrentUser.ModifyAsync(async dood => dood.Nickname = $"[{await SqliteClass.PrefixGetter(Context.Guild.Id)}] RoleX");
             return;
         }
+        [GuildPermissions(GuildPermission.ManageGuild)]
         [DiscordCommand("setup", commandHelp ="setup", description ="Helps set the bot up!")]
         public async Task Setup(params string[] args)
         {
@@ -180,7 +181,7 @@ namespace RoleX.modules
                     if (aa.Key == "Developer") continue;
                     helpAuto.AddField(aa.Key, aa.Value);
                 }
-                helpAuto.AddField("Need more help?", $"See our Well-Created documentation [here](https://rolex.gitbook.io/rolex/).\nFor command-wise help, do `{await SqliteClass.PrefixGetter(Context.Guild.Id)}help <commandname/modulename>`");
+                helpAuto.AddField("Need more help?", $"Read our Documentation [here](https://rolex.gitbook.io/rolex/ \"Weird Easter Egg\")\n or join [our support server](https://discord.com/invite/3Uq4WF2RFZ \"Probably weirder one\")!\nFor command-wise help, do `{await SqliteClass.PrefixGetter(Context.Guild.Id)}help <commandname/modulename>`");
                 await ReplyAsync(embed: helpAuto.Build());
                 return;
             }
@@ -229,7 +230,7 @@ namespace RoleX.modules
                 if (!string.IsNullOrEmpty(commandSelected.CommandHelpMessage)) embeds.AddField("Usage", $"`{prefixure}{commandSelected.CommandHelpMessage}`");
                 if (!string.IsNullOrEmpty(commandSelected.example)) embeds.AddField("Example", $"`{prefixure}{commandSelected.example}`");
                 if (commandSelected.Alts.Count > 0) embeds.AddField("Aliases", aliasStr);
-                //embeds.AddField("Links", "[Support Server](https://discord.gg/PbunDXN) | [Invite link](https://tiny.cc/TMAdmin) | [GitHub](https://tiny.cc/TMGitHub)");
+                embeds.AddField("Links", "[Support Server](https://discord.com/invite/3Uq4WF2RFZ) | [Invite link](https://tiny.cc/RoleXAdmin)");
                 embeds.Footer = new EmbedFooterBuilder { Text = "Help Command by RoleX" };
                 embeds.Color = Blurple;
                 if (commandSelected.CommandName == "help")

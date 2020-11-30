@@ -94,6 +94,16 @@ namespace RoleX
                     eb.Footer.IconUrl = _client.CurrentUser.GetAvatarUrl();
                     await _client.GetGuild(755076971041652786).GetTextChannel(758230822057934878).SendMessageAsync("", false, eb.Build());
                     break;
+                case CommandStatus.BotMissingPermissions:
+                    await msg.Channel.SendMessageAsync("", false, new EmbedBuilder
+                    {
+                        Title = $"I require the {result.ResultMessage} permission",
+                        Description = $"For this command to run, we require the `{result.ResultMessage}` permission.\n To understand all our required permissions, run `{await SqliteClass.PrefixGetter((msg.Channel as SocketGuildChannel).Guild.Id)}setup`",
+                        Color = Color.Red
+                    }.WithCurrentTimestamp()
+                    .Build()
+                    );
+                    break;
                 case CommandStatus.Error:
                     if (result.Exception.GetType().ToString() == "System.AggregateException" && result.Exception.InnerException.GetType().ToString() == "Discord.Net.HttpException")
                     {
@@ -193,12 +203,9 @@ namespace RoleX
                                 await HandleCommandResult(x, msg, prefu);
                                 Console.WriteLine(context.User.Username + ": " + x.Result + " in channel " + context.Channel.Name + " of guild " + context.Guild.Name);
                             }
-                            catch (Discord.Net.HttpException)
+                            catch (Exception ex)
                             {
-                                await context.Guild.Owner.SendMessageAsync("I do not have perms!!! Please give them to me!");
-                            } catch (Exception)
-                            {
-                                await _client.GetUser(701029647760097361).SendMessageAsync($"There was an error in {(msg.Channel as SocketGuildChannel).Guild.Name}\n");
+                                await _client.GetUser(701029647760097361).SendMessageAsync($"There was an error in {(msg.Channel as SocketGuildChannel).Guild.Name}\n{ex}");
                             }
                         }).Start();
                     }

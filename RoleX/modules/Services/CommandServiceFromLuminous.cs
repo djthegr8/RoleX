@@ -55,6 +55,13 @@ namespace Public_Bot
         public GuildPermissions(params GuildPermission[] perms)
             => this.Permissions = perms;
     }
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+    public class RequiredBotPermission: Attribute
+    {
+        public Discord.GuildPermission[] Permissions { get; set; }
+        public RequiredBotPermission(params Discord.GuildPermission[] perms)
+            => this.Permissions = perms;
+    }
     /// <summary>
     /// Discord command class
     /// </summary>
@@ -195,7 +202,8 @@ namespace Public_Bot
         /// Somthing happend that shouldn't have, i dont know what to say here other than :/
         /// </summary>
         MissingGuildPermission,
-        Unknown
+        Unknown,
+        BotMissingPermissions
     }
     /// <summary>
     /// The base class of <see cref="CustomCommandService"/>
@@ -224,6 +232,7 @@ namespace Public_Bot
             public CommandClassobj parent { get; set; }
 
             public GuildPermissions perms { get; set; }
+            public RequiredBotPermission bperms { get; set; }
         }
         private class CommandClassobj
         {
@@ -318,6 +327,9 @@ namespace Public_Bot
                     RequirePermission = cmdat.RequiredPermission,
                     perms = item.Key.CustomAttributes.Any(x => x.AttributeType == typeof(GuildPermissions))
                           ? item.Key.GetCustomAttribute<GuildPermissions>()
+                          : null,
+                    bperms = item.Key.CustomAttributes.Any(x => x.AttributeType == typeof(RequiredBotPermission))
+                          ? item.Key.GetCustomAttribute<RequiredBotPermission>()
                           : null,
                 };
                 CommandList.Add(cmdobj);
@@ -448,6 +460,23 @@ namespace Public_Bot
                                                 $"```\n" +
                                                 $"{string.Join('\n', cmd.perms.Permissions.Where(x => !(context.User as SocketGuildUser).GuildPermissions.Has(x)).Select(x => x.ToString()))}" +
                                                 $"```"
+                            };
+                        }
+                    }
+                }
+            }
+            if (!(context.Guild.CurrentUser.GuildPermissions.Administrator))
+            {
+                if (cmd.bperms != null)
+                {
+                    foreach (var p in cmd.bperms.Permissions)
+                    {
+                        if (!(context.Guild.CurrentUser.GuildPermissions.Has(p)))
+                        {
+                            return new CommandResult()
+                            {
+                                Result = CommandStatus.BotMissingPermissions,
+                                ResultMessage = Enum.GetName(typeof(GuildPermission), p)
                             };
                         }
                     }

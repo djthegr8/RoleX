@@ -85,6 +85,7 @@ namespace RoleX.modules
             }
             await ReplyAsync(embed: eb.WithCurrentTimestamp().Build());
         }
+        [RequiredBotPermission(GuildPermission.ManageRoles)]
         [GuildPermissions(GuildPermission.ManageGuild)]
         [DiscordCommand("mute",description ="Mutes the given user",example ="mute @Dumbkid 5m For trying to ping everyone",commandHelp ="mute <@user> <time> <reason>")]
         public async Task Mute(params string[] args)
