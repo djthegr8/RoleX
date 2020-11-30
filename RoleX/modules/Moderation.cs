@@ -15,6 +15,7 @@ namespace RoleX.modules
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Moderator : CommandModuleBase
     {
+        [Alt("ml")]
         [GuildPermissions(GuildPermission.ManageGuild)]
         [DiscordCommand("modlogs",commandHelp ="modlogs <@user>",description ="Shows all modlogs of a user",example ="modlogs @WeirdMan")]
         public async Task MLogs(params string[] aa)
@@ -428,6 +429,7 @@ namespace RoleX.modules
                 return;
             }
         }
+        [Alt("appeal")]
         [GuildPermissions(GuildPermission.ManageGuild)]
         [DiscordCommand("setappeal", commandHelp ="setappeal <link>", example ="setappeal https://gforms.com/bah", description ="Sets the appeal link sent to punished members")]
         public async Task Setappeal(params string[] args)
@@ -879,6 +881,7 @@ namespace RoleX.modules
                 return;
             }
         }
+        [Alt("hm")]
         [GuildPermissions(GuildPermission.ManageGuild)]
         [DiscordCommand("hardmute", description = "Mutes the given user after removing all roles", example = "hardmute @Dumbkid 5m For trying to ping everyone", commandHelp = "hardmute <@user> <time> <reason>")]
         public async Task HardMute(params string[] args)
@@ -984,17 +987,22 @@ namespace RoleX.modules
                         AutoReset = false,
                         Interval = ts.TotalMilliseconds
                     };
+                    Console.WriteLine(ts);
                     tmr.Elapsed += async (object send, ElapsedEventArgs arg) =>
                     {
+                        Console.WriteLine("Atleast this runs");
                         try
                         {
                             await gUser.RemoveRoleAsync(Context.Guild.GetRole(await MutedRoleIDGetter(Context.Guild.Id)));
                             await gUser.AddRolesAsync(formerroles);
                             await gUser.SendMessageAsync($"**You have been unmuted on {guildName}**");
+                            return;
                         }
-                        catch { }
+                        catch {
+                            Console.WriteLine("ERROR! ERROR!");
+                        }
                     };
-                    return;
+                    tmr.Enabled = true;
                 }
                 else if (gUser.Hierarchy == (Context.User as SocketGuildUser).Hierarchy)
                 {
