@@ -50,7 +50,7 @@ namespace RoleX
 
             Client.JoinedGuild += HandleGuildJoinAsync;
 
-            _client.Ready += HandleReadyAsync;
+            Client.Ready += HandleReadyAsync;
 
             //Console.WriteLine(fpath);
             await Client.LoginAsync(TokenType.Bot, token);
@@ -62,7 +62,7 @@ namespace RoleX
 
         private async Task HandleReadyAsync()
         {
-            await _client.Guilds.First(x => x.Id == 755076971041652786).GetTextChannel(762554740491026444).SendMessageAsync("https://static.wixstatic.com/media/34b14c_67c958fefbba43f29986dc510bcdd3e8.jpg");
+            await Client.Guilds.First(x => x.Id == 755076971041652786).GetTextChannel(762554740491026444).SendMessageAsync("https://static.wixstatic.com/media/34b14c_67c958fefbba43f29986dc510bcdd3e8.jpg");
         }
 
         private async Task HandleGuildJoinAsync(SocketGuild arg)
