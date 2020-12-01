@@ -958,7 +958,7 @@ namespace RoleX.modules
             }
             isValidTime = args[k].Last() switch
             {
-                'm' or 'M' or 's' or 'S' => true,
+                'm' or 'M' or 's' or 'S' or 'h' or 'H' => true,
                 _ => false
             } && int.TryParse(string.Join("", args[k].SkipLast(1)), out int _);
             if (!isValidTime)
@@ -966,7 +966,7 @@ namespace RoleX.modules
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "The time parameter is invalid",
-                    Description = $"Couldn't parse `{args[k]}` as time, see key below\n```s => seconds\nm => minutes```",
+                    Description = $"Couldn't parse `{args[k]}` as time, see key below\n```s => seconds\nm => minutes\nh => hours```",
                     Color = Color.Red
                 }.WithCurrentTimestamp().Build());
                 return;
@@ -977,15 +977,16 @@ namespace RoleX.modules
                 {
                     'm' or 'M' => new TimeSpan(0, timezar, 0),
                     's' or 'S' => new TimeSpan(0, 0, timezar),
+                    'h' or 'H' => new TimeSpan(timezar, 0, 0),
                     //Non possible outcome but IDE is boss
                     _ => new TimeSpan()
                 };
-                if (ts.TotalSeconds >= 120 || ts.TotalSeconds <= 5)
+                if (ts.TotalSeconds >= 21600 || ts.TotalSeconds <= 5)
                 {
                     await ReplyAsync(embed: new EmbedBuilder
                     {
                         Title = "Invalid Time",
-                        Description = "Only 5 seconds to 2 minutes of slowmode is permitted :(",
+                        Description = "Only 5 seconds to 6 hours of slowmode is permitted :(",
                         Color = Color.Red
                     }.WithCurrentTimestamp().Build());
                     return;
