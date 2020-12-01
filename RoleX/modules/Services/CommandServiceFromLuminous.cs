@@ -722,12 +722,27 @@ namespace Public_Bot
             if (regex.IsMatch(name))
             {
                 var u = Context.Guild.GetChannel(ulong.Parse(regex.Match(name).Groups[1].Value));
+                if (u as SocketCategoryChannel != null) return null;
                 return u;
             }
             if (ulong.TryParse(name, out var res))
-                return Context.Guild.Channels.Any(x => x.Id == res) ? Context.Guild.Channels.First(x => x.Id == res) : null;
+            {
+                var x = Context.Guild.Channels.Any(x => x.Id == res) ? Context.Guild.Channels.First(x => x.Id == res) : null;
+                if (x != null)
+                {
+                    if (x as SocketCategoryChannel != null) return null;
+                }
+                return x;
+            }
             else
-                return Context.Guild.Channels.Any(x => x.Name.ToLower().StartsWith(name.ToLower())) ? Context.Guild.Channels.First(x => x.Name.ToLower().StartsWith(name.ToLower())) : null;
+            {
+                var x = Context.Guild.Channels.Any(x => x.Name.ToLower().StartsWith(name.ToLower())) ? Context.Guild.Channels.First(x => x.Name.ToLower().StartsWith(name.ToLower())) : null;
+                if (x != null)
+                {
+                    if (x as SocketCategoryChannel != null) return null;
+                }
+                return x;
+            }
 
 
         }

@@ -892,7 +892,7 @@ namespace RoleX.modules
             }
         }
         [GuildPermissions(new GuildPermission[] { GuildPermission.ManageChannels, GuildPermission.ManageGuild })]
-        [DiscordCommand("slowmode", commandHelp = "slowmode <channel/category> <time>`\nslowmode <time>", description = "Sets the channel or category slowmode", example = "slowmode 10s")]
+        [DiscordCommand("slowmode", commandHelp = "slowmode <channel/category> <time>`\n`slowmode <time>", description = "Sets the channel or category slowmode", example = "slowmode 10s")]
         public async Task Sm(params string[] args)
         {
             if (args.Length == 0)
@@ -971,7 +971,7 @@ namespace RoleX.modules
                 }.WithCurrentTimestamp().Build());
                 return;
             }
-            else if (int.TryParse(string.Join("", args[1].SkipLast(k)), out int timezar))
+            else if (int.TryParse(string.Join("", args[k].SkipLast(1)), out int timezar))
             {
                 ts = args[k].Last() switch
                 {
@@ -981,7 +981,7 @@ namespace RoleX.modules
                     //Non possible outcome but IDE is boss
                     _ => new TimeSpan()
                 };
-                if (ts.TotalSeconds >= 21600 || ts.TotalSeconds <= 5)
+                if (ts.TotalSeconds >= 21600 || ts.TotalSeconds <= 5 && ts.TotalSeconds != 0)
                 {
                     await ReplyAsync(embed: new EmbedBuilder
                     {
@@ -1000,13 +1000,13 @@ namespace RoleX.modules
             {
                 foreach (var irdk in xcatg.Channels.Where(x => (x as SocketTextChannel) != null))
                 {
-                    await (xchnl as SocketTextChannel).ModifyAsync(x => x.SlowModeInterval = Convert.ToInt32(ts.TotalSeconds));
+                    await (irdk as SocketTextChannel).ModifyAsync(x => x.SlowModeInterval = Convert.ToInt32(ts.TotalSeconds));
                 }
             }
             await ReplyAsync(embed: new EmbedBuilder
             {
                 Title = "Slowmode set!",
-                Description = $"In {(isChannel ? $"channel <#{xchnl}>" : $"category {xcatg.Name} (ID: {xcatg.Id})")}, a slowmode of {ts.TotalSeconds} seconds is set!",
+                Description = $"In {(isChannel ? $"channel <#{xchnl.Id}>" : $"category {xcatg.Name} (ID: {xcatg.Id})")}, a slowmode of {ts.TotalSeconds} seconds is set!",
                 Color = Blurple
             }.WithCurrentTimestamp().Build());
         }
