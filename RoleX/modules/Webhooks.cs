@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using System;
+using Discord;
 using System.Net;
 using Public_Bot;
 using System.Linq;
@@ -7,6 +8,7 @@ using Discord.WebSocket;
 using System.IO;
 using GuildPermissions = Public_Bot.GuildPermissions;
 using RoleX.modules;
+using RoleX.Utilities;
 
 namespace RoleX.modules
 {
@@ -65,12 +67,6 @@ namespace RoleX.modules
                 return;
             } else
             {
-                var emb = new EmbedBuilder
-                {
-                    Title = "All Channel Webhooks",
-                    Description = $"*Below is the complete list of webhooks the channel <#{chn.Id}>*",
-                    Color = Blurple
-                }.WithCurrentTimestamp();
                 var idc = (await (chn as SocketTextChannel).GetWebhooksAsync()).ToList();
                 if (idc.Count == 0)
                 {
@@ -82,13 +78,18 @@ namespace RoleX.modules
                     }.WithCurrentTimestamp().Build());
                     return;
                 }
-                for(int i = 0; i < idc.Count; i++)
-                {
-                    Discord.Rest.RestWebhook rw = idc[i];
-                    emb.AddField($"{i + 1}) " + rw.Name, $"Channel: <#{rw.ChannelId}>\nCreated By: {rw.Creator.Mention}\nAvatar: [link]({(string.IsNullOrEmpty(rw.GetAvatarUrl()) ? "https://discord.com/assets/6debd47ed13483642cf09e832ed0bc1b.png" : rw.GetAvatarUrl())})");
-                }
-                await ReplyAsync("", false, emb.Build());
-                return;
+                var paginatedMessage = new PaginatedMessage(PaginatedAppearanceOptions.Default, Context.Channel, new PaginatedMessage.MessagePage("Loading...")) {
+                    Title = "All Channel Webhooks",
+                    Color = Blurple,
+                    Timestamp = DateTimeOffset.Now
+                };
+                var embedFieldBuilders = idc.Select((webhook, i) => 
+                    new EmbedFieldBuilder() {
+                        Name = $"{i + 1}) " + webhook.Name,
+                        Value = $"Channel: <#{webhook.ChannelId}>\nCreated By: {webhook.Creator.Mention}\nAvatar: [link]({(string.IsNullOrEmpty(webhook.GetAvatarUrl()) ? "https://discord.com/assets/6debd47ed13483642cf09e832ed0bc1b.png" : webhook.GetAvatarUrl())})"
+                    });
+                paginatedMessage.SetPages($"*Below is the complete list of webhooks the channel <#{chn.Id}>*", embedFieldBuilders, null);
+                await paginatedMessage.Resend();
             }
         }
         [GuildPermissions(GuildPermission.ManageWebhooks)]
