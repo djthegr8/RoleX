@@ -194,7 +194,16 @@ namespace RoleX.modules
             PermValue ovr;
             SocketRole srl;
             SocketUser sus;
-            
+            if (args.Length == 0)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "Insufficient Parameters!",
+                    Description = $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}channelperms <#channel> <@role/@member> <Permission> <yes,no,inherit>`",
+                    Color = Color.Red
+                }.WithCurrentTimestamp().Build());
+                return;
+            }
             var channe = GetChannel(args[0]);
             if (channe == null)
             {

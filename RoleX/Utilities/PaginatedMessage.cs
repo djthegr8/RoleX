@@ -8,7 +8,6 @@ using Bot.Utilities.Collector;
 using Common.Utils;
 using Discord;
 using Microsoft.VisualBasic;
-
 namespace RoleX.Utilities {
     public class PaginatedMessage : DisposableBase {
         private readonly EmbedBuilder _embedBuilder = new();
