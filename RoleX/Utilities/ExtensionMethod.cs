@@ -61,7 +61,7 @@ namespace RoleX.Utilities {
                     source1 = new List<T>();
                 }
                 source1.Add(element);
-                element = default (T);
+                element = default;
             }
             if (source1.Any<T>())
                 yield return (IReadOnlyList<T>) source1;

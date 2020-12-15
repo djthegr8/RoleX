@@ -1,18 +1,15 @@
-﻿using System;
-using Discord;
-using System.Net;
-using Public_Bot;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Discord;
 using Discord.WebSocket;
+using Public_Bot;
 using System.IO;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using GuildPermissions = Public_Bot.GuildPermissions;
-using RoleX.modules;
-using RoleX.Utilities;
 
 namespace RoleX.modules
 {
-    [DiscordCommandClass("Webhook Manager","Helps Manage all Webhooks!")]
+    [DiscordCommandClass("Webhook Manager", "Helps Manage all Webhooks!")]
     class Webhooks : CommandModuleBase
     {
         [GuildPermissions(GuildPermission.ManageWebhooks)]
@@ -22,16 +19,17 @@ namespace RoleX.modules
             var allGWH = (await Context.Guild.GetWebhooksAsync()).ToList();
             if (args.Length == 0)
             {
-                if (allGWH.Count == 0 ) {
+                if (allGWH.Count == 0)
+                {
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "No webhook found in yer server!",
                         Description = $"Really, how do you guys manage?\nIf you wanna make a Webhook, run `{await SqliteClass.PrefixGetter(Context.Guild.Id)}addwh`",
                         Color = Color.Red
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     return;
                 }
-                else 
+                else
                 {
                     var emb = new EmbedBuilder
                     {
@@ -43,9 +41,11 @@ namespace RoleX.modules
                     for (int i = 0; i < allGWH.Count; i++)
                     {
                         Discord.Rest.RestWebhook rw = allGWH[i];
-                        emb.AddField($"{i + 1}) " + rw.Name, $"Channel: <#{rw.ChannelId}>\nCreated By: {rw.Creator.Mention}\nAvatar: [link]({(string.IsNullOrEmpty(rw.GetAvatarUrl()) ? "https://discord.com/assets/6debd47ed13483642cf09e832ed0bc1b.png" : rw.GetAvatarUrl())})");
+                        emb.Fields.Add(new EmbedFieldBuilder {
+                            Name = $"{i + 1}) " + rw.Name,
+                            Value = $"Channel: <#{rw.ChannelId}>\nCreated By: {rw.Creator.Mention}\nAvatar: [link]({(string.IsNullOrEmpty(rw.GetAvatarUrl()) ? "https://discord.com/assets/6debd47ed13483642cf09e832ed0bc1b.png" : rw.GetAvatarUrl())})" });
                     }
-                    await ReplyAsync("", false, emb.Build());
+                    await ReplyAsync("", false, emb);
                     return;
                 }
             }
@@ -54,18 +54,19 @@ namespace RoleX.modules
             {
                 var emb = new EmbedBuilder
                 {
-                    Title = $"We couldn't parse `{args[0]}` as a channel so...",
-                    Description = $"*Below is the complete list of webhooks in your server*",
+                    Title = $"We couldn't parse the channel!",
+                    Description = $"Does `{args[0]}` even exist??",
                     Color = Blurple
                 }.WithCurrentTimestamp();
-                for (int i = 0; i < allGWH.Count; i++)
+                /*for (int i = 0; i < allGWH.Count; i++)
                 {
                     Discord.Rest.RestWebhook rw = allGWH[i];
                     emb.AddField($"{i + 1}) " + rw.Name, $"Channel: <#{rw.ChannelId}>\nCreated By: {rw.Creator.Mention}\nAvatar: [link]({(string.IsNullOrEmpty(rw.GetAvatarUrl()) ? "https://discord.com/assets/6debd47ed13483642cf09e832ed0bc1b.png" : rw.GetAvatarUrl())})");
                 }
-                await ReplyAsync("", false, emb.Build());
-                return;
-            } else
+                await ReplyAsync("", false, emb);
+                return;*/
+            }
+            else
             {
                 var idc = (await (chn as SocketTextChannel).GetWebhooksAsync()).ToList();
                 if (idc.Count == 0)
@@ -75,7 +76,7 @@ namespace RoleX.modules
                         Title = "No webhook found in dat channel",
                         Description = $"Really, how do you guys manage?\nIf you wanna make a Webhook, run `{await SqliteClass.PrefixGetter(Context.Guild.Id)}addwh`",
                         Color = Color.Red
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     return;
                 }
                 /*var paginatedMessage = new PaginatedMessage(PaginatedAppearanceOptions.Default, Context.Channel, new PaginatedMessage.MessagePage("Loading...")) {
@@ -83,8 +84,9 @@ namespace RoleX.modules
                     Color = Blurple,
                     Timestamp = DateTimeOffset.Now
                 };*/
-                var embedFieldBuilders = idc.Select((webhook, i) => 
-                    new EmbedFieldBuilder() {
+                var embedFieldBuilders = idc.Select((webhook, i) =>
+                    new EmbedFieldBuilder()
+                    {
                         Name = $"{i + 1}) " + webhook.Name,
                         Value = $"Channel: <#{webhook.ChannelId}>\nCreated By: {webhook.Creator.Mention}\nAvatar: [link]({(string.IsNullOrEmpty(webhook.GetAvatarUrl()) ? "https://discord.com/assets/6debd47ed13483642cf09e832ed0bc1b.png" : webhook.GetAvatarUrl())})"
                     });/*
@@ -99,12 +101,12 @@ namespace RoleX.modules
                         Text = "Yeah only 15 supported, will make sense later ig"
                     },
                     Color = Blurple
-                }.WithCurrentTimestamp().Build()
+                }.WithCurrentTimestamp()
                 );
             }
         }
         [GuildPermissions(GuildPermission.ManageWebhooks)]
-        [DiscordCommand("deletewh", commandHelp ="deletewh <webhook-name/id>", description ="Deletes the first webhook of given name or ID", example ="deletewh MyWebhook")]
+        [DiscordCommand("deletewh", commandHelp = "deletewh <webhook-name/id>", description = "Deletes the first webhook of given name or ID", example = "deletewh MyWebhook")]
         public async Task DeleteWh(params string[] args)
         {
             if (args.Length == 0)
@@ -114,7 +116,7 @@ namespace RoleX.modules
                     Title = "No webhook name/id given :(",
                     Description = $"There were no arguments given :sob:",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             var allGWH = await Context.Guild.GetWebhooksAsync();
@@ -126,7 +128,7 @@ namespace RoleX.modules
                     Title = "No webhook found with that name!",
                     Description = $"There were no webhooks found with the word `{args[0]}`",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             else if (iGTSW.Count == 1)
@@ -137,10 +139,11 @@ namespace RoleX.modules
                     Title = "Webhook deleted successfully!",
                     Description = $"The webhook `{reqwh.Name}` of channel <#{reqwh.ChannelId}> was deleted successfully!!",
                     Color = Blurple
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 await reqwh.DeleteAsync();
                 return;
-            } else
+            }
+            else
             {
                 var emb = new EmbedBuilder
                 {
@@ -153,13 +156,13 @@ namespace RoleX.modules
                     Discord.Rest.RestWebhook rw = iGTSW[i];
                     emb.AddField($"{i + 1}) " + rw.Name, $"Channel: <#{rw.ChannelId}>\nCreated By: {rw.Creator.Username}#{rw.Creator.Discriminator}\nAvatar: [link]({(string.IsNullOrEmpty(rw.GetAvatarUrl()) ? "https://discord.com/assets/6debd47ed13483642cf09e832ed0bc1b.png" : rw.GetAvatarUrl())})");
                 }
-                await ReplyAsync("", false, emb.Build());
+                await ReplyAsync("", false, emb);
                 return;
             }
         }
         [GuildPermissions(GuildPermission.ManageWebhooks)]
         [Alt("createwh")]
-        [DiscordCommand("addwh",commandHelp ="addwh <#channel> <Webhook-Name> <WebhookAvatarUrl>",description ="Creates a new webhook in given channel of given name, avatar & DMs the Webhook URL", example ="addwh #memes MemeWebhook https://tiny.cc/joketoyou")]
+        [DiscordCommand("addwh", commandHelp = "addwh <#channel> <Webhook-Name> <WebhookAvatarUrl>", description = "Creates a new webhook in given channel of given name, avatar & DMs the Webhook URL", example = "addwh #memes MemeWebhook https://tiny.cc/joketoyou")]
         public async Task AddWH(params string[] args)
         {
             SocketTextChannel achan;
@@ -175,9 +178,9 @@ namespace RoleX.modules
                         Title = "Invalid channel name",
                         Description = $"`{args[0]}` could not be parsed as channel!",
                         Color = Color.Red
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     return;
-                } 
+                }
             }
             var weh = await achan.CreateWebhookAsync(args.Length <= 1 ? $"RoleX Created Webhook (Requester ID:{Context.User.Id})" : args[1]);
             if (args.Length > 2)
@@ -186,26 +189,26 @@ namespace RoleX.modules
                 {
                     pfp = new MemoryStream(new WebClient().DownloadData(args[2]));
                     await weh.ModifyAsync(x => x.Image = new Image(pfp));
-                } catch { }
+                }
+                catch { }
             }
             await (await Context.User.GetOrCreateDMChannelAsync()).SendMessageAsync("", false, new EmbedBuilder
             {
-               Title=$"New Webhook Creation Successful",
-               Description = $"**Name:** {weh.Name}\n**Channel:** <#{weh.ChannelId}>\n**Link:** [Click here or on the title](https://discordapp.com/api/webhooks/{weh.Id}/{weh.Token})",
-               Url=$"https://discordapp.com/api/webhooks/{weh.Id}/{weh.Token}",
-               ImageUrl = weh.GetAvatarUrl(),
-               Color = Blurple
-            }.WithCurrentTimestamp()
-            .Build()
+                Title = $"New Webhook Creation Successful",
+                Description = $"**Name:** {weh.Name}\n**Channel:** <#{weh.ChannelId}>\n**Link:** [Click here or on the title](https://discordapp.com/api/webhooks/{weh.Id}/{weh.Token})",
+                Url = $"https://discordapp.com/api/webhooks/{weh.Id}/{weh.Token}",
+                ImageUrl = weh.GetAvatarUrl(),
+                Color = Blurple
+            }.WithCurrentTimestamp().Build()
             );
             await ReplyAsync(Context.User.Mention, false, new EmbedBuilder
             {
                 Title = "Created Webhook Successfully!",
                 Description = $"I have DMed you with the Url!",
                 Color = Blurple
-            }.WithCurrentTimestamp().Build());
+            }.WithCurrentTimestamp());
             return;
         }
-        
+
     }
 }

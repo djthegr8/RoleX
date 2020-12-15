@@ -24,7 +24,7 @@ namespace RoleX.modules
                     Title = "Invalid channel",
                     Description = $"`{aaa}` could not be parsed as channel!",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             else
@@ -36,7 +36,7 @@ namespace RoleX.modules
                     Description = $"Channel `#{aaa.Name}` was deleted!",
                     Color = Blurple
                 }.WithCurrentTimestamp()
-                .Build());
+                );
             }
         }
         [GuildPermissions(GuildPermission.ManageChannels)]
@@ -51,7 +51,7 @@ namespace RoleX.modules
                     Title = "Insufficient Parameters!",
                     Description = $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}categoryrename <old-category-name> <new-category-name>`",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             var alf = GetCategory(args[0]);
@@ -62,7 +62,7 @@ namespace RoleX.modules
                     Title = "Invalid category",
                     Description = $"`{args[0]}` could not be parsed as category!",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             await alf.ModifyAsync(x => x.Name = string.Join(' ', args.Skip(1)));
@@ -71,7 +71,7 @@ namespace RoleX.modules
                 Title = "Rename successful!",
                 Description = $"Your category was renamed to `{string.Join(' ', args.Skip(1))}`",
                 Color = Blurple
-            }.WithCurrentTimestamp().Build());
+            }.WithCurrentTimestamp());
             return;
         }
         [GuildPermissions(GuildPermission.ManageChannels)]
@@ -88,7 +88,7 @@ namespace RoleX.modules
                     Title = "Invalid category",
                     Description = $"`{aa}` could not be parsed as category!",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             foreach (var ch in alf.Channels)
@@ -101,7 +101,7 @@ namespace RoleX.modules
                 Title = "Delete successful!",
                 Description = $"Your category was deleted along with all its channels",
                 Color = Blurple
-            }.WithCurrentTimestamp().Build());
+            }.WithCurrentTimestamp());
             return;
         }
         [GuildPermissions(GuildPermission.ManageChannels)]
@@ -116,7 +116,7 @@ namespace RoleX.modules
                     Title = "Insufficient Parameters!",
                     Description = $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}channelrename <#channel> <new-channel-name>`",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             if (GetChannel(args[0]) == null)
@@ -126,7 +126,7 @@ namespace RoleX.modules
                     Title = "Invalid channel",
                     Description = $"`{args[0]}` could not be parsed as channel!",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             var bchname = string.Join('-', args.Skip(1));
@@ -137,7 +137,7 @@ namespace RoleX.modules
                     Title = "Invalid channel re-name",
                     Description = $"`{bchname}` is an invalid channel name, as it either ~ \n1) Contains non-allowed characters\n 2) Is too long",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             var cha = GetChannel(args[0]);
@@ -147,7 +147,7 @@ namespace RoleX.modules
                 Title = "Channel Name Updated!!",
                 Description = $"<#{cha.Id}> is now set!!!",
                 Color = Blurple
-            }.WithCurrentTimestamp().Build());
+            }.WithCurrentTimestamp());
             return;
         }
         [GuildPermissions(GuildPermission.ManageChannels)]
@@ -163,7 +163,7 @@ namespace RoleX.modules
                     Title = "Insufficient Parameters!",
                     Description = $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}channeldesc <#channel> <new-channel-name>`",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             var cha = GetChannel(args[0]);
@@ -181,7 +181,7 @@ namespace RoleX.modules
                 Title = "Channel Description Updated!!",
                 Description = $"<#{cha.Id}> is now set with its new topic!!!",
                 Color = Blurple
-            }.WithCurrentTimestamp().Build());
+            }.WithCurrentTimestamp());
             return;
         }
         [GuildPermissions(GuildPermission.ManageChannels)]
@@ -201,7 +201,7 @@ namespace RoleX.modules
                     Title = "Insufficient Parameters!",
                     Description = $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}channelperms <#channel> <@role/@member> <Permission> <yes,no,inherit>`",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             var channe = GetChannel(args[0]);
@@ -212,7 +212,7 @@ namespace RoleX.modules
                     Title = "Invalid channel name",
                     Description = $"`{args[0]}` could not be parsed as channel!",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;*/
                 channe = Context.Channel as SocketGuildChannel;
                 var argsL = args.ToList();
@@ -227,7 +227,7 @@ namespace RoleX.modules
                         Title = "Insufficient Parameters!",
                         Description = $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}channelperms <#channel> <@role/@member> <Permission> <yes,no,inherit>`",
                         Color = Color.Red
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     return;
             }
             sus = await GetUser(args[1]);
@@ -239,7 +239,7 @@ namespace RoleX.modules
                     Title = "Invalid Role/User",
                     Description = $"We couldn't find any role or user from `{args[1]}`",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             else if (sus == null)
@@ -257,7 +257,7 @@ namespace RoleX.modules
                     Title = "Multiple Possibilities Detected",
                     Description = $"Given `{args[1]}`, we found both a Role and a User.\n**Role Found:**\n{srl.Mention}\n**User Found**\n{sus.Mention}\nPlease use a mention instead of a search query!",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             /*
@@ -277,7 +277,7 @@ namespace RoleX.modules
                     Title = "No User/Role Mentioned",
                     Description = $"We couldn't find any role or user mentioned!",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }*/
             var prm_ = GetChannelPermission(args[2]);
@@ -288,7 +288,7 @@ namespace RoleX.modules
                     Title = "That permission is invalid",
                     Description = $"The list of permissions is ~ ```{string.Join('\n', Enum.GetNames(typeof(Discord.ChannelPermission)))}```",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             var prm = prm_.Item1;
@@ -311,10 +311,10 @@ namespace RoleX.modules
                         Title = "That overwrite type is invalid",
                         Description = $"For giving the permission, use `y`, `yes`, `positive` or `true`.\nFor Inheriting use `i` or `inherit`\nAnd for revoking use `n`, `no`, `negative` or `false` as the last parameter for the command",
                         Color = Color.Red
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     return;
             }
-            var op = new OverwritePermissions();
+            OverwritePermissions op;
             if (roleOrNot)
             {
                 op = channe.GetPermissionOverwrite(srl) != null ? (OverwritePermissions)channe.GetPermissionOverwrite(srl) : new OverwritePermissions();
@@ -333,7 +333,7 @@ namespace RoleX.modules
                 Description = $"Channel Overwrite added for <#{channe.Id}>",
                 Color = Blurple
             }.AddField("Overwrite Details", $"For: {(roleOrNot ? srl.Mention : sus.Mention)}\nPermission: {prm}\nValue: {ovr}")
-            .WithCurrentTimestamp().Build());
+            .WithCurrentTimestamp());
             return;
         }
         [GuildPermissions(GuildPermission.ManageChannels)]
@@ -349,7 +349,7 @@ namespace RoleX.modules
                         Title = "Insufficient Parameters!",
                         Description = $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}overwrites <#channel> <@role/@member>`",
                         Color = Color.Red
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     return;
             }*/
             if (args.Length == 0)
@@ -388,7 +388,7 @@ namespace RoleX.modules
                 }.AddField("Channel", $"<#{channe.Id}>")
                 .AddField("Role Overwrites", rpos)
                 .AddField("User Overwrites", upos)
-                .WithCurrentTimestamp().Build());
+                .WithCurrentTimestamp());
             }
         }
     }

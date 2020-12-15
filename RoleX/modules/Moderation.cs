@@ -27,7 +27,7 @@ namespace RoleX.modules
                     Title = "What user?",
                     Description = "Mention the user you wish to get modlogs of",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             IUser user;
@@ -46,7 +46,7 @@ namespace RoleX.modules
                             Title = "What user?",
                             Description = "That user isn't valid :(",
                             Color = Color.Red
-                        }.WithCurrentTimestamp().Build());
+                        }.WithCurrentTimestamp());
                         return;
                     }
                     user = aala;
@@ -62,7 +62,7 @@ namespace RoleX.modules
                         Title = "What user?",
                         Description = "That user isn't valid :(",
                         Color = Color.Red
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     return;
                 }
             }
@@ -85,7 +85,7 @@ namespace RoleX.modules
             {
                 eb.Description = "They've been a good boye! No modlogs :)";
             }
-            await ReplyAsync(embed: eb.WithCurrentTimestamp().Build());
+            await ReplyAsync(embed: eb.WithCurrentTimestamp());
         }
         [RequiredBotPermission(GuildPermission.ManageRoles)]
         [GuildPermissions(GuildPermission.ManageGuild)]
@@ -99,7 +99,7 @@ namespace RoleX.modules
                     Title = "No muted role set :|",
                     Description = $"Set muted role by running `{await PrefixGetter(Context.Guild.Id)}mutedrole <create/@Role>`",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             bool isValidTime = false;
@@ -111,7 +111,7 @@ namespace RoleX.modules
                     Title = "What user?",
                     Description = "Mention the user you wish to mute",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             if (args.Length >= 2)
@@ -128,7 +128,7 @@ namespace RoleX.modules
                         Title = "The time parameter is invalid",
                         Description = $"Couldn't parse `{args[1]}` as time, see key below\n```s => seconds\nm => minutes\nh => hours\nd => days\ny => years```",
                         Color = Color.Red
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     return;
                 }
                 else if (int.TryParse(string.Join("", args[1].SkipLast(1)), out int timezar))
@@ -167,7 +167,7 @@ namespace RoleX.modules
                         Title = $"{gUser.Username}#{gUser.Discriminator} Muted {(isValidTime ? $"for {ts.Days}d, {ts.Minutes}m and {ts.Seconds}s" : "indefinitely")}!",
                         Description = $"Reason: {(args.Length > 2 ? string.Join(' ', args.Skip(2)) : $"Requested by { Context.User.Username }#{Context.User.Discriminator}")}",
                         Color = Blurple
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     try
                     {
                         await gUser.SendMessageAsync("", false, new EmbedBuilder
@@ -208,7 +208,7 @@ namespace RoleX.modules
                         Title = $"Seriously??",
                         Color = Color.Red,
                         ImageUrl = "https://cdn.discordapp.com/attachments/758922634749542420/760180089870090320/unknown.png"
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     return;
                 }
                 else
@@ -218,7 +218,7 @@ namespace RoleX.modules
                         Title = "Not gonna happen",
                         Description = "That person is above you!?",
                         Color = Color.Red
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     return;
                 }
             }
@@ -229,7 +229,7 @@ namespace RoleX.modules
                     Title = "What user?",
                     Description = "That user isn't valid :(",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
         }
@@ -244,7 +244,7 @@ namespace RoleX.modules
                     Title = "What user?",
                     Description = "Mention the user you wish to ban",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             if (await GetUser(args[0]) != null || Context.Message.MentionedUsers.Any())
@@ -263,7 +263,7 @@ namespace RoleX.modules
                             Title = "Oops, that person is above me :(",
                             Description = $"I don't have perms to ban them :/",
                             Color = Color.Red
-                        }.WithCurrentTimestamp().Build());
+                        }.WithCurrentTimestamp());
                         return;
                     }
                     await ReplyAsync("", false, new EmbedBuilder
@@ -271,7 +271,7 @@ namespace RoleX.modules
                         Title = $"{gUser.Username}#{gUser.Discriminator} Banned Successfully!",
                         Description = $"Reason: {(args.Length > 1 ? string.Join(' ', args.Skip(1)) : $"Requested by { Context.User.Username }#{Context.User.Discriminator}")}",
                         Color = Blurple
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     try
                     {
                         await gUser.SendMessageAsync("", false, new EmbedBuilder
@@ -293,7 +293,7 @@ namespace RoleX.modules
                         Title = $"Seriously??",
                         Color = Color.Red,
                         ImageUrl = "https://cdn.discordapp.com/attachments/758922634749542420/760180089870090320/unknown.png"
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     return;
                 }
                 else
@@ -303,7 +303,7 @@ namespace RoleX.modules
                         Title = "Not gonna happen",
                         Description = "That person is above you!?",
                         Color = Color.Red
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     return;
                 }
             }
@@ -319,7 +319,7 @@ namespace RoleX.modules
                         Title = "What user?",
                         Description = "Could not find specified user on Discord",
                         Color = Color.Red
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     return;
                 }
                 await ReplyAsync("", false, new EmbedBuilder
@@ -327,7 +327,7 @@ namespace RoleX.modules
                     Title = $"{aa.Username}#{aa.Discriminator} Banned Successfully!",
                     Description = $"Reason: {(args.Length > 1 ? string.Join(' ', args.Skip(1)) : $"Requested by { Context.User.Username }#{Context.User.Discriminator}")}",
                     Color = Blurple
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 try
                 {
                     await aa.SendMessageAsync("", false, new EmbedBuilder
@@ -349,7 +349,7 @@ namespace RoleX.modules
                     Title = "What user?",
                     Description = "That user isn't valid :(",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
         }
@@ -364,7 +364,7 @@ namespace RoleX.modules
                     Title = "What user?",
                     Description = "Mention the user you wish to kick",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             if (await GetUser(args[0]) != null || Context.Message.MentionedUsers.Any())
@@ -383,7 +383,7 @@ namespace RoleX.modules
                             Title = "Oops, that person is above me :(",
                             Description = $"I don't have perms to kick them :/",
                             Color = Color.Red
-                        }.WithCurrentTimestamp().Build());
+                        }.WithCurrentTimestamp());
                         return;
                     }
                     await ReplyAsync("", false, new EmbedBuilder
@@ -391,7 +391,7 @@ namespace RoleX.modules
                         Title = $"{gUser.Username}#{gUser.Discriminator} Kicked Successfully!",
                         Description = $"Reason: {(args.Length > 1 ? string.Join(' ', args.Skip(1)) : $"Requested by { Context.User.Username }#{Context.User.Discriminator}")}",
                         Color = Blurple
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     try
                     {
                         await gUser.SendMessageAsync("", false, new EmbedBuilder
@@ -413,7 +413,7 @@ namespace RoleX.modules
                         Title = $"Seriously??",
                         Color = Color.Red,
                         ImageUrl = "https://media.discordapp.net/attachments/758922634749542420/760180449749368832/unknown.png"
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     return;
                 }
                 else
@@ -423,7 +423,7 @@ namespace RoleX.modules
                         Title = "Not gonna happen",
                         Description = "That person is above you!?",
                         Color = Color.Red
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     return;
                 }
             }
@@ -434,7 +434,7 @@ namespace RoleX.modules
                     Title = "What user?",
                     Description = "That user isn't valid :(",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
         }
@@ -455,11 +455,25 @@ namespace RoleX.modules
                     {
                         Text = $"To change it, do `{await PrefixGetter(Context.Guild.Id)}setappeal <link>`, and do `{await PrefixGetter(Context.Guild.Id)}setappeal remove` to remove it"
                     }
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             else
             {
+                if (!Uri.TryCreate(args[0], UriKind.RelativeOrAbsolute, out Uri? _))
+                {
+                    await ReplyAsync("", false, new EmbedBuilder
+                    {
+                        Title = "Invalid appeal link!",
+                        Description = $"Couldn't parse `{args[0]}` as an URL :sob:",
+                        Color = Color.Red,
+                        Footer = new EmbedFooterBuilder
+                        {
+                            Text = $"To change it, do `{await PrefixGetter(Context.Guild.Id)}setappeal <link>`, and do `{await PrefixGetter(Context.Guild.Id)}setappeal remove` to remove it"
+                        }
+                    }.WithCurrentTimestamp());
+                    return;
+                }
                 if (args[0].ToLower() == "remove")
                 {
                     args[0] = "";
@@ -475,7 +489,7 @@ namespace RoleX.modules
                     {
                         Text = $"To change it yet again, do `{await PrefixGetter(Context.Guild.Id)}setappeal <link>`"
                     }
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
             }
         }
         [GuildPermissions(GuildPermission.BanMembers)]
@@ -489,7 +503,7 @@ namespace RoleX.modules
                     Title = "What user?",
                     Description = "Mention the user you wish to unban",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             var bu = await GetBannedUser(args[0]);
@@ -500,7 +514,7 @@ namespace RoleX.modules
                     Title = "What user?",
                     Description = $"`{args[0]}` isn't a previously banned user!?",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             await Context.Guild.RemoveBanAsync(bu);
@@ -510,7 +524,7 @@ namespace RoleX.modules
                 Title = $"{bu.Username}#{bu.Discriminator} unbanned succesfully!",
                 Description = $"Unban successful! Welcome them back :tada:",
                 Color = Blurple
-            }.WithCurrentTimestamp().Build());
+            }.WithCurrentTimestamp());
         }
         [GuildPermissions(GuildPermission.BanMembers)]
         [DiscordCommand("softban", commandHelp = "softban <@user> <days>", example = "softban @Dumbass 7", description = "Bans the specified user and unbans immediately, for deletion of messages")]
@@ -523,7 +537,7 @@ namespace RoleX.modules
                     Title = "What user?",
                     Description = "Mention the user you wish to softban",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             if (args.Length == 2)
@@ -537,7 +551,7 @@ namespace RoleX.modules
                             Title = "Invalid delete (prune) days parameter!",
                             Description = "It needs to be between 0 and 7 bruh :|",
                             Color = Color.Red
-                        }.WithCurrentTimestamp().Build());
+                        }.WithCurrentTimestamp());
                         return;
                     }
                 }
@@ -558,7 +572,7 @@ namespace RoleX.modules
                             Title = "Oops, that person is above me :(",
                             Description = $"I don't have perms to ban them :/",
                             Color = Color.Red
-                        }.WithCurrentTimestamp().Build());
+                        }.WithCurrentTimestamp());
                         return;
                     }
                     await ReplyAsync("", false, new EmbedBuilder
@@ -566,7 +580,7 @@ namespace RoleX.modules
                         Title = $"{gUser.Username}#{gUser.Discriminator} Softbanned Successfully!",
                         Description = $"Days to delete: {(args.Length == 1 ? "7" : (ulong.TryParse(args[1], out ulong a1) ? a1.ToString() : "7"))}",
                         Color = Blurple
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     try
                     {
                         await gUser.SendMessageAsync("", false, new EmbedBuilder
@@ -590,7 +604,7 @@ namespace RoleX.modules
                         Title = $"Seriously??",
                         Color = Color.Red,
                         ImageUrl = "https://cdn.discordapp.com/attachments/758922634749542420/760180089870090320/unknown.png"
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     return;
                 }
                 else
@@ -600,7 +614,7 @@ namespace RoleX.modules
                         Title = "Not gonna happen",
                         Description = "That person is above you!?",
                         Color = Color.Red
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     return;
                 }
             }
@@ -616,7 +630,7 @@ namespace RoleX.modules
                         Title = "What user?",
                         Description = "That user isn't on Discord which world r u in? :(",
                         Color = Color.Red
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     return;
                 }
                 await ReplyAsync("", false, new EmbedBuilder
@@ -624,7 +638,7 @@ namespace RoleX.modules
                     Title = $"{aa.Username}#{aa.Discriminator} Softbanned Successfully!",
                     Description = $"Days to delete: {(args.Length == 1 ? "7" : (ulong.TryParse(args[1], out ulong a1) ? a1.ToString() : "7"))}",
                     Color = Blurple
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 try
                 {
                     await aa.SendMessageAsync("", false, new EmbedBuilder
@@ -647,7 +661,7 @@ namespace RoleX.modules
                     Title = "What user?",
                     Description = "That user isn't valid :(",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
         }
@@ -658,9 +672,9 @@ namespace RoleX.modules
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "List of bans in the server",
-                Description = string.Join("\n\n", (await Context.Guild.GetBansAsync()).Select((r5, idx) => $"**{idx + 1}) User**: <@{r5.User.Id}>\n**Reason**: {(r5.Reason == null ? "Not given" : r5.Reason)}")),
+                Description = string.Join("\n\n", (await Context.Guild.GetBansAsync()).Select((r5, idx) => $"**{idx + 1}) User**: <@{r5.User.Id}>\n**Reason**: {(r5.Reason ?? "Not given")}")),
                 Color = Blurple
-            }.WithCurrentTimestamp().Build()
+            }.WithCurrentTimestamp()
             );
         }
         [GuildPermissions(GuildPermission.ManageChannels)]
@@ -684,12 +698,11 @@ namespace RoleX.modules
                     Title = "Invalid channel",
                     Description = $"`{args[0]}` could not be parsed as channel!",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
-            var lockMSGchnl = lockchnl as SocketTextChannel;
             EmbedBuilder alfa = new EmbedBuilder();
-            if (lockMSGchnl == null)
+            if (lockchnl is not SocketTextChannel lockMSGchnl)
             {
                 var lockVOICE = lockchnl as SocketVoiceChannel;
                 var prvo = lockchnl.GetPermissionOverwrite(Context.Guild.EveryoneRole);
@@ -700,7 +713,7 @@ namespace RoleX.modules
                 }
                 else
                 {
-                    xyz = new OverwritePermissions(connect: PermValue.Deny);
+                    xyz = new OverwritePermissions(connect: PermValue.Deny, speak: PermValue.Deny);
                 }
                 await lockVOICE.AddPermissionOverwriteAsync(Context.Guild.EveryoneRole, xyz);
                 alfa.Title = $"Locked Voice Channel {lockVOICE.Name}";
@@ -749,12 +762,11 @@ namespace RoleX.modules
                     Title = "Invalid channel",
                     Description = $"`{args[0]}` could not be parsed as channel!",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
-            var lockMSGchnl = lockchnl as SocketTextChannel;
             EmbedBuilder alfa = new EmbedBuilder();
-            if (lockMSGchnl == null)
+            if (lockchnl is not SocketTextChannel lockMSGchnl)
             {
                 var lockVOICE = lockchnl as SocketVoiceChannel;
                 var prvo = lockchnl.GetPermissionOverwrite(Context.Guild.EveryoneRole);
@@ -808,7 +820,7 @@ namespace RoleX.modules
                     {
                         Text = $"To change it, do `{await PrefixGetter(Context.Guild.Id)}muted <@MutedRole>`, and do `{await PrefixGetter(Context.Guild.Id)}muted create` to create a novel one"
                     }
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             else
@@ -819,7 +831,7 @@ namespace RoleX.modules
                     {
                         Title = "Creating muted role.......",
                         Color = Blurple
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     var rl = await Context.Guild.CreateRoleAsync("Muted by RoleX", new Discord.GuildPermissions(), new Color(0, 0, 0), false, null);
                     foreach (var chnl in Context.Guild.Channels)
                     {
@@ -835,7 +847,7 @@ namespace RoleX.modules
                         Title = "What role?",
                         Description = $"Couldn't parse `{args[0]}` as role :(",
                         Color = Color.Red
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     return;
                 }
                 await MutedRoleIDAdder(Context.Guild.Id, GetRole(args[0]).Id);
@@ -848,10 +860,11 @@ namespace RoleX.modules
                     {
                         Text = $"To change it yet again, do `{await PrefixGetter(Context.Guild.Id)}mutedrole <@Role>`"
                     }
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
             }
         }
         [GuildPermissions(GuildPermission.ManageGuild)]
+        [Alt("um")]
         [DiscordCommand("unmute", commandHelp = "unmute <@user>", example = "unmute @RegretfulMan", description = "Unmutes given user")]
         public async Task Unmute(params string[] args)
         {
@@ -862,7 +875,7 @@ namespace RoleX.modules
                     Title = "What user?",
                     Description = "Mention the user you wish to unmute",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             else if (await GetUser(args[0]) == null)
@@ -872,7 +885,7 @@ namespace RoleX.modules
                     Title = "What user?",
                     Description = $"Couldn't parse `{args[0]}` as user",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             else
@@ -887,10 +900,11 @@ namespace RoleX.modules
                     Title = "User unmuted successfully!",
                     Description = $"{await GetUser(args[0])} was successfully unmuted :)",
                     Color = Blurple
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
         }
+        [Alt("sm")]
         [GuildPermissions(new GuildPermission[] { GuildPermission.ManageChannels, GuildPermission.ManageGuild })]
         [DiscordCommand("slowmode", commandHelp = "slowmode <channel/category> <time>`\n`slowmode <time>", description = "Sets the channel or category slowmode", example = "slowmode 10s")]
         public async Task Sm(params string[] args)
@@ -902,7 +916,7 @@ namespace RoleX.modules
                     Title = "Invalid Parameters",
                     Description = $"The way to run this command is `{await PrefixGetter(Context.Guild.Id)}slowmode <time>` to set in the current channel, or `{await PrefixGetter(Context.Guild.Id)}slowmode <#channel-or-category> <time>`",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             var xchnl = GetChannel(args[0]);
@@ -931,7 +945,7 @@ namespace RoleX.modules
                         Title = "You can't slow down the beat <a:vibing:782998739865305089>",
                         Description = "Voice Channels cannot be put to a slowdown",
                         Color = Color.Red
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     return;
                 }
             }
@@ -943,7 +957,7 @@ namespace RoleX.modules
                     Title = "Multiple Possibilities detected",
                     Description = $"Given `{args[0]}`\n**Channel Found:**\n<#{xchnl.Id}>\n**Category Found:**\n{xcatg.Name} (ID: {xcatg.Id})\nTo resolve this conflict, either use the ID, or mention the channel.",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             bool isValidTime;
@@ -956,7 +970,7 @@ namespace RoleX.modules
                     Title = "Invalid Parameters",
                     Description = $"The way to run this command is `{await PrefixGetter(Context.Guild.Id)}slowmode <time>` to set in the current channel, or `{await PrefixGetter(Context.Guild.Id)}slowmode <#channel-or-category> <time>`",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             isValidTime = args[k].Last() switch
@@ -971,7 +985,7 @@ namespace RoleX.modules
                     Title = "The time parameter is invalid",
                     Description = $"Couldn't parse `{args[k]}` as time, see key below\n```s => seconds\nm => minutes\nh => hours```",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             else if (int.TryParse(string.Join("", args[k].SkipLast(1)), out int timezar))
@@ -991,7 +1005,7 @@ namespace RoleX.modules
                         Title = "Invalid Time",
                         Description = "Only 5 seconds to 6 hours of slowmode is permitted :(",
                         Color = Color.Red
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     return;
                 }
             }
@@ -1012,7 +1026,7 @@ namespace RoleX.modules
                 Title = "Slowmode set!",
                 Description = $"In {(isChannel ? $"channel <#{xchnl.Id}>" : $"category {xcatg.Name} (ID: {xcatg.Id})")}, a slowmode of {ts.TotalSeconds} seconds is set!",
                 Color = Blurple
-            }.WithCurrentTimestamp().Build());
+            }.WithCurrentTimestamp());
         }
         [Alt("hm")]
         [GuildPermissions(GuildPermission.ManageGuild)]
@@ -1026,7 +1040,7 @@ namespace RoleX.modules
                     Title = "No muted role set :|",
                     Description = $"Set muted role by running `{await PrefixGetter(Context.Guild.Id)}mutedrole <create/@Role>`",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             bool isValidTime = false;
@@ -1038,7 +1052,7 @@ namespace RoleX.modules
                     Title = "What user?",
                     Description = "Mention the user you wish to hardmute",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             if (args.Length >= 2)
@@ -1055,7 +1069,7 @@ namespace RoleX.modules
                         Title = "The time parameter is invalid",
                         Description = $"Couldn't parse `{args[1]}` as time, see key below\n```s => seconds\nm => minutes\nh => hours\nd => days\ny => years```",
                         Color = Color.Red
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     return;
                 }
                 else if (int.TryParse(string.Join("", args[1].SkipLast(1)), out int timezar))
@@ -1104,7 +1118,13 @@ namespace RoleX.modules
                     var formerroles = gUser.Roles.ToList();
                     formerroles.Remove(Context.Guild.EveryoneRole);
                     await gUser.RemoveRolesAsync(formerroles);
-                    await gUser.AddRoleAsync(Context.Guild.GetRole(await MutedRoleIDGetter(Context.Guild.Id)));
+                    try
+                    {
+                        await gUser.AddRoleAsync(Context.Guild.GetRole(await MutedRoleIDGetter(Context.Guild.Id)));
+                    } catch
+                    {
+                        await ReplyAsync("", false, new EmbedBuilder { Title = "okay ur muted role is messed", Description = "wth man.", Color = Color.Red });
+                    }
                     if (!isValidTime)
                     {
                         return;
@@ -1136,7 +1156,7 @@ namespace RoleX.modules
                         Title = $"{gUser.Username}#{gUser.Discriminator} Hardmuted {(isValidTime ? $"for {ts.Days}d, {ts.Minutes}m and {ts.Seconds}s" : "indefinitely")}!",
                         Description = $"Reason: {(args.Length > 2 ? string.Join(' ', args.Skip(2)) : $"Requested by { Context.User.Username }#{Context.User.Discriminator}")}",
                         Color = Blurple
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                 }
                 else if (gUser.Hierarchy == (Context.User as SocketGuildUser).Hierarchy)
                 {
@@ -1145,7 +1165,7 @@ namespace RoleX.modules
                         Title = $"Seriously??",
                         Color = Color.Red,
                         ImageUrl = "https://cdn.discordapp.com/attachments/758922634749542420/760180089870090320/unknown.png"
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     return;
                 }
                 else
@@ -1155,7 +1175,7 @@ namespace RoleX.modules
                         Title = "Not gonna happen",
                         Description = "That person is above you!?",
                         Color = Color.Red
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     return;
                 }
             }
@@ -1166,7 +1186,7 @@ namespace RoleX.modules
                     Title = "What user?",
                     Description = "That user isn't valid :(",
                     Color = Color.Red
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
         }

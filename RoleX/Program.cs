@@ -22,7 +22,7 @@ namespace RoleX
     {
         readonly static string fpath = string.Join(Path.DirectorySeparatorChar,Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location).Split(Path.DirectorySeparatorChar).SkipLast(1)) + Path.DirectorySeparatorChar + "Data" + Path.DirectorySeparatorChar + "token.txt";
         public static string token = File.ReadAllLines(fpath)[0];
-        public static void Main(string[] args)
+        public static void Main(string[] _)
         {
             new Program().MainAsync().GetAwaiter().GetResult();
         }
@@ -31,7 +31,7 @@ namespace RoleX
             Console.WriteLine(msg.ToString());
             return Task.CompletedTask;
         }
-        public static DiscordSocketClient Client;
+        public static DiscordShardedClient Client;
         public CustomCommandService _service = new CustomCommandService(new Settings());
         public async Task MainAsync()
         {
@@ -42,7 +42,7 @@ namespace RoleX
             //    Console.WriteLine(db);
             //}
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-            Client = new DiscordSocketClient(new DiscordSocketConfig { AlwaysDownloadUsers = true, LargeThreshold = 250 });
+            Client = new DiscordShardedClient(new DiscordSocketConfig { AlwaysDownloadUsers = true, LargeThreshold = 250 });
 
             Client.Log += Log;
 
@@ -50,9 +50,10 @@ namespace RoleX
 
             Client.JoinedGuild += HandleGuildJoinAsync;
 
-            Client.Ready += HandleReadyAsync;
+            Client.ShardReady += HandleReadyAsync;
 
-            //Console.WriteLine(fpath);
+            Client.UserJoined += AltAlertAsync;
+
             await Client.LoginAsync(TokenType.Bot, token);
             await Client.StartAsync();
             await Client.SetGameAsync("Supervising Roles!",null,ActivityType.Playing);
@@ -60,9 +61,22 @@ namespace RoleX
             await Task.Delay(-1);
         }
 
-        private async Task HandleReadyAsync()
+        private async Task AltAlertAsync(SocketGuildUser arg)
         {
-            await Client.Guilds.First(x => x.Id == 755076971041652786).GetTextChannel(762554740491026444).SendMessageAsync("https://static.wixstatic.com/media/34b14c_67c958fefbba43f29986dc510bcdd3e8.jpg");
+            var aca = await SqliteClass.AlertChanGetter(arg.Guild.Id);
+            if (aca != 0 && arg.CreatedAt.UtcDateTime.CompareTo(DateTime.UtcNow.AddMonths(-await SqliteClass.AltTimePeriodGetter(arg.Guild.Id))) > 0)
+            {
+                var hopefullyValidChannel = arg.Guild.GetTextChannel(aca);
+                if (hopefullyValidChannel != null)
+                {
+                    await hopefullyValidChannel.SendMessageAsync("", false, new EmbedBuilder { Title= "Suspicious User Detected!!!!!", Description = $"**Name:** <@{arg.Id}>\n**ID: **{arg.Id}\n**Date Created: ** `{arg.CreatedAt:D}`, which seems sus to me..." , Color = Color.Red}.WithCurrentTimestamp().Build());
+                }
+            }
+        }
+
+        private async Task HandleReadyAsync(DiscordSocketClient _)
+        {
+            await Client.Guilds.First(x => x.Id == 755076971041652786).GetTextChannel(762554740491026444).SendMessageAsync("We're back on bois!");
         }
 
         private async Task HandleGuildJoinAsync(SocketGuild arg)
@@ -84,7 +98,7 @@ namespace RoleX
             catch { }
         }
 
-        internal async Task HandleCommandResult(CustomCommandService.ICommandResult result, SocketUserMessage msg, string prefi)
+        internal static async Task HandleCommandResult(CustomCommandService.ICommandResult result, SocketUserMessage msg, string prefi)
         { 
             await Task.Delay(10);
             string completed = Resultformat(result.IsSuccess);
@@ -95,7 +109,7 @@ namespace RoleX
                     {
                         Color = Color.Green,
                         Title = "**Command Log**",
-                        Description = $"The Command {msg.Content.Substring(prefi.Length)} was used in {msg.Channel.Name} of {(msg.Channel as SocketTextChannel).Guild.Name} by {msg.Author.Username + "#" + msg.Author.Discriminator}",
+                        Description = $"The Command {msg.Content[prefi.Length..]} was used in {msg.Channel.Name} of {(msg.Channel as SocketTextChannel).Guild.Name} by {msg.Author.Username + "#" + msg.Author.Discriminator}",
                         Footer = new EmbedFooterBuilder()
                     };
                     eb.Footer.Text = "Command Autogen";
@@ -174,7 +188,9 @@ namespace RoleX
 
         public async Task HandleCommandAsync(SocketMessage s)
         {
-            var msg = s as SocketUserMessage;
+#pragma warning disable IDE0019 // Use pattern matching
+            SocketUserMessage msg = s as SocketUserMessage;
+#pragma warning restore IDE0019 // Use pattern matching
             try
             {
                 if (msg == null) return;
@@ -184,9 +200,9 @@ namespace RoleX
                 }
                 var ca = msg.Content.ToCharArray();
                 if (ca.Length == 0) return;
-                var context = new SocketCommandContext(Client, msg);
+                var context = new ShardedCommandContext(Client, msg);
                 var prefu = await SqliteClass.PrefixGetter(context.Guild.Id);
-                if (msg.MentionedUsers.Any(x => x.Id == Client.CurrentUser.Id))
+                if (msg.Content == $"<@{context.Client.CurrentUser.Id}>" || msg.Content == $"<@!{context.Client.CurrentUser.Id}>")
                 {
                     await context.Message.Channel.SendMessageAsync("", false, new EmbedBuilder
                     {
@@ -213,7 +229,11 @@ namespace RoleX
                             }
                             catch (Exception ex)
                             {
-                                await Client.GetUser(701029647760097361).SendMessageAsync($"There was an error in {(msg.Channel as SocketGuildChannel).Guild.Name}\n{ex}");
+                                try
+                                {
+                                    await Client.GetUser(701029647760097361).SendMessageAsync($"There was an error in {(msg.Channel as SocketGuildChannel).Guild.Name}\n{ex}");
+                                }
+                                catch { }
                             }
                         }).Start();
                     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using static RoleX.modules.SqliteClass;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
@@ -9,11 +10,11 @@ using Discord;
 using GuildPermissions = Public_Bot.GuildPermissions;
 namespace RoleX.modules
 {
-    [DiscordCommandClass("General","General Commands for all")]
-    class General: CommandModuleBase
+    [DiscordCommandClass("General", "General Commands for all")]
+    class General : CommandModuleBase
     {
         [Alt("hoomans")]
-        [DiscordCommand("humans",description ="Shows number of users in server",commandHelp ="humans")]
+        [DiscordCommand("humans", description = "Shows number of users in server", commandHelp = "humans")]
         public async Task hmans()
         {
             await ReplyAsync("", false, new EmbedBuilder
@@ -25,8 +26,109 @@ namespace RoleX.modules
                 {
                     Text = $"Hehe!"
                 }
-            }.WithCurrentTimestamp().Build());
+            }.WithCurrentTimestamp());
             return;
+        }
+        [GuildPermissions(GuildPermission.ManageGuild)]
+        [Alt("altchannel")]
+        [DiscordCommand("altchan", commandHelp = "altchan #channel", description = "Sets the channel for alt alerts", example = "altchan #staff-announcements`\n`altchan remove")]
+        public async Task AltChan(params string[] args)
+        {
+            if (args.Length == 0)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "The current alt alerts channel",
+                    Description = $"{(await AlertChanGetter(Context.Guild.Id) == 0 ? "No alert channel set" : $"<#{await AlertChanGetter(Context.Guild.Id)}>")}\n",
+                    Color = Blurple,
+                    Footer = new EmbedFooterBuilder
+                    {
+                        Text = $"To change it, do `{await PrefixGetter(Context.Guild.Id)}altchan #channel`"
+                    }
+                }.WithCurrentTimestamp());
+                return;
+            }
+            else
+            {
+                if (args[0].ToLower() == "remove")
+                {
+                    await AlertChanAdder(Context.Guild.Id, 0);
+                    await ReplyAsync("", false, new EmbedBuilder
+                    {
+                        Title = "Alerts Disabled!",
+                        Description = $"The alert channel has now been terminated.",
+                        Color = Blurple,
+                        Footer = new EmbedFooterBuilder
+                        {
+                            Text = $"To change it, do `{await PrefixGetter(Context.Guild.Id)}alertchan #channel`"
+                        }
+                    });
+                }
+                else if (GetChannel(args[0]) == null)
+                {
+                    await ReplyAsync("", false, new EmbedBuilder
+                    {
+                        Title = "What channel?",
+                        Description = $"Couldn't parse `{args[0]}` as channel :(",
+                        Color = Color.Red
+                    }.WithCurrentTimestamp());
+                    return;
+                }
+                await AlertChanAdder(Context.Guild.Id, GetChannel(args[0]).Id);
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "The updated Alert Channel!",
+                    Description = $"The alert channel is now <#{await AlertChanGetter(Context.Guild.Id)}>",
+                    Color = Blurple,
+                    Footer = new EmbedFooterBuilder
+                    {
+                        Text = $"To change it yet again, do `{await PrefixGetter(Context.Guild.Id)}alertchan #channel`"
+                    }
+                }.WithCurrentTimestamp());
+            }
+        }
+        [Alt("altmonths")]
+        [DiscordCommand("alttime", commandHelp ="alttime num_months", description ="Sets the number of months for flagging as alt", example ="alttime 4")]
+        public async Task Alttime(params string[] args)
+        {
+            if (args.Length == 0)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "The current alt flagging timespan",
+                    Description = $"We will flag an account as an alt if it's {await AltTimePeriodGetter(Context.Guild.Id)} months or younger on Discord.",
+                    Color = Blurple,
+                    Footer = new EmbedFooterBuilder
+                    {
+                        Text = $"To change it, do `{await PrefixGetter(Context.Guild.Id)}alttime num_months`"
+                    }
+                }.WithCurrentTimestamp());
+                return;
+            }
+            else
+            {
+                if (!ushort.TryParse(args[0], out ushort t) || t > 12)
+                {
+                    await ReplyAsync("", false, new EmbedBuilder
+                    {
+                        Title = "How many months?",
+                        Description = $"Either `{args[0]}` is an invalid number or its >12.",
+                        Color = Color.Red
+                    }.WithCurrentTimestamp());
+                    return;
+                }
+                await AltTimePeriodAdder(Context.Guild.Id, int.Parse(args[0]));
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "The updated Alert Channel!",
+                    Description = $"The alert channel is now <#{await AlertChanGetter(Context.Guild.Id)}>",
+                    Color = Blurple,
+                    Footer = new EmbedFooterBuilder
+                    {
+                        Text = $"To change it yet again, do `{await PrefixGetter(Context.Guild.Id)}alertchan #channel`"
+                    }
+                }.WithCurrentTimestamp());
+            }
         }
         //[Alt("alt")]
         //[DiscordCommand("altidentify", commandHelp = "altidentify <number-of-alts>", description = "Finds the x users newest to Discord and most probable alts")]
@@ -44,7 +146,7 @@ namespace RoleX.modules
         //            Title="This guild does not have the specified amount of users",
         //            Description=$"You asked for {test} youngest users, while your server has only {Context.Guild.MemberCount}",
         //            Color = Blurple
-        //        }.WithCurrentTimestamp().Build()
+        //        }.WithCurrentTimestamp()
         //        );
         //        return;
         //    }
@@ -73,12 +175,12 @@ namespace RoleX.modules
         //        Title = $"Youngest Users in {Context.Guild.Name}",
         //        Description = cty,
         //        Color = Blurple
-        //    }.WithCurrentTimestamp().Build();
+        //    }.WithCurrentTimestamp();
         //    await Context.Channel.SendMessageAsync("", false, mmbed);
         //}
-    
-    [DiscordCommand("invite",description ="Invite RoleX to your server!!", commandHelp ="invite")]
-        public async Task Invite(params string[] args)
+
+        [DiscordCommand("invite",description ="Invite RoleX to your server!!", commandHelp ="invite")]
+        public async Task Invite(params string[] _)
         {
             await ReplyAsync("", false, new EmbedBuilder
             {
@@ -90,10 +192,10 @@ namespace RoleX.modules
                 },
 
                 Color = Blurple
-            }.WithCurrentTimestamp().Build());
+            }.WithCurrentTimestamp());
         }
         [DiscordCommand("ping",commandHelp ="ping", description ="Finds the latency!")]
-        public async Task Ping(params string[] argz)
+        public async Task Ping(params string[] _)
         {
             await Context.Channel.TriggerTypingAsync();
             await ReplyAsync($"***RoleX enters the Discord Universe in {Context.Client.Latency} miliseconds***");
@@ -113,7 +215,7 @@ namespace RoleX.modules
                     {
                         Text= $"Do {await SqliteClass.PrefixGetter(Context.Guild.Id)}prefix <prefix> to change it!"
                     }
-                }.WithCurrentTimestamp().Build());
+                }.WithCurrentTimestamp());
                 return;
             }
             await SqliteClass.PrefixAdder(Context.Guild.Id, args[0]);
@@ -126,13 +228,13 @@ namespace RoleX.modules
                 {
                     Text = "Bot nickname updated to reflect prefix changes"
                 }
-            }.WithCurrentTimestamp().Build());
+            }.WithCurrentTimestamp());
             await Context.Guild.CurrentUser.ModifyAsync(async dood => dood.Nickname = $"[{await SqliteClass.PrefixGetter(Context.Guild.Id)}] RoleX");
             return;
         }
         [GuildPermissions(GuildPermission.ManageGuild)]
         [DiscordCommand("setup", commandHelp ="setup", description ="Helps set the bot up!")]
-        public async Task Setup(params string[] args)
+        public async Task Setup(params string[] _)
         {
             string x = "";
             x += $"Admin:        {(Context.Guild.CurrentUser.GuildPermissions.Administrator ? "✅" : "❌")}\n";
@@ -159,7 +261,7 @@ namespace RoleX.modules
                 {
                     Text = "Command Inspired from LuminousBot (ID: 722435272532426783)"
                 }
-            }.WithCurrentTimestamp().Build()
+            }.WithCurrentTimestamp()
             );
         }
         [DiscordCommand("help",commandHelp ="help <command>", description ="Shows the Help Message")]
@@ -182,7 +284,7 @@ namespace RoleX.modules
                     helpAuto.AddField(aa.Key, aa.Value);
                 }
                 helpAuto.AddField("Need more help?", $"Read our Documentation [here](https://rolex.gitbook.io/rolex/ \"Weird Easter Egg\")\n or join [our support server](https://discord.com/invite/3Uq4WF2RFZ \"Probably weirder one\")!\nFor command-wise help, do `{await SqliteClass.PrefixGetter(Context.Guild.Id)}help <commandname/modulename>`");
-                await ReplyAsync(embed: helpAuto.Build());
+                await ReplyAsync(embed: helpAuto);
                 return;
             }
             else
@@ -200,7 +302,7 @@ namespace RoleX.modules
                             Title = "Theres no such command or module",
                             Description = $"`{args[0]}` isnt a command or a module!",
                             Color = Color.Red
-                        }.WithCurrentTimestamp().Build());
+                        }.WithCurrentTimestamp());
                         return;
                     }
                     List<string> LS = new List<string>();
@@ -220,7 +322,7 @@ namespace RoleX.modules
                             }
                         },
                         Color = Blurple
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
                     return;
                 }
                 var aliasStr = prefixure + string.Join($", {prefixure}", commandSelected.Alts);
@@ -237,7 +339,7 @@ namespace RoleX.modules
                 {
                     embeds.ThumbnailUrl = "https://tiny.cc/spidermanmeme";
                 }
-                await ReplyAsync("", false, embeds.Build());
+                await ReplyAsync("", false, embeds);
             }
         }
     }

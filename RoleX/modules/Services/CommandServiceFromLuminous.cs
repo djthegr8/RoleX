@@ -1,4 +1,5 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
 using System;
 using System.Collections;
@@ -8,7 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Discord;
+using static MoreLinq.Extensions.BatchExtension;
 using static Public_Bot.CustomCommandService;
 
 namespace Public_Bot
@@ -56,7 +57,7 @@ namespace Public_Bot
             => this.Permissions = perms;
     }
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public class RequiredBotPermission: Attribute
+    public class RequiredBotPermission : Attribute
     {
         public Discord.GuildPermission[] Permissions { get; set; }
         public RequiredBotPermission(params Discord.GuildPermission[] perms)
@@ -91,7 +92,7 @@ namespace Public_Bot
         /// <summary>
         /// An example of the commands' usage
         /// </summary>
-        public string example {get; set;}
+        public string example { get; set; }
         /// <summary>
         /// If <see langword="true"/> then bots can execute the command, default is <see langword="false"/>
         /// </summary>
@@ -103,7 +104,7 @@ namespace Public_Bot
         public DiscordCommand(string commandName)
         {
             this.commandName = commandName;
-            prefixes = new char[] { };
+            prefixes = Array.Empty<char>();
             BotCanExecute = false;
         }
         /// <summary>
@@ -128,7 +129,7 @@ namespace Public_Bot
             if (Prefixes.Length > 0)
                 prefixes = Prefixes;
             else
-                prefixes = new char[] { };
+                prefixes = Array.Empty<char>();
             BotCanExecute = false;
         }
     }
@@ -214,7 +215,7 @@ namespace Public_Bot
 
         public static List<char> UsedPrefixes { get; set; }
 
-        public bool ContainsUsedPrefix(string msg)
+        public static bool ContainsUsedPrefix(string msg)
         {
             return UsedPrefixes.Any(x => msg.StartsWith(x));
         }
@@ -254,8 +255,10 @@ namespace Public_Bot
         public CustomCommandService(Settings s)
         {
             currentSettings = s;
-            UsedPrefixes = new List<char>();
-            UsedPrefixes.Add(s.DefaultPrefix);
+            UsedPrefixes = new List<char>
+            {
+                s.DefaultPrefix
+            };
             if (currentSettings.HasPermissionMethod == null)
                 currentSettings.HasPermissionMethod = (SocketCommandContext s) => { return true; };
             if (s.CustomGuildPermissionMethod == null)
@@ -303,7 +306,7 @@ namespace Public_Bot
 
                 var alts = item.Key.GetCustomAttributes<Alt>();
                 List<string> altsL = new List<string>();
-                if (alts.Count() != 0)
+                if (alts.Any())
                 {
                     foreach (var alt in alts)
                     {
@@ -404,7 +407,7 @@ namespace Public_Bot
         /// <returns>The <see cref="ICommandResult"/> containing what the status of the execution is </returns>
         public async Task<ICommandResult> ExecuteAsync(SocketCommandContext context, string pref)
         {
-            bool IsMentionCommand = context.Message.Content.StartsWith($"<@{context.Client.CurrentUser.Id}>") ? true : context.Message.Content.StartsWith($"<@!{context.Client.CurrentUser.Id}>") ? true : false;
+            bool IsMentionCommand = context.Message.Content.StartsWith($"<@{context.Client.CurrentUser.Id}>") || (context.Message.Content.StartsWith($"<@!{context.Client.CurrentUser.Id}>"));
             string[] param = IsMentionCommand
                 ? context.Message.Content.Replace($"<@{context.Client.CurrentUser.Id}>", string.Empty).Replace($"<@!{context.Client.CurrentUser.Id}>", "").Trim().Split(' ')
                 : context.Message.Content.Split(' ');
@@ -415,9 +418,9 @@ namespace Public_Bot
                 : context.Message.Content.Remove(0, pref.Length).Split(' ')[0];
             var commandobj = CommandList.Where(x => x.CommandName.ToLower() == command);
             var altob = CommandList.Where(x => x.alts.Any(x => x.ToLower() == command));
-            if (commandobj.Count() == 0)
+            if (!commandobj.Any())
                 commandobj = altob;
-            if (commandobj.Count() == 0)
+            if (!commandobj.Any())
                 return new CommandResult()
                 {
                     Result = CommandStatus.NotFound,
@@ -430,8 +433,16 @@ namespace Public_Bot
             if (commandobj.Any(x => x.Paramaters.Length > 0))
                 if (commandobj.Where(x => x.Paramaters.Length > 0).Any(x => x.Paramaters.Last().GetCustomAttributes(typeof(ParamArrayAttribute), false).Length == 0))
                     commandobj = commandobj.Where(x => x.Paramaters.Length == param.Length);
-            if (commandobj.Count() == 0)
+            if (!commandobj.Any())
                 return new CommandResult() { IsSuccess = false, Result = CommandStatus.InvalidParams };
+            var idegk = param.ToList();
+            try
+            {
+                // Add more flags here
+                if (idegk.RemoveAll(idegc => idegc == "-q") >= 1) await context.Message.DeleteAsync();
+            }
+            catch { }
+            param = idegk.ToArray();
             foreach (var cmd in commandobj)
             {
                 results.Add(await ExecuteCommand(cmd, context, param));
@@ -670,11 +681,11 @@ namespace Public_Bot
     /// </summary>
     public class CommandModuleBase
     {
-        public static ulong[] devids = {
+        public readonly ulong[] devids = {
             701029647760097361,
             615873008959225856
         };
-        public static Color Blurple = new Color(114, 137, 218);
+        public static readonly Color Blurple = new Color(114, 137, 218);
         /// <summary>
         /// If the user has execute permission based on the <see cref="CustomCommandService.Settings.HasPermissionMethod"/>
         /// </summary>
@@ -705,8 +716,8 @@ namespace Public_Bot
                 var c = new Commands
                 {
                     CommandName = cmd.CommandName,
-                    CommandDescription = cmd.CommandDescription == null ? null : cmd.CommandDescription.Replace("(PREFIX)", prefix),
-                    CommandHelpMessage = cmd.CommandHelpMessage == null ? null : cmd.CommandHelpMessage.Replace("(PREFIX)", prefix),
+                    CommandDescription = cmd.CommandDescription?.Replace("(PREFIX)", prefix),
+                    CommandHelpMessage = cmd.CommandHelpMessage?.Replace("(PREFIX)", prefix),
                     Prefixes = cmd.Prefixes,
                     RequiresPermission = cmd.RequiresPermission,
                     ModuleName = cmd.ModuleName,
@@ -761,17 +772,17 @@ namespace Public_Bot
 
 
         }
-        public async Task <SocketGuildUser> GetUser(string user)
+        public async Task<SocketGuildUser> GetUser(string user)
         {
             await Context.Guild.DownloadUsersAsync();
-                var regex = new Regex(@"(\d{18}|\d{17})");
-                if (regex.IsMatch(user))
-                {
-                    var u = Context.Guild.GetUser(ulong.Parse(regex.Match(user).Groups[1].Value));
-                    return u;
-                }
-                else
-                {
+            var regex = new Regex(@"(\d{18}|\d{17})");
+            if (regex.IsMatch(user))
+            {
+                var u = Context.Guild.GetUser(ulong.Parse(regex.Match(user).Groups[1].Value));
+                return u;
+            }
+            else
+            {
                 if (Context.Message.MentionedUsers.Any())
                 {
                     return Context.Message.MentionedUsers.First() as SocketGuildUser;
@@ -790,7 +801,7 @@ namespace Public_Bot
                 }
                 else
                     return null;
-                }
+            }
         }
         public async Task<IUser> GetBannedUser(string uname)
         {
@@ -802,7 +813,7 @@ namespace Public_Bot
             }
             return alr.FirstOrDefault(x => x.User.Username.ToLower().Contains(uname.ToLower()))?.User;
         }
-        public OverwritePermissions GetOP(ChannelPermission cp, PermValue pv, OverwritePermissions eop)
+        public static OverwritePermissions GetOP(ChannelPermission cp, PermValue pv, OverwritePermissions eop)
         {
             var x = cp switch
             {
@@ -831,7 +842,7 @@ namespace Public_Bot
             return x;
         }
 
-        public Discord.GuildPermissions EditPerm(SocketRole roleA, GuildPermission perm, bool add = true)
+        public static Discord.GuildPermissions EditPerm(SocketRole roleA, GuildPermission perm, bool add = true)
         {
             Console.WriteLine(roleA.Name);
             Console.WriteLine(perm);
@@ -840,103 +851,104 @@ namespace Public_Bot
             {
                 GuildPermission.AddReactions => roleA.Permissions.Modify(addReactions: add),
                 GuildPermission.Administrator => roleA.Permissions.Modify(administrator: add),
-                 GuildPermission.AttachFiles=>
-                    roleA.Permissions.Modify(attachFiles: add)
+                GuildPermission.AttachFiles =>
+                   roleA.Permissions.Modify(attachFiles: add)
                     ,
-                 GuildPermission.BanMembers=>
-                    roleA.Permissions.Modify(banMembers: add)
+                GuildPermission.BanMembers =>
+                   roleA.Permissions.Modify(banMembers: add)
                     ,
-                 GuildPermission.ChangeNickname=>
-                    roleA.Permissions.Modify(changeNickname: add)
+                GuildPermission.ChangeNickname =>
+                   roleA.Permissions.Modify(changeNickname: add)
                     ,
-                 GuildPermission.Connect=>
-                    roleA.Permissions.Modify(connect: add)
+                GuildPermission.Connect =>
+                   roleA.Permissions.Modify(connect: add)
                     ,
-                 GuildPermission.CreateInstantInvite=>
-                    roleA.Permissions.Modify(createInstantInvite: add)
+                GuildPermission.CreateInstantInvite =>
+                   roleA.Permissions.Modify(createInstantInvite: add)
                     ,
-                 GuildPermission.DeafenMembers=>
-                    roleA.Permissions.Modify(deafenMembers: add)
+                GuildPermission.DeafenMembers =>
+                   roleA.Permissions.Modify(deafenMembers: add)
                     ,
-                 GuildPermission.EmbedLinks=>
-                    roleA.Permissions.Modify(embedLinks: add)
+                GuildPermission.EmbedLinks =>
+                   roleA.Permissions.Modify(embedLinks: add)
                     ,
-                 GuildPermission.KickMembers=>
-                    roleA.Permissions.Modify(kickMembers: add)
+                GuildPermission.KickMembers =>
+                   roleA.Permissions.Modify(kickMembers: add)
                     ,
-                 GuildPermission.ManageChannels=>
-                    roleA.Permissions.Modify(manageChannels: add)
+                GuildPermission.ManageChannels =>
+                   roleA.Permissions.Modify(manageChannels: add)
                     ,
-                 GuildPermission.ManageEmojis=>
-                    roleA.Permissions.Modify(manageEmojis: add)
+                GuildPermission.ManageEmojis =>
+                   roleA.Permissions.Modify(manageEmojis: add)
                     ,
-                 GuildPermission.ManageGuild=>
-                    roleA.Permissions.Modify(manageGuild: add)
+                GuildPermission.ManageGuild =>
+                   roleA.Permissions.Modify(manageGuild: add)
                     ,
-                 GuildPermission.ManageMessages=>
-                    roleA.Permissions.Modify(manageMessages: add)
+                GuildPermission.ManageMessages =>
+                   roleA.Permissions.Modify(manageMessages: add)
                     ,
-                 GuildPermission.ManageNicknames=>
-                    roleA.Permissions.Modify(manageNicknames: add)
+                GuildPermission.ManageNicknames =>
+                   roleA.Permissions.Modify(manageNicknames: add)
                     ,
-                 GuildPermission.ManageRoles=>
-                    roleA.Permissions.Modify(manageRoles: add)
+                GuildPermission.ManageRoles =>
+                   roleA.Permissions.Modify(manageRoles: add)
                     ,
-                 GuildPermission.ManageWebhooks=>
-                    roleA.Permissions.Modify(manageWebhooks: add)
+                GuildPermission.ManageWebhooks =>
+                   roleA.Permissions.Modify(manageWebhooks: add)
                     ,
-                 GuildPermission.MentionEveryone=>
-                    roleA.Permissions.Modify(mentionEveryone: add)
+                GuildPermission.MentionEveryone =>
+                   roleA.Permissions.Modify(mentionEveryone: add)
                     ,
-                 GuildPermission.MoveMembers=>
-                    roleA.Permissions.Modify(moveMembers: add)
+                GuildPermission.MoveMembers =>
+                   roleA.Permissions.Modify(moveMembers: add)
                     ,
-                 GuildPermission.MuteMembers=>
-                    roleA.Permissions.Modify(muteMembers: add)
+                GuildPermission.MuteMembers =>
+                   roleA.Permissions.Modify(muteMembers: add)
                     ,
-                 GuildPermission.PrioritySpeaker=>
-                    roleA.Permissions.Modify(prioritySpeaker: add)
+                GuildPermission.PrioritySpeaker =>
+                   roleA.Permissions.Modify(prioritySpeaker: add)
                     ,
-                 GuildPermission.ReadMessageHistory=>
-                    roleA.Permissions.Modify(readMessageHistory: add)
+                GuildPermission.ReadMessageHistory =>
+                   roleA.Permissions.Modify(readMessageHistory: add)
                     ,
-                 GuildPermission.ReadMessages or GuildPermission.ViewChannel=>
-                    roleA.Permissions.Modify(viewChannel: add)
+                GuildPermission.ReadMessages or GuildPermission.ViewChannel =>
+                   roleA.Permissions.Modify(viewChannel: add)
                     ,
-                 GuildPermission.SendMessages=>
-                    roleA.Permissions.Modify(sendMessages: add)
+                GuildPermission.SendMessages =>
+                   roleA.Permissions.Modify(sendMessages: add)
                     ,
-                 GuildPermission.SendTTSMessages=>
-                    roleA.Permissions.Modify(sendTTSMessages: add)
+                GuildPermission.SendTTSMessages =>
+                   roleA.Permissions.Modify(sendTTSMessages: add)
                     ,
-                 GuildPermission.Speak=>
-                    roleA.Permissions.Modify(speak: add)
+                GuildPermission.Speak =>
+                   roleA.Permissions.Modify(speak: add)
                     ,
-                 GuildPermission.Stream=>
-                    roleA.Permissions.Modify(stream: add)
+                GuildPermission.Stream =>
+                   roleA.Permissions.Modify(stream: add)
                     ,
-                 GuildPermission.UseExternalEmojis=>
-                    roleA.Permissions.Modify(useExternalEmojis: add)
+                GuildPermission.UseExternalEmojis =>
+                   roleA.Permissions.Modify(useExternalEmojis: add)
                     ,
-                 GuildPermission.UseVAD=>
-                    roleA.Permissions.Modify(useVoiceActivation: add)
+                GuildPermission.UseVAD =>
+                   roleA.Permissions.Modify(useVoiceActivation: add)
                     ,
-                 GuildPermission.ViewAuditLog=>
-                    roleA.Permissions.Modify(viewAuditLog: add),
-                    
+                GuildPermission.ViewAuditLog =>
+                   roleA.Permissions.Modify(viewAuditLog: add),
+
             };
             return gp;
         }
-        public Tuple<GuildPermission,bool> GetPermission(string perm)
+        public static Tuple<GuildPermission, bool> GetPermission(string perm)
         {
-            if (Enum.TryParse(perm, true, out GuildPermission Gp)){
+            if (Enum.TryParse(perm, true, out GuildPermission Gp))
+            {
                 return new Tuple<GuildPermission, bool>(Gp, true);
             }
             else return new Tuple<GuildPermission, bool>(GuildPermission.AddReactions, false);
         }
-        public Tuple<ChannelPermission, bool> GetChannelPermission (string perm)
+        public static Tuple<ChannelPermission, bool> GetChannelPermission(string perm)
         {
-            if ( Enum.TryParse(perm, true, out ChannelPermission Gp))
+            if (Enum.TryParse(perm, true, out ChannelPermission Gp))
             {
                 return new Tuple<ChannelPermission, bool>(Gp, true);
             }
@@ -959,9 +971,93 @@ namespace Public_Bot
             else
                 return null;
         }
-        protected virtual async Task<IUserMessage> ReplyAsync(string message = null, bool isTTS = false, Embed embed = null, RequestOptions options = null)
+        /// <summary>
+        /// Takes an Context, and sends a message to the channel it was sent in, while customizing the embed to fit parameters.
+        /// </summary>
+        /// <param name="message">The actual message</param>
+        /// <param name="isTTS">Whether to speak the <paramref name="message"/> or not</param>
+        /// <param name="embed">A <c>Discord.EmbedBuilder</c> for editing and making it work</param>
+        /// <param name="options">Just a useless param to me ig</param>
+        /// <returns></returns>
+        protected virtual async Task<IUserMessage> ReplyAsync(string message = null, bool isTTS = false, EmbedBuilder embed = null, RequestOptions options = null)
         {
-            return await Context.Channel.SendMessageAsync(message, isTTS, embed, options).ConfigureAwait(false);
+            if (Context.Message.Content.EndsWith("-q"))
+            {
+                return null;
+            }
+            // Embed editing time!
+            if (embed?.Description?.Length >= EmbedBuilder.MaxDescriptionLength ||
+                embed?.Title?.Length >= EmbedBuilder.MaxTitleLength ||
+                embed?.Fields?.Count >= EmbedBuilder.MaxFieldCount ||
+                embed?.Length >= EmbedBuilder.MaxEmbedLength
+                )
+            {
+                //Require some editing eh...
+                if (embed?.Description?.Length >= EmbedBuilder.MaxDescriptionLength)
+                {
+                    //devids.Select(async x => await (await GetUser(x.ToString())).SendMessageAsync($"yet another too long description. ```{Context.Message.Content}```"));
+                    int chunkSize = 2000;
+                    var chunks = embed.Description.Batch(chunkSize).Select(r => new string(r.ToArray()));
+                    IUserMessage xyz = null;
+                    try
+                    {
+                        xyz = await Context.Channel.SendMessageAsync(message, isTTS);
+                    } catch { }
+                    foreach (var chunk in chunks)
+                    {
+                        xyz = await Context.Channel.SendMessageAsync("", false, embed.WithDescription(chunk).Build());
+                        await Task.Delay(500);
+                    }
+                    return xyz;
+                }
+                else if (embed?.Title?.Length >= EmbedBuilder.MaxTitleLength)
+                {
+                    return await Context.Channel.SendMessageAsync(embed: embed.WithTitle(embed.Title.Substring(0, EmbedBuilder.MaxTitleLength - 5) + "...").Build());
+                }
+                else if (embed?.Fields?.Count >= EmbedBuilder.MaxFieldCount)
+                {
+                    IUserMessage xyz = null;
+                    try
+                    {
+                        xyz = await Context.Channel.SendMessageAsync(message, isTTS);
+                    }
+                    catch { }
+                    var batches = embed.Fields.Batch(10);
+                    foreach(var batch in batches)
+                    {
+                        embed.Fields = batch.ToList();
+                        xyz = await Context.Channel.SendMessageAsync(message, isTTS, embed.Build());
+                        await Task.Delay(500);
+                    }
+                    return xyz;
+                }
+                else if (embed?.Length >= EmbedBuilder.MaxEmbedLength)
+                {
+                    IUserMessage xyz = null;
+                    try
+                    {
+                        xyz = await Context.Channel.SendMessageAsync(message, isTTS);
+                    }
+                    catch { }
+                    var batches = embed.Fields.Batch(10);
+                    foreach (var batch in batches)
+                    {
+                        embed.Fields = batch.ToList();
+                        xyz = await Context.Channel.SendMessageAsync(message, isTTS, embed.Build());
+                        await Task.Delay(500);
+
+                    }
+                    return xyz;
+                }
+            }
+            var here = await Context.Channel.SendMessageAsync(message, isTTS, embed.Build(), options).ConfigureAwait(false);
+            var ranjom = new Random();
+            var irdk = ranjom.Next(10);
+            if (irdk == 1)
+            {
+                await Context.Channel.SendMessageAsync("", false, new EmbedBuilder { Title = "Vote for RoleX TODAY (LIKE SRSLY TODAY)", Description = "Support RoleX by [voting](https:/tiny.cc/rolexdsl) for it in top.gg!"}.WithCurrentTimestamp().Build());
+            }
+            return here;
         }
 
     }

