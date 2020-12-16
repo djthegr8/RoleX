@@ -12,6 +12,11 @@ namespace RoleX.modules
 {
     class SqliteClass
     {
+        public enum TradeTexts
+        {
+            Buying, 
+            Selling
+        }
         public class Infraction {
             public ulong GuildID { get; set; }
             public ulong ModeratorID { get; set; }
@@ -171,6 +176,16 @@ namespace RoleX.modules
             var ii = await QueryFunctionCreator($"select AlertChanID from prefixes where GuildID = {GuildID}", long.Parse("0"));
             return Convert.ToUInt64(ii);
         }
+        public static async Task<string> StringGetter(ulong UserID, TradeTexts tt)
+        {
+            var bs = tt switch
+            {
+                TradeTexts.Buying => "BuyingString",
+                TradeTexts.Selling => "SellingString",
+                _ => ""                // IDE do be bossy
+            };
+            return await QueryFunctionCreator($"select {bs} from tradelists where UserID = {UserID}", "");
+        }
         // All adders
         public static async Task MutedRoleIDAdder(ulong GuildID, ulong MutedRoleID) => await NonQueryFunctionCreator($"update prefixes set MutedRoleID = {MutedRoleID} where GuildID = {GuildID};");
         public static async Task PrefixAdder(ulong GuLDID, string prefix)
@@ -184,5 +199,9 @@ namespace RoleX.modules
         public static async Task<List<Infraction>> GetUserModlogs(ulong GuildID, ulong UserID) => await GetInfractions($"select * from modlogs where GuildID = {GuildID} and UserID = {UserID};");
         public static async Task AlertChanAdder(ulong GuildID, ulong ChanID) => await NonQueryFunctionCreator($"update prefixes set AlertChanID = {ChanID} where GuildID = {GuildID};");
         public static async Task AltTimePeriodAdder(ulong GuildID, long AltTimeMonths) => await NonQueryFunctionCreator($"update prefixes set AltTimeMonths = {AltTimeMonths} where GuildID = {GuildID};");
+        public static async Task TradeEditor(ulong UserID, string text, TradeTexts tt)
+        {
+            await NonQueryFunctionCreator($"replace into tradelists (UserID, BuyingString, SellingString) values({UserID},\"{(tt == TradeTexts.Selling ? await StringGetter(UserID, TradeTexts.Buying) : text)}\",\"{(tt == TradeTexts.Buying ? await StringGetter(UserID, TradeTexts.Selling) : text)}\");");
+        }
     }
 }
