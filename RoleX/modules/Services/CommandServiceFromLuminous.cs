@@ -727,6 +727,24 @@ namespace Public_Bot
             }
             return cmds;
         }
+        public async Task<GuildEmote> GetEmote(string str)
+        {
+            var replstr = str.Replace("a:", "").Replace("<", "").Replace(">", "").Replace(":", "");
+            if (Context.Guild.Emotes.Any(x => replstr.ToLower().StartsWith(x.Name.ToLower()))) return Context.Guild.Emotes.First(x => replstr.ToLower().StartsWith(x.Name.ToLower()));
+            Console.WriteLine(replstr);
+            try
+            {
+                var resultString = ulong.Parse(Regex.Match(replstr, @"\d+").Value);
+            
+            if (resultString == 0 || await Context.Guild.GetEmoteAsync(resultString) == null)
+            {
+                return null;
+            }
+            return await Context.Guild.GetEmoteAsync(resultString);
+            }
+            catch { return null; }
+
+        }
         public SocketGuildChannel GetChannel(string name)
         {
             var regex = new Regex(@"(\d{18}|\d{17})");
@@ -1055,7 +1073,7 @@ namespace Public_Bot
             var irdk = ranjom.Next(10);
             if (irdk == 1)
             {
-                await Context.Channel.SendMessageAsync("", false, new EmbedBuilder { Title = "Vote for RoleX TODAY (LIKE SRSLY TODAY)", Description = "Support RoleX by [voting](https:/tiny.cc/rolexdsl) for it in top.gg!"}.WithCurrentTimestamp().Build());
+                await Context.Channel.SendMessageAsync("", false, new EmbedBuilder { Title = "Vote for RoleX TODAY (LIKE SRSLY TODAY)", Url="https://tiny.cc/rolexdsl", Description = "Support RoleX by [voting](http:/tiny.cc/rolexdsl) for it in top.gg!", Color = Blurple}.WithCurrentTimestamp().Build());
             }
             return here;
         }

@@ -64,7 +64,7 @@ namespace RoleX
         private async Task AltAlertAsync(SocketGuildUser arg)
         {
             var aca = await SqliteClass.AlertChanGetter(arg.Guild.Id);
-            if (aca != 0 && arg.CreatedAt.UtcDateTime.CompareTo(DateTime.UtcNow.AddMonths(-await SqliteClass.AltTimePeriodGetter(arg.Guild.Id))) > 0)
+            if (aca != 0 && arg.CreatedAt.UtcDateTime.CompareTo(DateTime.UtcNow.AddMonths(Convert.ToInt32(-await SqliteClass.AltTimePeriodGetter(arg.Guild.Id)))) > 0)
             {
                 var hopefullyValidChannel = arg.Guild.GetTextChannel(aca);
                 if (hopefullyValidChannel != null)
@@ -202,18 +202,22 @@ namespace RoleX
                 if (ca.Length == 0) return;
                 var context = new ShardedCommandContext(Client, msg);
                 var prefu = await SqliteClass.PrefixGetter(context.Guild.Id);
-                if (msg.Content == $"<@{context.Client.CurrentUser.Id}>" || msg.Content == $"<@!{context.Client.CurrentUser.Id}>")
+                try
                 {
-                    await context.Message.Channel.SendMessageAsync("", false, new EmbedBuilder
+                    if (msg.Content == $"<@{context.Client.CurrentUser.Id}>" || msg.Content == $"<@!{context.Client.CurrentUser.Id}>")
                     {
-                        Title = "Hi! I am RoleX",
-                        Description = $"The prefix of your favourite role editor bot is {prefu}\nTo see documentation, come up [here](https://tiny.cc/rolexgit)",
-                        Color = CommandModuleBase.Blurple,
-                        ThumbnailUrl = context.Client.CurrentUser.GetAvatarUrl()
-                    }.WithCurrentTimestamp().Build()
-                    );
-                    return;
+                        await context.Message.Channel.SendMessageAsync("", false, new EmbedBuilder
+                        {
+                            Title = "Hi! I am RoleX",
+                            Description = $"The prefix of your favourite role editor bot is {prefu}\nTo see documentation, come up [here](https://tiny.cc/rolexgit)",
+                            Color = CommandModuleBase.Blurple,
+                            ThumbnailUrl = context.Client.CurrentUser.GetAvatarUrl()
+                        }.WithCurrentTimestamp().Build()
+                        );
+                        return;
+                    }
                 }
+                catch { }
                 if (msg.Content.Length <= prefu.Length) return;
                 if (msg.Content.Substring(0, prefu.Length) == prefu)
                 {

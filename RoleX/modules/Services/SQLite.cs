@@ -161,7 +161,7 @@ namespace RoleX.modules
         // All getters
         public static async Task<string> PrefixGetter(ulong GuilID) => await QueryFunctionCreator($"select Prefix from prefixes where guildid = {GuilID}", "r");
         public static async Task<string> AppealGetter(ulong GuilID) => await QueryFunctionCreator($"select appeal from prefixes where guildid = {GuilID}", "");
-        public static async Task<int> AltTimePeriodGetter(ulong GuildID) => await QueryFunctionCreator($"select AltTimeMonths from prefixes where guildid = {GuildID}", 3);
+        public static async Task<long> AltTimePeriodGetter(ulong GuildID) => await QueryFunctionCreator($"select AltTimeMonths from prefixes where guildid = {GuildID}", long.Parse("3"));
         public static async Task<ulong> MutedRoleIDGetter(ulong GuildID) { 
             var ii = await QueryFunctionCreator($"select MutedRoleID from prefixes where guildid = {GuildID}", long.Parse("0"));
             return Convert.ToUInt64(ii);
@@ -183,6 +183,6 @@ namespace RoleX.modules
         }
         public static async Task<List<Infraction>> GetUserModlogs(ulong GuildID, ulong UserID) => await GetInfractions($"select * from modlogs where GuildID = {GuildID} and UserID = {UserID};");
         public static async Task AlertChanAdder(ulong GuildID, ulong ChanID) => await NonQueryFunctionCreator($"update prefixes set AlertChanID = {ChanID} where GuildID = {GuildID};");
-        public static async Task AltTimePeriodAdder(ulong GuildID, int AltTimeMonths) => await NonQueryFunctionCreator($"update prefixes set AltTimeMonths = {AltTimeMonths} where GuildID = {GuildID};");
+        public static async Task AltTimePeriodAdder(ulong GuildID, long AltTimeMonths) => await NonQueryFunctionCreator($"update prefixes set AltTimeMonths = {AltTimeMonths} where GuildID = {GuildID};");
     }
 }

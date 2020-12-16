@@ -88,6 +88,7 @@ namespace RoleX.modules
             }
         }
         [Alt("altmonths")]
+        [GuildPermissions(GuildPermission.ManageGuild)]
         [DiscordCommand("alttime", commandHelp ="alttime num_months", description ="Sets the number of months for flagging as alt", example ="alttime 4")]
         public async Task Alttime(params string[] args)
         {
@@ -117,11 +118,11 @@ namespace RoleX.modules
                     }.WithCurrentTimestamp());
                     return;
                 }
-                await AltTimePeriodAdder(Context.Guild.Id, int.Parse(args[0]));
+                await AltTimePeriodAdder(Context.Guild.Id, long.Parse(args[0]));
                 await ReplyAsync("", false, new EmbedBuilder
                 {
-                    Title = "The updated Alert Channel!",
-                    Description = $"The alert channel is now <#{await AlertChanGetter(Context.Guild.Id)}>",
+                    Title = "The updated Alert Flagging Timespan!",
+                    Description = $"We will now flag an account as an Alt if it's {await AltTimePeriodGetter(Context.Guild.Id)} months or younger on Discord",
                     Color = Blurple,
                     Footer = new EmbedFooterBuilder
                     {

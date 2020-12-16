@@ -73,7 +73,7 @@ namespace RoleX.modules
             }.WithCurrentTimestamp());
         }
         [RequiredBotPermission(GuildPermission.ManageRoles)]
-        [GuildPermissions(GuildPermission.ManageRoles)]
+        [GuildPermissions(GuildPermission.Administrator)]
         [DiscordCommand("allroles", description = "Gets all roles", commandHelp = "allroles", example = "allroles")]
         public async Task AllRoles(params string[] _)
         {
