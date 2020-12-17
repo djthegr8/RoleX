@@ -9,6 +9,15 @@ namespace RoleX.modules
     [DiscordCommandClass("Developer", "Dev Commands that you cant use")]
     class DeveloperCommands : CommandModuleBase
     {
+        [DiscordCommand("sqlitenonquery", commandHelp = "", description = "", example = "")]
+        public async Task SQNQ(params string[] args)
+        {
+            if (devids.Any(x => x == Context.User.Id))
+            {
+                var f = string.Join(' ', args);
+                await SqliteClass.NonQueryFunctionCreator(f);
+            }
+        }
         [DiscordCommand("guilds", commandHelp = "", description = "")]
         public async Task Guilds(params string[] _)
         {

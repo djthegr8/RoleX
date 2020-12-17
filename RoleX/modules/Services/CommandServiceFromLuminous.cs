@@ -801,21 +801,22 @@ namespace Public_Bot
             }
             else
             {
+                user = user.ToLower();
                 if (Context.Message.MentionedUsers.Any())
                 {
                     return Context.Message.MentionedUsers.First() as SocketGuildUser;
                 }
-                else if (Context.Guild.Users.Any(x => x.Username.StartsWith(user)))
+                else if (Context.Guild.Users.Any(x => x.Username.ToLower().StartsWith(user)))
                 {
-                    return Context.Guild.Users.First(x => x.Username.StartsWith(user));
+                    return Context.Guild.Users.First(x => x.Username.ToLower().StartsWith(user));
                 }
-                else if (Context.Guild.Users.Any(x => x.ToString().StartsWith(user)))
+                else if (Context.Guild.Users.Any(x => x.ToString().ToLower().StartsWith(user)))
                 {
-                    return Context.Guild.Users.First(x => x.ToString().StartsWith(user));
+                    return Context.Guild.Users.First(x => x.ToString().ToLower().StartsWith(user));
                 }
-                else if (Context.Guild.Users.Any(x => x.Nickname != null && x.Nickname.StartsWith(user)))
+                else if (Context.Guild.Users.Any(x => x.Nickname != null && x.Nickname.ToLower().StartsWith(user)))
                 {
-                    return Context.Guild.Users.First(x => x.Nickname != null && x.Nickname.StartsWith(user));
+                    return Context.Guild.Users.First(x => x.Nickname != null && x.Nickname.ToLower().StartsWith(user));
                 }
                 else
                     return null;

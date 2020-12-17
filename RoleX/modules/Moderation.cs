@@ -118,7 +118,7 @@ namespace RoleX.modules
             {
                 isValidTime = args[1].Last() switch
                 {
-                    'h' or 'H' or 'm' or 'M' or 'd' or 'D' or 'Y' or 'y' or 's' or 'S' => true,
+                    'm' or 'M' or 'd' or 'D' or 'Y' or 'y' or 's' or 'S' => true,
                     _ => false
                 } && int.TryParse(string.Join("", args[1].SkipLast(1)), out int _);
                 if (!isValidTime)
@@ -126,7 +126,7 @@ namespace RoleX.modules
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "The time parameter is invalid",
-                        Description = $"Couldn't parse `{args[1]}` as time, see key below\n```s => seconds\nm => minutes\nh => hours\nd => days\ny => years```",
+                        Description = $"Couldn't parse `{args[1]}` as time, see key below\n```s => seconds\nm => minutes\nh => hours\nd => days```",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
                     return;
@@ -139,7 +139,6 @@ namespace RoleX.modules
                         'm' or 'M' => new TimeSpan(0, timezar, 0),
                         's' or 'S' => new TimeSpan(0, 0, timezar),
                         'd' or 'D' => new TimeSpan(timezar, 0, 0, 0),
-                        'y' or 'Y' => new TimeSpan(timezar * 365, 0, 0, 0),
                         //Non possible outcome but IDE is boss
                         _ => new TimeSpan()
                     };
@@ -1059,7 +1058,7 @@ namespace RoleX.modules
             {
                 isValidTime = args[1].Last() switch
                 {
-                    'h' or 'H' or 'm' or 'M' or 'd' or 'D' or 'Y' or 'y' or 's' or 'S' => true,
+                    'h' or 'H' or 'm' or 'M' or 'd' or 'D' or 's' or 'S' => true,
                     _ => false
                 } && int.TryParse(string.Join("", args[1].SkipLast(1)), out int _);
                 if (!isValidTime)
@@ -1067,7 +1066,7 @@ namespace RoleX.modules
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "The time parameter is invalid",
-                        Description = $"Couldn't parse `{args[1]}` as time, see key below\n```s => seconds\nm => minutes\nh => hours\nd => days\ny => years```",
+                        Description = $"Couldn't parse `{args[1]}` as time, see key below\n```s => seconds\nm => minutes\nh => hours\nd => days```",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
                     return;
@@ -1080,7 +1079,6 @@ namespace RoleX.modules
                         'm' or 'M' => new TimeSpan(0, timezar, 0),
                         's' or 'S' => new TimeSpan(0, 0, timezar),
                         'd' or 'D' => new TimeSpan(timezar, 0, 0, 0),
-                        'y' or 'Y' => new TimeSpan(timezar * 365, 0, 0, 0),
                         //Non possible outcome but IDE is boss
                         _ => new TimeSpan()
                     };

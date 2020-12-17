@@ -184,7 +184,12 @@ namespace RoleX.modules
                 TradeTexts.Selling => "SellingString",
                 _ => ""                // IDE do be bossy
             };
-            return await QueryFunctionCreator($"select {bs} from tradelists where UserID = {UserID}", "");
+            var st = await QueryFunctionCreator($"select {bs} from tradelists where UserID = {UserID}", "");
+            if (!st.StartsWith(';') && st != "" && st != ";")
+            {
+                return ';' + st;
+            }
+            return st;
         }
         // All adders
         public static async Task MutedRoleIDAdder(ulong GuildID, ulong MutedRoleID) => await NonQueryFunctionCreator($"update prefixes set MutedRoleID = {MutedRoleID} where GuildID = {GuildID};");

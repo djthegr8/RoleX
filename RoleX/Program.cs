@@ -148,9 +148,10 @@ namespace RoleX
                     {
                         Color = Color.Red,
                         Title = $"**An error occured in <#{msg.Channel.Id}> of ${(msg.Channel as SocketGuildChannel).Guild.Id}**",
-                        Description = $"We are on towards fixing it! In case of any problem, DM <@701029647760097361> or <@615873008959225856> \nRefer to the below error message: ```{result.Exception}```"
+                        Description = $"We are on towards fixing it! In case of any problem, DM <@701029647760097361> or <@615873008959225856>"
                     }.WithCurrentTimestamp();
                     await msg.Channel.SendMessageAsync(embed: emb.Build());
+                    emb.Description += $"\nRefer to the below error message: ```{result.Exception}```";
                     await Client.GetUser(701029647760097361).SendMessageAsync(embed: emb.Build());
                     break;
                 case CommandStatus.MissingGuildPermission:
@@ -204,7 +205,7 @@ namespace RoleX
                 var prefu = await SqliteClass.PrefixGetter(context.Guild.Id);
                 try
                 {
-                    if (msg.Content == $"<@{context.Client.CurrentUser.Id}>" || msg.Content == $"<@!{context.Client.CurrentUser.Id}>")
+                    if (context.Client.CurrentUser != null && (msg.Content == $"<@{context.Client.CurrentUser.Id}>" || msg.Content == $"<@!{context.Client.CurrentUser.Id}>"))
                     {
                         await context.Message.Channel.SendMessageAsync("", false, new EmbedBuilder
                         {
