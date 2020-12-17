@@ -12,6 +12,7 @@ using System.Reflection;
 using System.IO;
 using RoleX.modules;
 using System.Collections.Generic;
+using Discord.Rest;
 using Bot.Utilities.Collector;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json;
@@ -32,6 +33,7 @@ namespace RoleX
             return Task.CompletedTask;
         }
         public static DiscordShardedClient Client;
+        public static DiscordRestClient CL2;
         public CustomCommandService _service = new CustomCommandService(new Settings());
         public async Task MainAsync()
         {
@@ -42,8 +44,8 @@ namespace RoleX
             //    Console.WriteLine(db);
             //}
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-            Client = new DiscordShardedClient(new DiscordSocketConfig { AlwaysDownloadUsers = true, LargeThreshold = 250 });
-
+            Client = new DiscordShardedClient(new DiscordSocketConfig { AlwaysDownloadUsers = true, LargeThreshold = 250, GuildSubscriptions = true });
+            CL2 = new DiscordRestClient();
             Client.Log += Log;
 
             Client.MessageReceived += HandleCommandAsync;
@@ -53,7 +55,7 @@ namespace RoleX
             Client.ShardReady += HandleReadyAsync;
 
             Client.UserJoined += AltAlertAsync;
-
+            await CL2.LoginAsync(TokenType.Bot, token);
             await Client.LoginAsync(TokenType.Bot, token);
             await Client.StartAsync();
             await Client.SetGameAsync("Supervising Roles!",null,ActivityType.Playing);
@@ -151,7 +153,7 @@ namespace RoleX
                         Description = $"We are on towards fixing it! In case of any problem, DM <@701029647760097361> or <@615873008959225856>"
                     }.WithCurrentTimestamp();
                     await msg.Channel.SendMessageAsync(embed: emb.Build());
-                    emb.Description += $"\nRefer to the below error message: ```{result.Exception}```";
+                    emb.Description += $"\nRefer to the below error message: ```{string.Join("",result.Exception.Message.Take(1000))}```";
                     await Client.GetUser(701029647760097361).SendMessageAsync(embed: emb.Build());
                     break;
                 case CommandStatus.MissingGuildPermission:

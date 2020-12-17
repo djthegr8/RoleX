@@ -1069,7 +1069,7 @@ namespace Public_Bot
                     return xyz;
                 }
             }
-            var here = await Context.Channel.SendMessageAsync(message, isTTS, embed.Build(), options).ConfigureAwait(false);
+            var here = await Context.Channel.SendMessageAsync(message, isTTS, embed?.Build(), options).ConfigureAwait(false);
             var ranjom = new Random();
             var irdk = ranjom.Next(10);
             if (irdk == 1)

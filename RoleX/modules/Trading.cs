@@ -1,6 +1,9 @@
 ﻿using Discord;
+using Discord.WebSocket;
 using Public_Bot;
 using System.Collections.Generic;
+using static RoleX.Program;
+using GuildPermissions = Public_Bot.GuildPermissions;
 using System.Linq;
 using System.Threading.Tasks;
 using static RoleX.modules.SqliteClass;
@@ -9,7 +12,52 @@ namespace RoleX.modules
     [DiscordCommandClass("Trading", "Class with trading related commands")]
     class TradingClass : CommandModuleBase
     {
-        [Alt("post")]
+        [DiscordCommand("post", commandHelp ="post", description ="Posts the set Trading Embed in all Mutual Servers")]
+        public async Task Post(params string[] args)
+        {
+            Embed mbed = new EmbedBuilder
+            {
+                Title = $"**{Context.User.Username}#{Context.User.Discriminator}**'s Trading List",
+                Color = Blurple,
+                Description = $"Ping or DM {Context.User.Mention} if interested.",
+                Fields = new List<EmbedFieldBuilder>
+                {
+                    new EmbedFieldBuilder
+                    {
+                        Name = "Buying",
+                        Value = $"{(await StringGetter(Context.User.Id, TradeTexts.Buying) == "" ? "*None*": string.Join('\n',(await StringGetter(Context.User.Id, TradeTexts.Buying)).Remove(0,1).Split(';').Select((al, idx) => $"{idx+1}) {al}")))}"
+                    },
+                    new EmbedFieldBuilder
+                    {
+                        Name = "Selling",
+                        Value = $"{(await StringGetter(Context.User.Id, TradeTexts.Selling) == "" ? "*None*": string.Join('\n',(await StringGetter(Context.User.Id, TradeTexts.Selling)).Remove(0,1).Split(';').Select((al, idx) => $"{idx+1}) {al}")))}"
+                    }
+                }
+            }.WithCurrentTimestamp().Build();
+            var mes = await Context.Channel.SendMessageAsync(embed: new EmbedBuilder
+            {
+                Title = "Posting your trades...",
+                Description = "Starting the post",
+                Color = Blurple
+            }.WithCurrentTimestamp().Build());
+
+            foreach(var gld in (await CL2.GetGuildsAsync()).Where(k => (k.GetUserAsync(Context.User.Id)).GetAwaiter().GetResult() != null))
+            {
+                string msg;
+                if (await TradingChanGetter(gld.Id) == 0)
+                {
+                    msg = $"Posting failed in **{gld.Name}**...";
+                } else
+                {
+                    var chID = await TradingChanGetter(gld.Id);
+                    var chn = await gld.GetTextChannelAsync(chID);
+                    await chn.SendMessageAsync($"Trading post from {Context.User.Username}#{Context.User.Discriminator}!", embed: mbed);
+                    msg = $"Posting Completed in **{gld.Name}**";
+                }
+                await mes.ModifyAsync(k => k.Embed = new EmbedBuilder { Title = mes.Embeds.First().Title, Description = mes.Embeds.First().Description + "\n" + msg, Color = Blurple }.WithCurrentTimestamp().Build());
+            }
+            await mes.ModifyAsync(k => k.Embed = new EmbedBuilder { Title = "Posting Complete", Description = mes.Embeds.First().Description, Color = Blurple }.WithCurrentTimestamp().Build());
+        }
         [Alt("tlist")]
         [DiscordCommand("tradinglist", commandHelp = "tradinglist", description = "Shows the user's trading list")]
         public async Task ShowTradingList(params string[] lc)
@@ -181,6 +229,64 @@ namespace RoleX.modules
                     await TradeEditor(Context.User.Id, string.Join(';', lis), TradeTexts.Selling);
                     await ShowTradingList();
                     break;
+            }
+        }
+        [Alt("tchan")]
+        [DiscordCommand("tradingchan", description ="Set's the guild's trading channel for users to post trades in.", example ="tradingchan #trading-ads", commandHelp ="tradingchan #channel")]
+        public async Task TradingChan(params string[] args)
+        {
+            if (args.Length == 0 || !(Context.User as SocketGuildUser).GuildPermissions.Administrator)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "The current trading channel",
+                    Description = $"{(await TradingChanGetter(Context.Guild.Id) == 0 ? "No trading channel set" : $"<#{await TradingChanGetter(Context.Guild.Id)}>")}\n",
+                    Color = Blurple,
+                    Footer = new EmbedFooterBuilder
+                    {
+                        Text = $"To change it, do `{await PrefixGetter(Context.Guild.Id)}tradingchan #channel`"
+                    }
+                }.WithCurrentTimestamp());
+                return;
+            }
+            else
+            {
+                if (args[0].ToLower() == "remove" || args[0] == "0")
+                {
+                    await AlertChanAdder(Context.Guild.Id, 0);
+                    await ReplyAsync("", false, new EmbedBuilder
+                    {
+                        Title = "Trading Disabled!",
+                        Description = $"The trading channel has now been terminated.",
+                        Color = Blurple,
+                        Footer = new EmbedFooterBuilder
+                        {
+                            Text = $"To change it, do `{await PrefixGetter(Context.Guild.Id)}tradingchan #channel`"
+                        }
+                    });
+                    return;
+                }
+                else if (GetChannel(args[0]) == null)
+                {
+                    await ReplyAsync("", false, new EmbedBuilder
+                    {
+                        Title = "What channel?",
+                        Description = $"Couldn't parse `{args[0]}` as channel :(",
+                        Color = Color.Red
+                    }.WithCurrentTimestamp());
+                    return;
+                }
+                await TradingChanAdder(Context.Guild.Id, GetChannel(args[0]).Id);
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "The updated Alert Channel!",
+                    Description = $"The alert channel is now <#{await TradingChanGetter(Context.Guild.Id)}>",
+                    Color = Blurple,
+                    Footer = new EmbedFooterBuilder
+                    {
+                        Text = $"To change it yet again, do `{await PrefixGetter(Context.Guild.Id)}tradingchan #channel`"
+                    }
+                }.WithCurrentTimestamp());
             }
         }
     }

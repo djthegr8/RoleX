@@ -176,6 +176,11 @@ namespace RoleX.modules
             var ii = await QueryFunctionCreator($"select AlertChanID from prefixes where GuildID = {GuildID}", long.Parse("0"));
             return Convert.ToUInt64(ii);
         }
+        public static async Task<ulong> TradingChanGetter(ulong GuildID)
+        {
+            var ii = await QueryFunctionCreator($"select TradingChannel from prefixes where GuildID = {GuildID}", long.Parse("0"));
+            return Convert.ToUInt64(ii);
+        }
         public static async Task<string> StringGetter(ulong UserID, TradeTexts tt)
         {
             var bs = tt switch
@@ -203,6 +208,7 @@ namespace RoleX.modules
         }
         public static async Task<List<Infraction>> GetUserModlogs(ulong GuildID, ulong UserID) => await GetInfractions($"select * from modlogs where GuildID = {GuildID} and UserID = {UserID};");
         public static async Task AlertChanAdder(ulong GuildID, ulong ChanID) => await NonQueryFunctionCreator($"update prefixes set AlertChanID = {ChanID} where GuildID = {GuildID};");
+        public static async Task TradingChanAdder(ulong GuildID, ulong ChanID) => await NonQueryFunctionCreator($"update prefixes set TradingChannel = {ChanID} where GuildID = {GuildID};");
         public static async Task AltTimePeriodAdder(ulong GuildID, long AltTimeMonths) => await NonQueryFunctionCreator($"update prefixes set AltTimeMonths = {AltTimeMonths} where GuildID = {GuildID};");
         public static async Task TradeEditor(ulong UserID, string text, TradeTexts tt)
         {

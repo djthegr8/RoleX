@@ -172,7 +172,7 @@ namespace RoleX.modules
                         await gUser.SendMessageAsync("", false, new EmbedBuilder
                         {
                             Title = "Oops, you were muted!",
-                            Description = $"You were muted {(isValidTime ? $"for {ts.Days} days, {ts.Minutes} minutes and {ts.Seconds} seconds" : "indefinitely")} from **{Context.Guild.Name}** by {Context.User.Mention} {(args.Length > 1 ? $"Reason:{args[1]}" : "")}\n[Click here to appeal]({(await AppealGetter(Context.Guild.Id) == "" ? "" : await AppealGetter(Context.Guild.Id))})",
+                            Description = $"You were muted {(isValidTime ? $"for {ts.Days} days, {ts.Minutes} minutes and {ts.Seconds} seconds" : "indefinitely")} from **{Context.Guild.Name}** by {Context.User.Mention} {(args.Length > 1 ? $"Reason:{args[1]}" : "")}{(await AppealGetter(Context.Guild.Id) == "" ? "" : "\n[Click here to appeal](" + await AppealGetter(Context.Guild.Id))})",
                             Color = Color.Red
                         }.WithCurrentTimestamp().Build());
                     }
@@ -1106,7 +1106,7 @@ namespace RoleX.modules
                         await gUser.SendMessageAsync("", false, new EmbedBuilder
                         {
                             Title = "Oops, you were muted!",
-                            Description = $"You were muted {(isValidTime ? $"for {ts.Days} days, {ts.Minutes} minutes and {ts.Seconds} seconds" : "indefinitely")} from **{Context.Guild.Name}** by {Context.User.Mention} {(args.Length > 1 ? $"Reason:{args[1]}" : "")}\n[Click here to appeal]({(await AppealGetter(Context.Guild.Id) == "" ? "" : await AppealGetter(Context.Guild.Id))})",
+                            Description = $"You were muted {(isValidTime ? $"for {ts.Days} days, {ts.Minutes} minutes and {ts.Seconds} seconds" : "indefinitely")} from **{Context.Guild.Name}** by {Context.User.Mention} {(args.Length > 1 ? $"Reason:{args[1]}" : "")}{(await AppealGetter(Context.Guild.Id) == "" ? "" : "\n[Click here to appeal]" + (await AppealGetter(Context.Guild.Id)))})",
                             Color = Color.Red
                         }.WithCurrentTimestamp().Build());
                     }
