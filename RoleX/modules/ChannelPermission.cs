@@ -10,6 +10,7 @@ namespace RoleX.modules
     [DiscordCommandClass("Channel Editor", "Edit Channel-wise perms of a Role using these commands!")]
     class ChannelPermission : CommandModuleBase
     {
+    [RequiredBotPermission(GuildPermission.ManageChannels)]
         [GuildPermissions(GuildPermission.ManageChannels)]
         [Alt("chdelete")]
         [Alt("chdel")]
@@ -39,6 +40,7 @@ namespace RoleX.modules
                 );
             }
         }
+        [RequiredBotPermission(GuildPermission.ManageChannels)]
         [GuildPermissions(GuildPermission.ManageChannels)]
         [Alt("catrename")]
         [DiscordCommand("categoryrename", commandHelp = "categoryrename <old-category-name> <new-category-name>", description = "Renames given category", example = "categoryrename Trading Xtreme Trading")]
@@ -74,6 +76,7 @@ namespace RoleX.modules
             }.WithCurrentTimestamp());
             return;
         }
+        [RequiredBotPermission(GuildPermission.ManageChannels)]
         [GuildPermissions(GuildPermission.ManageChannels)]
         [Alt("catdelete")]
         [Alt("catdel")]
@@ -104,9 +107,11 @@ namespace RoleX.modules
             }.WithCurrentTimestamp());
             return;
         }
+        [RequiredBotPermission(GuildPermission.ManageChannels)]
         [GuildPermissions(GuildPermission.ManageChannels)]
         [DiscordCommand("chrename", commandHelp = "chrename <#channel> <multi-word-string>")]
         [Alt("channelrename")]
+        [Alt("chr")]
         public async Task RenameChannel(params string[] args)
         {
             if (args.Length == 0 || args.Length == 1)
@@ -150,9 +155,11 @@ namespace RoleX.modules
             }.WithCurrentTimestamp());
             return;
         }
+        [RequiredBotPermission(GuildPermission.ManageChannels)]
         [GuildPermissions(GuildPermission.ManageChannels)]
         [DiscordCommand("chdesc", commandHelp = "chdesc <#channel> <multi-word-string>")]
-        [Alt("chtopic")]
+        [Alt("topic")]
+        [Alt("rchd")]
         [Alt("channeldescription")]
         public async Task ReDescChannel(params string[] args)
         {
@@ -184,8 +191,10 @@ namespace RoleX.modules
             }.WithCurrentTimestamp());
             return;
         }
+        [RequiredBotPermission(GuildPermission.ManageChannels)]
         [GuildPermissions(GuildPermission.ManageChannels)]
         [Alt("chperms")]
+        [Alt("chp")]
 
         [DiscordCommand("channelperms", commandHelp = "channelperms <#channel> <@role/@user> <Permission> <yes,no,inherit>", description = "Edits the Channel-wise perms of the given Role or Member", example = "channelperms @Moderator viewChannel no")]
         public async Task ChannelPermEdit(params string[] args)
@@ -309,7 +318,7 @@ namespace RoleX.modules
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "That overwrite type is invalid",
-                        Description = $"For giving the permission, use `y`, `yes`, `positive` or `true`.\nFor Inheriting use `i` or `inherit`\nAnd for revoking use `n`, `no`, `negative` or `false` as the last parameter for the command",
+                        Description = $"For assigning the permission, use `y`, `yes`, `positive` or `true`.\nFor Inheriting use `i` or `inherit`\nAnd for revoking use `n`, `no`, `negative` or `false` as the last parameter for the command",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
                     return;
