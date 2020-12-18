@@ -44,11 +44,11 @@ jobs:
            git config --global user.name "djthegr8"
            git config --global user.password "${{secrets.DJ_GITHUB_PWD}}"
            git clone https://github.com/djthegr8/RoleX-tar.git
-           git remote add origin https://djthegr8:${{secrets.DJ_GITHUB_PWD}}@github.com/djthegr8/RoleX-tar.git
+           git remote add retr https://djthegr8:${{secrets.DJ_GITHUB_PWD}}@github.com/djthegr8/RoleX-tar.git
            mv ${{github.sha}}.tar.gz ./RoleX-tar
            cd ./RoleX-tar
            git add .
            git commit -a --allow-empty-message -m 'Add tar wrt commit ${{github.sha}}'
-           git push origin main
+           git push retr main
     - name: Test
       run: dotnet test --no-build --verbosity normal
