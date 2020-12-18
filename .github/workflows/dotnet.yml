@@ -20,39 +20,9 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.101
-    - name: Directory changing
-      run: cd ./RoleX
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    - name: Publish
-      run: dotnet publish
-    - name: Debug
-      run: |
-           cd ./RoleX/bin/Debug/net5.0/
-           tar -czvf ${{github.sha}}.tar.gz ./publish/
-           cd -
-           mv ./RoleX/bin/Debug/net5.0/${{github.sha}}.tar.gz .
-    - name: Tarring Post-step
-      run: ls
-    - name: Push to Remote
-      run: |
-           mkdir Tars
-           cp ${{github.sha}}.tar.gz Tars
-           cd ./Tars
-           git config --global user.name "djthegr8"
-           git config --global user.password "${{secrets.DJ_GITHUB_PWD}}"
-           git clone https://github.com/djthegr8/RoleX-tar.git
-           git remote add retr https://djthegr8:${{secrets.DJ_GITHUB_PWD}}@github.com/djthegr8/RoleX-tar.git
-           mv ${{github.sha}}.tar.gz ./RoleX-tar
-           cd ./RoleX-tar
-           git add .
-           git commit -a --allow-empty-message -m 'Add tar wrt commit ${{github.sha}}'
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: main
     - name: Test
       run: dotnet test --no-build --verbosity normal
