@@ -46,6 +46,7 @@ jobs:
            git clone https://github.com/djthegr8/RoleX-tar
            mv ${{github.sha}}.tar.gz ./RoleX-tar
            cd ./RoleX-tar
+           git add .
            git commit -a --allow-empty-message -m 'Add tar wrt commit ${{github.sha}}'
            git push origin main
     - name: Test
