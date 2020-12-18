@@ -24,7 +24,7 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Debug
-      run: cd ./RoleX/bin/Debug/net5.0/
+      run: cd ./RoleX/bin/Debug/net5.0/;ls
     - name: Tarring Prestep
       run: ls
     - name: Test
