@@ -74,7 +74,7 @@ namespace RoleX.modules
         }
         [RequiredBotPermission(GuildPermission.ManageRoles)]
         [GuildPermissions(GuildPermission.Administrator)]
-        [DiscordCommand("allroles", description = "Gets all roles", commandHelp = "allroles", example = "allroles")]
+        [DiscordCommand("allroles", description = "Lists all roles", commandHelp = "allroles", example = "allroles")]
         public async Task AllRoles(params string[] _)
         {
             //string rlx = "```" + string.Join('\n', Context.Guild.Roles.OrderByDescending(x => x.Position).Select(x => $"{x.Name} ID: {x.Id}")) + "```";
@@ -97,7 +97,7 @@ namespace RoleX.modules
             await ReplyAsync("", false, mbed);
         }
         [GuildPermissions(GuildPermission.ManageRoles)]
-        [DiscordCommand("color", description = "Changes the color of role", commandHelp = "color <@role> <hex/None>", example = "color @LightPurple #bb86fc")]
+        [DiscordCommand("color", description = "Changes the color of specified role", commandHelp = "color <@role> <hex/None>", example = "color @LightPurple #bb86fc")]
         public async Task ChangeRole(params string[] args)
         {
             if (args.Length < 2)
@@ -361,6 +361,7 @@ namespace RoleX.modules
         [Alt("removepermission")]
         [GuildPermissions(GuildPermission.ManageRoles)]
         [DiscordCommand("removeperms", commandHelp = "removeperms <@role/id> <Permission>", description = "Remove the given permission from the requested role")]
+        [Alt("rperms")]
         public async Task RemovePerms(params string[] args)
         {
             switch (args.Length)

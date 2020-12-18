@@ -83,7 +83,7 @@ namespace RoleX.modules
             }
             if (eb.Fields.Count == 0)
             {
-                eb.Description = "They've been a good boye! No modlogs :)";
+                eb.Description = "They've been a good user! No modlogs :)";
             }
             await ReplyAsync(embed: eb.WithCurrentTimestamp());
         }
@@ -96,7 +96,7 @@ namespace RoleX.modules
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
-                    Title = "No muted role set :|",
+                    Title = "No muted role set",
                     Description = $"Set muted role by running `{await PrefixGetter(Context.Guild.Id)}mutedrole <create/@Role>`",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
@@ -261,7 +261,7 @@ namespace RoleX.modules
                         await ReplyAsync("", false, new EmbedBuilder
                         {
                             Title = "Oops, that person is above me :(",
-                            Description = $"I don't have perms to ban them :/",
+                            Description = $"I don't have sufficient permissions to ban them",
                             Color = Color.Red
                         }.WithCurrentTimestamp());
                         return;
