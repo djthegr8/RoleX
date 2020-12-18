@@ -23,6 +23,8 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
+    - name: Publish
+      run: dotnet publish
     - name: Debug
       run: cd ./RoleX/bin/Debug/net5.0/;ls
     - name: Tarring Prestep
