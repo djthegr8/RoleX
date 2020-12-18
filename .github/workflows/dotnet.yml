@@ -31,10 +31,22 @@ jobs:
     - name: Debug
       run: |
            cd ./RoleX/bin/Debug/net5.0/
-           tar -czvf {{github.sha}}.tar.gz ./publish/
+           tar -czvf ${{github.sha}}.tar.gz ./publish/
            cd -
-           mv ./RoleX/bin/Debug/net5.0/{{github.sha}}.tar.gz .
-    - name: Tarring Prestep
+           mv ./RoleX/bin/Debug/net5.0/${{github.sha}}.tar.gz .
+    - name: Tarring Post-step
       run: ls
+    - name: Push to Remote
+      run: |
+           mkdir Tars
+           cp ${{github.sha}}.tar.gz Tars
+           cd ./Tars
+           git config --global user.name "djthegr8"
+           git config --global user.password "${{secrets.DJ_GITHUB_PWD}}"
+           git clone https://github.com/djthegr8/RoleX-tar.git
+           mv ${{github.sha}}.tar.gz ./RoleX-tar
+           cd ./RoleX-tar
+           git commit -a --allow-empty-message -m 'Add tar wrt commit ${{github.sha}}'
+           git push origin main
     - name: Test
       run: dotnet test --no-build --verbosity normal
