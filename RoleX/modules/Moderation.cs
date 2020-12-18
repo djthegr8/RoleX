@@ -187,7 +187,8 @@ namespace RoleX.modules
                     Timer tmr = new Timer()
                     {
                         AutoReset = false,
-                        Interval = ts.TotalMilliseconds
+                        Interval = ts.TotalMilliseconds,
+                        Enabled = true
                     };
                     tmr.Elapsed += async (object send, ElapsedEventArgs arg) =>
                     {
@@ -1135,7 +1136,6 @@ namespace RoleX.modules
                     Console.WriteLine(ts);
                     tmr.Elapsed += async (object send, ElapsedEventArgs arg) =>
                     {
-                        Console.WriteLine("Atleast this runs");
                         try
                         {
                             await gUser.RemoveRoleAsync(Context.Guild.GetRole(await MutedRoleIDGetter(Context.Guild.Id)));

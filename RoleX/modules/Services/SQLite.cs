@@ -14,7 +14,7 @@ namespace RoleX.modules
     {
         public enum TradeTexts
         {
-            Buying, 
+            Buying,
             Selling
         }
         public class Infraction {
@@ -93,7 +93,7 @@ namespace RoleX.modules
             T retval;
             if (!read.HasRows || await read.IsDBNullAsync(0)) retval = defval;
             else {
-                retval = (T)read[0]; 
+                retval = (T)read[0];
             }
             await read.CloseAsync();
             await con.CloseAsync();
@@ -106,7 +106,7 @@ namespace RoleX.modules
         /// <param name="cmdtext">Command text to execute in SQLite</param>
         /// <param name="defval">Default value if no rows are found</param>
         /// <returns>The query reply (if exists) or default value</returns>
-        public static async Task<List<Infraction>> GetInfractions (string cmdtext)
+        public static async Task<List<Infraction>> GetInfractions(string cmdtext)
         {
             List<Infraction> retvals = new List<Infraction>();
             using var con = new SqliteConnection(fph);
@@ -164,10 +164,18 @@ namespace RoleX.modules
             await con.CloseAsync();
         }
         // All getters
+        /// <summary>
+        /// Self-exp
+        /// </summary>
+        /// <param name="GuildID"></param>
+        /// <param name="UserID"></param>
+        /// <returns>A boolean saying whether on Cooldown <c>true</c> if yes, else <c>false</c></returns>
+        public static async Task<bool> CooldownGetter(ulong GuildID, ulong UserID) => await QueryFunctionCreator($"select GuildID from cooldown where guildid = {GuildID} and UserID = {UserID}", long.Parse("0")) == 0 ;
         public static async Task<string> PrefixGetter(ulong GuilID) => await QueryFunctionCreator($"select Prefix from prefixes where guildid = {GuilID}", "r");
         public static async Task<string> AppealGetter(ulong GuilID) => await QueryFunctionCreator($"select appeal from prefixes where guildid = {GuilID}", "");
         public static async Task<long> AltTimePeriodGetter(ulong GuildID) => await QueryFunctionCreator($"select AltTimeMonths from prefixes where guildid = {GuildID}", long.Parse("3"));
-        public static async Task<ulong> MutedRoleIDGetter(ulong GuildID) { 
+        public static async Task<long> SlowdownTimeGetter(ulong GuildID) => await QueryFunctionCreator($"select Slowdown from prefixes where guildid = {GuildID}", long.Parse("15"));
+        public static async Task<ulong> MutedRoleIDGetter(ulong GuildID) {
             var ii = await QueryFunctionCreator($"select MutedRoleID from prefixes where guildid = {GuildID}", long.Parse("0"));
             return Convert.ToUInt64(ii);
         }
@@ -197,6 +205,9 @@ namespace RoleX.modules
             return st;
         }
         // All adders
+        public static async Task SlowdownTimeAdder(ulong GuildID, ulong SlowdownTime) => await NonQueryFunctionCreator($"update prefixes set Slowdown = {SlowdownTime} where GuildID = {GuildID};");
+        public static async Task CooldownAdder(ulong GuildID, ulong UserID) => await NonQueryFunctionCreator($"insert into cooldown (GuildID, UserID) values ({GuildID}, {UserID});");
+        public static async Task CooldownRemover(ulong GuildID, ulong UserID) => await NonQueryFunctionCreator($"delete from cooldown where GuildID = {GuildID} and UserID = {UserID};");
         public static async Task MutedRoleIDAdder(ulong GuildID, ulong MutedRoleID) => await NonQueryFunctionCreator($"update prefixes set MutedRoleID = {MutedRoleID} where GuildID = {GuildID};");
         public static async Task PrefixAdder(ulong GuLDID, string prefix)
         {

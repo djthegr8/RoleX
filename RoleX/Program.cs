@@ -150,10 +150,9 @@ namespace RoleX
                     {
                         Color = Color.Red,
                         Title = $"**An error occured in <#{msg.Channel.Id}> of ${(msg.Channel as SocketGuildChannel).Guild.Id}**",
-                        Description = $"We are on towards fixing it! In case of any problem, DM <@701029647760097361> or <@615873008959225856>"
+                        Description = $"We are on towards fixing it! In case of any problem, DM <@701029647760097361> or <@615873008959225856>" + $"\nRefer to the below error message: ```{ string.Join("", result.Exception.Message.Take(1000))}```",
                     }.WithCurrentTimestamp();
                     await msg.Channel.SendMessageAsync(embed: emb.Build());
-                    emb.Description += $"\nRefer to the below error message: ```{string.Join("",result.Exception.Message.Take(1000))}```";
                     await Client.GetUser(701029647760097361).SendMessageAsync(embed: emb.Build());
                     break;
                 case CommandStatus.MissingGuildPermission:

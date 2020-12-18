@@ -979,13 +979,14 @@ namespace Public_Bot
             if (regex.IsMatch(role))
             {
                 var u = Context.Guild.GetRole(ulong.Parse(regex.Match(role).Groups[1].Value));
-                return u;
+                if (!u.IsEveryone) return u;
+                else return null;
             }
             else
-                if (Context.Guild.Roles.Any(x => x.Name.ToLower().StartsWith(role.ToLower())))
+                if (Context.Guild.Roles.Any(x => !x.IsEveryone && x.Name.ToLower().StartsWith(role.ToLower())))
                 return Context.Guild.Roles.First(x => x.Name.ToLower().StartsWith(role.ToLower()));
             else
-                    if (Context.Guild.Roles.Any(x => x.Name.ToLower().StartsWith(role.ToLower())))
+                    if (Context.Guild.Roles.Any(x => !x.IsEveryone && x.Name.ToLower().StartsWith(role.ToLower())))
                 return Context.Guild.Roles.First(x => x.Name.ToLower().StartsWith(role.ToLower()));
             else
                 return null;

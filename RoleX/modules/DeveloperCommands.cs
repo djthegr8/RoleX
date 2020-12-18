@@ -1,7 +1,9 @@
 ﻿using Discord;
 using Public_Bot;
 using System.IO;
+using System;
 using System.Linq;
+using MoreLinq;
 using System.Threading.Tasks;
 
 namespace RoleX.modules
@@ -34,16 +36,21 @@ namespace RoleX.modules
                     }
                     catch { inv = "No Perms LMAO!"; }*/
                     /*st += $"{srver.Name}\t{inv}\n";*/
-                    st += $"{srver.Name}({srver.Id})\t{srver.MemberCount}\n";
+                    st += $"{srver.Name}({srver.Id})(Perms: {srver.CurrentUser.GuildPermissions.RawValue})\t{srver.MemberCount}\n";
                 }
                 st += "```";
-                await ReplyAsync(
+                string filePath = "nice.txt";
+                using (StreamWriter sw = File.CreateText(filePath))
+                {
+                    sw.WriteLine(st);
+                }
+                await Context.Channel.SendFileAsync(filePath,
                     embed: new EmbedBuilder
                     {
                         Title = $"All RoleX Guilds LMAO (total: {Context.Client.Guilds.Count})",
-                        Description = st,
+                        
                         Color = Blurple
-                    }.WithCurrentTimestamp());
+                    }.WithCurrentTimestamp().Build());
             }
         }
         [DiscordCommand("sqlite", commandHelp = "", description = "")]

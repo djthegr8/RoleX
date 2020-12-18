@@ -126,7 +126,7 @@ namespace RoleX.modules
                     Color = Blurple,
                     Footer = new EmbedFooterBuilder
                     {
-                        Text = $"To change it yet again, do `{await PrefixGetter(Context.Guild.Id)}alertchan #channel`"
+                        Text = $"To change it yet again, do `{await PrefixGetter(Context.Guild.Id)}alttime <months>`"
                     }
                 }.WithCurrentTimestamp());
             }
