@@ -44,7 +44,7 @@ jobs:
            git config --global user.name "djthegr8"
            git config --global user.password "${{secrets.DJ_GITHUB_PWD}}"
            git clone https://github.com/djthegr8/RoleX-tar.git
-           git remote set-url origin https://github.com/djthegr8/RoleX-tar.git
+           git remote add origin https://djthegr8:${{secrets.DJ_GITHUB_PWD}}@github.com/djthegr8/RoleX-tar.git
            mv ${{github.sha}}.tar.gz ./RoleX-tar
            cd ./RoleX-tar
            git add .
