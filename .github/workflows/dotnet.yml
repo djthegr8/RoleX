@@ -13,7 +13,7 @@ jobs:
 
     steps:
     - name: Shifting the Current Directory
-      run: cd ./RoleX
+      run: ls
     - uses: actions/checkout@v2
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
