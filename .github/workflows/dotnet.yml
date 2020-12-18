@@ -21,5 +21,11 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
+    - name: Build to Linux-x64
+      run: dotnet build -r linux-x64
+    - name: Publish to Linux-x64
+      run: dotnet publish -r linux-x64
+    - name: Debug
+      run: ls
     - name: Test
       run: dotnet test --no-build --verbosity normal
