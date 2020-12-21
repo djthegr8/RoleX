@@ -52,6 +52,8 @@ namespace RoleX
 
             Client.JoinedGuild += HandleGuildJoinAsync;
 
+            Client.LeftGuild += LeftGuildAsync;
+
             Client.ShardReady += HandleReadyAsync;
 
             Client.UserJoined += AltAlertAsync;
@@ -61,6 +63,13 @@ namespace RoleX
             await Client.SetGameAsync("Supervising Roles!",null,ActivityType.Playing);
             //await _client.StopAsync();
             await Task.Delay(-1);
+        }
+
+        private async Task LeftGuildAsync(SocketGuild arg)
+        {
+            await Client.GetUser(701029647760097361).SendMessageAsync($"I left {arg.Name}, a Guild of {arg.MemberCount} members.");
+            await Client.GetUser(615873008959225856).SendMessageAsync($"I left {arg.Name}, a Guild of {arg.MemberCount} members.");
+            await modules.Services.TopGG.topGGUPD(Client.Guilds.Count);
         }
 
         private async Task AltAlertAsync(SocketGuildUser arg)
@@ -83,6 +92,7 @@ namespace RoleX
 
         private async Task HandleGuildJoinAsync(SocketGuild arg)
         {
+            await modules.Services.TopGG.topGGUPD(Client.Guilds.Count);
             // <@701029647760097361> or <@615873008959225856>
             await Client.GetUser(701029647760097361).SendMessageAsync($"I joined {arg.Name}, a Guild of {arg.MemberCount} members.");
             await Client.GetUser(615873008959225856).SendMessageAsync($"I joined {arg.Name}, a Guild of {arg.MemberCount} members.");
@@ -169,7 +179,7 @@ namespace RoleX
                     {
                         Title = "**That isn't how to use that command**",
                         Color = Color.Red,
-                        Description = $"Do `{pref}help {msg.Content.Split(' ')[0].Replace(pref,"")}` to know how!"
+                        Description = $"Do `{pref}help {msg.Content.Split(' ')[0].Remove(0,pref.Length)}` to know how!"
                     }.WithCurrentTimestamp().Build());
                     break;
                 case CommandStatus.NotFound:

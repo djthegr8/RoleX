@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -1005,6 +1006,20 @@ namespace Public_Bot
             {
                 return null;
             }
+            if (message?.Length >= 2000)
+            {
+                string filePath = "message.txt";
+                using (StreamWriter sw = File.CreateText(filePath))
+                {
+                    sw.WriteLine(message);
+                }
+                await Context.Channel.SendFileAsync(filePath);
+                message = null;
+            }
+            if (message == null && embed == null)
+            {
+                return null;
+            }
             // Embed editing time!
             if (embed?.Description?.Length >= EmbedBuilder.MaxDescriptionLength ||
                 embed?.Title?.Length >= EmbedBuilder.MaxTitleLength ||
@@ -1073,9 +1088,11 @@ namespace Public_Bot
             var here = await Context.Channel.SendMessageAsync(message, isTTS, embed?.Build(), options).ConfigureAwait(false);
             var ranjom = new Random();
             var irdk = ranjom.Next(10);
-            if (irdk == 1)
+            if (irdk == 1 && !await RoleX.modules.Services.TopGG.HasVoted(Context.User.Id))
             {
-                await Context.Channel.SendMessageAsync("", false, new EmbedBuilder { Title = "Vote for RoleX TODAY (LIKE SRSLY TODAY)", Url="https://tiny.cc/rolexdsl", Description = "Support RoleX by [voting](http:/tiny.cc/rolexdsl) for it in top.gg!", Color = Blurple}.WithCurrentTimestamp().Build());
+                var idk = ranjom.Next(2);
+                if (idk == 1 || (await RoleX.Program.CL2.GetGuildsAsync()).Any(x => x.Id == 591660163229024287 && x.GetUserAsync(Context.User.Id) != null)) await Context.Channel.SendMessageAsync("", false, new EmbedBuilder { Title = "Vote for RoleX TODAY (LIKE SRSLY TODAY)", Url="https://tiny.cc/rolexdsl", Description = "Support RoleX by [voting](http:/tiny.cc/rolexdsl) for it in top.gg!", Color = Blurple}.WithCurrentTimestamp().Build());
+                else await Context.Channel.SendMessageAsync("", false, new EmbedBuilder { Title = "Join our support server!", Url = "https://tiny.cc/rolexdsl", Description = "Support RoleX by [voting](http:/tiny.cc/rolexdsl) for it in top.gg!", Color = Blurple }.WithCurrentTimestamp().Build());
             }
             return here;
         }

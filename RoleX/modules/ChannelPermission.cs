@@ -46,23 +46,22 @@ namespace RoleX.modules
             var loa = new List<Tuple<string, int>>();
             foreach (var pin in pins)
             {
-                if (loa.Any(i => i.Item1 == pin.Author.Username + pin.Author.Discriminator))
+                if (loa.Any(i => i.Item1 == pin.Author.Username + "#" + pin.Author.Discriminator))
                 {
-                    var d = loa.First(k => k.Item1 == pin.Author.Username + "#" +  pin.Author.Discriminator).Item2;
-                    loa.Remove(new Tuple<string, int>(pin.Author.Username + "#" + pin.Author.Discriminator, d));
-                    loa.Add(new Tuple<string, int>(pin.Author.Username + "#" + pin.Author.Discriminator, d + 1));
+                    
                 }
                 else
                 {
                     loa.Add(new Tuple<string, int>(pin.Author.Username + "#" + pin.Author.Discriminator, 1));
                 }
             }
+            loa = loa.Select(x => new Tuple<string, int>(x.Item1, pins.Count(k => k.Author.Username + "#" + k.Author.Discriminator == x.Item1))).ToList();
             loa = loa.OrderByDescending(k => k.Item2).ToList();
             loa = loa.Take(3).ToList();
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = $"The channel {axSTC.Name} has {pins.Count} pins",
-                Description = $"Out of these, the top 3 are ~ \n{string.Join('\n', loa.Select((k, l) => $"{( l == 0 ? "🥇" : (l == 1 ? "🥈" : "🥉"))} **{k.Item1}** with {k.Item2} pins"))}",
+                Description = pins.Count > 1 ? $"Out of these, the top 3 are ~ \n{string.Join('\n', loa.Select((k, l) => $"{( l == 0 ? "🥇" : (l == 1 ? "🥈" : "🥉"))} **{k.Item1}** with {k.Item2} pins"))}" : "No pins eh",
                 Color = Blurple
             }.WithCurrentTimestamp());
             return;

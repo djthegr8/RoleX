@@ -36,7 +36,7 @@ namespace RoleX.modules
                     }
                     catch { inv = "No Perms LMAO!"; }*/
                     /*st += $"{srver.Name}\t{inv}\n";*/
-                    st += $"{srver.Name}({srver.Id})(Perms: {srver.CurrentUser.GuildPermissions.RawValue})\t{srver.MemberCount}\n";
+                    st += $"{srver.Name} (ID: {srver.Id})\n{srver.MemberCount} members (Perms: {srver.CurrentUser.GuildPermissions.RawValue})\n";
                 }
                 st += "```";
                 string filePath = "nice.txt";
@@ -48,7 +48,7 @@ namespace RoleX.modules
                     embed: new EmbedBuilder
                     {
                         Title = $"All RoleX Guilds LMAO (total: {Context.Client.Guilds.Count})",
-                        
+                        Description = st.Length < 2000 ? st : "Ig i sent it as a file",
                         Color = Blurple
                     }.WithCurrentTimestamp().Build());
             }

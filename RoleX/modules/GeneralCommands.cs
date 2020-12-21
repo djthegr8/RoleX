@@ -87,7 +87,99 @@ namespace RoleX.modules
                 }.WithCurrentTimestamp());
             }
         }
-        [Alt("altmonths")]
+        [DiscordCommand("whois", description = "Shows information about the mentioned user", commandHelp = "whois <@user>", example ="whois DJ001")]
+        public async Task WhoIs(params string[] user)
+        {
+            SocketGuildUser userAccount;
+            if (user.Length == 0)
+                userAccount = Context.User as SocketGuildUser;
+            else userAccount = await GetUser(user[0]);
+
+            if (userAccount == null)
+            {
+                EmbedBuilder error = new EmbedBuilder()
+                {
+                    Title = "That user is invalid ¯\\_(ツ)_/¯",
+                    Description = "Please provide a valid user",
+                    Color = Color.Red
+                };
+                await Context.Channel.SendMessageAsync("", false, error.Build());
+                return;
+            }
+            string perms = "```\n";
+            string permsRight = "";
+            var props = typeof(Discord.GuildPermissions).GetProperties();
+            var boolProps = props.Where(x => x.PropertyType == typeof(bool));
+            var pTypes = boolProps.Where(x => (bool)x.GetValue(userAccount.GuildPermissions) == true).ToList();
+            var nTypes = boolProps.Where(x => (bool)x.GetValue(userAccount.GuildPermissions) == false).ToList();
+            var pd = boolProps.Max(x => x.Name.Length) + 1;
+            if (nTypes.Count == 0)
+                perms += "Administrator: ✅```";
+            else
+            {
+                foreach (var perm in pTypes)
+                    perms += $"{perm.Name}:".PadRight(pd) + " ✅\n";
+                perms += "```";
+                permsRight = "```\n";
+                foreach (var nperm in nTypes)
+                    permsRight += $"{nperm.Name}:".PadRight(pd) + " ❌\n";
+                permsRight += "```";
+            }
+            var orderedroles = userAccount.Roles.OrderBy(x => x.Position * -1).ToArray();
+            string roles = "";
+            for (int i = 0; i < orderedroles.Count(); i++)
+            {
+                var role = orderedroles[i];
+                if (roles.Length + role.Mention.Length < 256)
+                    roles += role.Mention + "\n";
+                else
+                {
+                    roles += $"+ {orderedroles.Length - i + 1} more";
+                    break;
+                }
+            }
+            string stats = $"Nickname: {(userAccount.Nickname == null ? "None" : userAccount.Nickname)}\n" +
+                              $"Id: {userAccount.Id}\n" +
+                              $"Creation Date: {userAccount.CreatedAt.UtcDateTime.ToString("r")}\n" +
+                              $"Joined At: {userAccount.JoinedAt.Value.UtcDateTime.ToString("r")}\n";
+
+            EmbedBuilder whois = new EmbedBuilder()
+            {
+                Author = new EmbedAuthorBuilder()
+                {
+                    Name = userAccount.ToString(),
+                    IconUrl = userAccount.GetAvatarUrl()
+                },
+                Color = Blurple,
+                Description = permsRight == "" ? "**Stats**\n" + stats : "",
+                Fields = permsRight == "" ? new List<EmbedFieldBuilder>()
+                {
+                    new EmbedFieldBuilder()
+                    {
+                        Name = "Roles",
+                        Value = roles,
+                    }
+                } : new List<EmbedFieldBuilder>()
+                {
+                    new EmbedFieldBuilder()
+                    {
+                        Name = "Stats",
+                        Value = stats,
+                        IsInline = true,
+
+                    },
+                    new EmbedFieldBuilder()
+                    {
+                        Name = "Roles",
+                        Value = roles,
+                        IsInline = false,
+
+                    }
+                }
+            }.WithCurrentTimestamp();
+            await Context.Channel.SendMessageAsync("", false, whois.Build());
+        }
+    [Alt("altmonths")]
         [GuildPermissions(GuildPermission.ManageGuild)]
         [DiscordCommand("alttime", commandHelp ="alttime num_months", description ="Sets the number of months for flagging as alt", example ="alttime 4")]
         public async Task Alttime(params string[] args)
@@ -130,6 +222,39 @@ namespace RoleX.modules
                     }
                 }.WithCurrentTimestamp());
             }
+        }
+        [Alt("rp")]
+        [DiscordCommand("rawperms",description ="Takes a permission integer and gives the values", example ="rawperms 8")]
+        public async Task PermRaw(ulong raw)
+        {
+            var gp = new Discord.GuildPermissions(raw);
+            string x = "";
+            x += $"Admin:        {(gp.Administrator ? "✅" : "❌")}\n";
+            x += $"Kick:         {(gp.KickMembers ? "✅" : "❌")}\n";
+            x += $"Ban:          {(gp.BanMembers ? "✅" : "❌")}\n";
+            x += $"Mention:      {(gp.MentionEveryone ? "✅" : "❌")}\n";
+            x += $"Manage Guild: {(gp.ManageGuild ? "✅" : "❌")}\n";
+            x += $"Messages:     {(gp.ManageMessages ? "✅" : "❌")}\n";
+            x += $"Channels:     {(gp.ManageChannels ? "✅" : "❌")}\n";
+            x += $"Roles:        {(gp.ManageRoles ? "✅" : "❌")}\n";
+            x += $"Webhooks:     {(gp.ManageWebhooks ? "✅" : "❌")}\n";
+            await ReplyAsync("", false, new EmbedBuilder
+            {
+                Title = "Decoding Permission values",
+                ThumbnailUrl = Context.Client.CurrentUser.GetAvatarUrl(),
+                Description = $"Below is what {raw} means in Discord API language ~",
+                Fields = {new EmbedFieldBuilder()
+                {
+                    Name = "Permissions",
+                    Value = $"```{x}```"
+                } },
+                Color = Blurple,
+                Footer = new EmbedFooterBuilder
+                {
+                    Text = "Useful command, isn't it?"
+                }
+            }.WithCurrentTimestamp()
+            );
         }
         //[Alt("alt")]
         //[DiscordCommand("altidentify", commandHelp = "altidentify <number-of-alts>", description = "Finds the x users newest to Discord and most probable alts")]
