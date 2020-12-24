@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using static Public_Bot.Punishment;
+using P = Public_Bot.Punishment;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using Public_Bot;
@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Discord.Rest;
 
-namespace RoleX.modules
+namespace RoleX.Modules
 {
     class SqliteClass
     {
@@ -28,12 +28,12 @@ namespace RoleX.modules
             {
                 return value switch
                 {
-                    "Ban" => Ban,
-                    "Mute" => Mute,
-                    "Kick" => Kick,
-                    "HardMute" => HardMute,
-                    "Softban" => Softban,
-                    "Unban" => Unban,
+                    "Ban" => P.Ban,
+                    "Mute" => P.Mute,
+                    "Kick" => P.Kick,
+                    "HardMute" => P.HardMute,
+                    "Softban" => P.Softban,
+                    "Unban" => P.Unban,
                     _ => throw new NotImplementedException("Irdk what happened :/")
                 };
             }
@@ -41,12 +41,12 @@ namespace RoleX.modules
             {
                 return pment switch
                 {
-                    Ban => "Ban",
-                    Mute => "Mute",
-                    Kick => "Kick",
-                    HardMute => "HardMute",
-                    Softban => "Softban",
-                    Unban => "Unban",
+                    P.Ban => "Ban",
+                    P.Mute => "Mute",
+                    P.Kick => "Kick",
+                    P.HardMute => "HardMute",
+                    P.Softban => "Softban",
+                    P.Unban => "Unban",
                     _ => "kekw i hate the compiler"
                 };
             }

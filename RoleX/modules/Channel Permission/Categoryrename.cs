@@ -1,0 +1,48 @@
+using Discord;
+using Discord.WebSocket;
+using Public_Bot;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GuildPermissions = Public_Bot.GuildPermissions;
+namespace RoleX.Modules
+{
+    [DiscordCommandClass("Channel Editor", "Edit Channel-wise perms of a Role using these commands!")]
+    public class Categoryrename : CommandModuleBase
+    {
+        [DiscordCommand("categoryrename", commandHelp = "categoryrename <old-category-name> <new-category-name>", description = "Renames given category", example = "categoryrename Trading Xtreme Trading")]
+        public async Task CatRename(params string[] args)
+        {
+            if (args.Length < 2)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "Insufficient Parameters!",
+                    Description = $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}categoryrename <old-category-name> <new-category-name>`",
+                    Color = Color.Red
+                }.WithCurrentTimestamp());
+                return;
+            }
+            var alf = GetCategory(args[0]);
+            if (alf == null)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "Invalid category",
+                    Description = $"`{args[0]}` could not be parsed as category!",
+                    Color = Color.Red
+                }.WithCurrentTimestamp());
+                return;
+            }
+            await alf.ModifyAsync(x => x.Name = string.Join(' ', args.Skip(1)));
+            await ReplyAsync("", false, new EmbedBuilder
+            {
+                Title = "Rename successful!",
+                Description = $"Your category was renamed to `{string.Join(' ', args.Skip(1))}`",
+                Color = Blurple
+            }.WithCurrentTimestamp());
+            return;
+        }
+    }
+}

@@ -2,7 +2,7 @@
 using DiscordBotsList.Api.Objects;
 using System.Threading.Tasks;
 
-namespace RoleX.modules.Services
+namespace RoleX.Modules.Services
 {
     class TopGG
     {

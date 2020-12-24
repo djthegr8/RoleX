@@ -273,7 +273,9 @@ namespace Public_Bot
             foreach (var item in CommandClasses)
             {
                 var att = item.GetCustomAttribute<DiscordCommandClass>();
-                Modules.Add(att.ModuleName, att.ModuleDescription);
+
+                if (!Modules.ContainsKey(att.ModuleName))
+                    Modules.Add(att.ModuleName, att.ModuleDescription);
             }
             var Commandmethods = types.SelectMany(x => x.GetMethods().Where(y => y.GetCustomAttributes(typeof(DiscordCommand), false).Length > 0).ToArray());
             foreach (var t in Commandmethods)
@@ -1088,7 +1090,7 @@ namespace Public_Bot
             var here = await Context.Channel.SendMessageAsync(message, isTTS, embed?.Build(), options).ConfigureAwait(false);
             var ranjom = new Random();
             var irdk = ranjom.Next(10);
-            if (irdk == 1 && !await RoleX.modules.Services.TopGG.HasVoted(Context.User.Id))
+            if (irdk == 1 && !await RoleX.Modules.Services.TopGG.HasVoted(Context.User.Id))
             {
                 var idk = ranjom.Next(2);
                 if (idk == 1 || (await RoleX.Program.CL2.GetGuildsAsync()).Any(x => x.Id == 591660163229024287 && x.GetUserAsync(Context.User.Id) != null)) await Context.Channel.SendMessageAsync("", false, new EmbedBuilder { Title = "Vote for RoleX TODAY (LIKE SRSLY TODAY)", Url="https://tiny.cc/rolexdsl", Description = "Support RoleX by [voting](http:/tiny.cc/rolexdsl) for it in top.gg!", Color = Blurple}.WithCurrentTimestamp().Build());

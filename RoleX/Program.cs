@@ -10,7 +10,7 @@ using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using System.IO;
-using RoleX.modules;
+using RoleX.Modules;
 using System.Collections.Generic;
 using Discord.Rest;
 using Bot.Utilities.Collector;
@@ -69,7 +69,7 @@ namespace RoleX
         {
             await Client.GetUser(701029647760097361).SendMessageAsync($"I left {arg.Name}, a Guild of {arg.MemberCount} members.");
             await Client.GetUser(615873008959225856).SendMessageAsync($"I left {arg.Name}, a Guild of {arg.MemberCount} members.");
-            await modules.Services.TopGG.topGGUPD(Client.Guilds.Count);
+            await Modules.Services.TopGG.topGGUPD(Client.Guilds.Count);
         }
 
         private async Task AltAlertAsync(SocketGuildUser arg)
@@ -92,7 +92,7 @@ namespace RoleX
 
         private async Task HandleGuildJoinAsync(SocketGuild arg)
         {
-            await modules.Services.TopGG.topGGUPD(Client.Guilds.Count);
+            await Modules.Services.TopGG.topGGUPD(Client.Guilds.Count);
             // <@701029647760097361> or <@615873008959225856>
             await Client.GetUser(701029647760097361).SendMessageAsync($"I joined {arg.Name}, a Guild of {arg.MemberCount} members.");
             await Client.GetUser(615873008959225856).SendMessageAsync($"I joined {arg.Name}, a Guild of {arg.MemberCount} members.");
