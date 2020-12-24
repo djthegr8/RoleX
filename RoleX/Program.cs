@@ -25,7 +25,7 @@ namespace RoleX
         public static string token = File.ReadAllLines(fpath)[0];
         public static void Main(string[] _)
         {
-            new Program().MainAsync().GetAwaiter().GetResult();
+            new Program().MainlikeAsync().GetAwaiter().GetResult();
         }
         private Task Log(LogMessage msg)
         {
@@ -34,8 +34,8 @@ namespace RoleX
         }
         public static DiscordShardedClient Client;
         public static DiscordRestClient CL2;
-        public CustomCommandService _service = new CustomCommandService(new Settings());
-        public async Task MainAsync()
+        public static CustomCommandService _service = new CustomCommandService(new Settings());
+        public async Task MainlikeAsync()
         {
             //Console.WriteLine("The list of databases on this server is: ");
             //foreach (var db in dbList)
