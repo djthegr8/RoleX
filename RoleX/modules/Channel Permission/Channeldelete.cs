@@ -2,15 +2,13 @@ using Discord;
 using Discord.WebSocket;
 using Public_Bot;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using GuildPermissions = Public_Bot.GuildPermissions;
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Channel Editor", "Edit Channel-wise perms of a Role using these commands!")]
     public class Channeldelete : CommandModuleBase
     {
+        [Alt("chdel")]
         [DiscordCommand("channeldelete", description = "Deletes given channel", example = "channeldelete #WeirdChan", commandHelp = "channeldelete <#channel>")]
         public async Task Cdel(string ags)
         {
@@ -20,21 +18,59 @@ namespace RoleX.Modules
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Invalid channel",
-                    Description = $"`{aaa}` could not be parsed as channel!",
+                    Description = $"`{ags}` could not be parsed as channel!",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
             }
             else
             {
-                await aaa.DeleteAsync();
-                await ReplyAsync(embed: new EmbedBuilder
-                {
-                    Title = "Deleted Channel Successfully",
-                    Description = $"Channel `#{aaa.Name}` was deleted!",
-                    Color = Blurple
-                }.WithCurrentTimestamp()
-                );
+                var ram = await Context.Channel.SendMessageAsync("Are you sure you want to delete?\nThis is a potentially destructive action.");
+                await ram.AddReactionsAsync(
+                    new IEmote[] {
+                        Emote.Parse("<a:tick:792389924312973333>"),
+                        Emote.Parse("<a:cros:792389968890429461>")
+                });
+                bool isTick = true;
+                Func<Cacheable<IUserMessage, ulong>, ISocketMessageChannel, SocketReaction, Task> weird = null;
+                weird =
+                    async (UserMsg, MsgChannel, Reaction) =>
+                  {
+                      if (MsgChannel == ram.Channel &&
+                      UserMsg.Id == ram.Id &&
+                      Reaction.UserId == Context.User.Id
+                      && (
+                      Reaction.Emote.ToString() == "<a:tick:792389924312973333>" ||
+                      Reaction.Emote.ToString() == "<a:cros:792389968890429461>"
+                      ))
+                      {
+                          var tick = Emote.Parse("<a:tick:792389924312973333>");
+                          isTick = Reaction.Emote.ToString() == tick.ToString();
+                          if (!isTick)
+                          {
+                              await Context.Channel.SendMessageAsync("https://i.imgflip.com/2o7z0r.jpg?a446944");
+                              Program.Client.ReactionAdded -= weird;
+                              return;
+                          } else
+                          {
+                              isTick = false;
+                              await aaa.DeleteAsync();
+                              await Context.Channel.SendMessageAsync(embed: new EmbedBuilder
+                              {
+                                  Title = "Deleted Channel Successfully",
+                                  Description = $"Channel `#{aaa.Name}` was deleted!",
+                                  Color = Blurple
+                              }.WithCurrentTimestamp().Build());
+                              Program.Client.ReactionAdded -= weird;
+                              return;
+                          }
+                      }
+                  };
+                Program.Client.ReactionAdded += weird;
+                await Task.Delay(15000);
+                if (isTick) await Context.Channel.SendMessageAsync("Well, you didn't reply :(");
+                Program.Client.ReactionAdded -= weird;
+                return;
             }
         }
     }

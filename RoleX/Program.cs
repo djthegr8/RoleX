@@ -1,27 +1,21 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Public_Bot;
-using Discord;
+﻿using Discord;
 using Discord.Commands;
-using Discord.WebSocket;
-using System.Text.RegularExpressions;
-using System.Threading;
-using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
-using System.IO;
-using RoleX.Modules;
-using System.Collections.Generic;
 using Discord.Rest;
-using Bot.Utilities.Collector;
-using Microsoft.VisualBasic;
-using Newtonsoft.Json;
+using Discord.WebSocket;
+using Public_Bot;
+using RoleX.Modules;
+using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace RoleX
 {
     class Program
     {
-        readonly static string fpath = string.Join(Path.DirectorySeparatorChar,Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location).Split(Path.DirectorySeparatorChar).SkipLast(1)) + Path.DirectorySeparatorChar + "Data" + Path.DirectorySeparatorChar + "token.txt";
+        readonly static string fpath = string.Join(Path.DirectorySeparatorChar, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location).Split(Path.DirectorySeparatorChar).SkipLast(1)) + Path.DirectorySeparatorChar + "Data" + Path.DirectorySeparatorChar + "token.txt";
         public static string token = File.ReadAllLines(fpath)[0];
         public static void Main(string[] _)
         {
@@ -60,7 +54,7 @@ namespace RoleX
             await CL2.LoginAsync(TokenType.Bot, token);
             await Client.LoginAsync(TokenType.Bot, token);
             await Client.StartAsync();
-            await Client.SetGameAsync("Supervising Roles!",null,ActivityType.Playing);
+            await Client.SetGameAsync("Supervising Roles!", null, ActivityType.Playing);
             //await _client.StopAsync();
             await Task.Delay(-1);
         }
@@ -80,7 +74,7 @@ namespace RoleX
                 var hopefullyValidChannel = arg.Guild.GetTextChannel(aca);
                 if (hopefullyValidChannel != null)
                 {
-                    await hopefullyValidChannel.SendMessageAsync("", false, new EmbedBuilder { Title= "Suspicious User Detected!!!!!", Description = $"**Name:** <@{arg.Id}>\n**ID: **{arg.Id}\n**Date Created: ** `{arg.CreatedAt:D}`, which seems sus to me..." , Color = Color.Red}.WithCurrentTimestamp().Build());
+                    await hopefullyValidChannel.SendMessageAsync("", false, new EmbedBuilder { Title = "Suspicious User Detected!!!!!", Description = $"**Name:** <@{arg.Id}>\n**ID: **{arg.Id}\n**Date Created: ** `{arg.CreatedAt:D}`, which seems sus to me...", Color = Color.Red }.WithCurrentTimestamp().Build());
                 }
             }
         }
@@ -111,7 +105,7 @@ namespace RoleX
         }
 
         internal static async Task HandleCommandResult(CustomCommandService.ICommandResult result, SocketUserMessage msg, string prefi)
-        { 
+        {
             await Task.Delay(10);
             string completed = Resultformat(result.IsSuccess);
             switch (result.Result)
@@ -150,7 +144,8 @@ namespace RoleX
                         try
                         {
                             await msg.Author.SendMessageAsync(embed: ella.Build());
-                        } catch (Exception)
+                        }
+                        catch (Exception)
                         {
                             await msg.Channel.SendMessageAsync(embed: ella.Build());
                         }
@@ -179,7 +174,7 @@ namespace RoleX
                     {
                         Title = "**That isn't how to use that command**",
                         Color = Color.Red,
-                        Description = $"Do `{pref}help {msg.Content.Split(' ')[0].Remove(0,pref.Length)}` to know how!"
+                        Description = $"Do `{pref}help {msg.Content.Split(' ')[0].Remove(0, pref.Length)}` to know how!"
                     }.WithCurrentTimestamp().Build());
                     break;
                 case CommandStatus.NotFound:
@@ -197,7 +192,7 @@ namespace RoleX
                 return "Failed";
             return "Unknown";
         }
-
+        
         public async Task HandleCommandAsync(SocketMessage s)
         {
 #pragma warning disable IDE0019 // Use pattern matching

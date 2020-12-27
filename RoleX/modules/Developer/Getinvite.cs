@@ -15,16 +15,16 @@ namespace RoleX.Modules
         {
             if (devids.Any(x => x == Context.User.Id))
             {
+                if (args.Length == 0 || !ulong.TryParse(args[0], out ulong _)) { await ReplyAsync("Why are you like this <:noob:756055614861344849>"); return; }
+                ulong x = ulong.Parse(args[0]);
                 try
                 {
-                    if (args.Length == 0 || !ulong.TryParse(args[0], out ulong _)) { await ReplyAsync("Why are you like this <:noob:756055614861344849>"); return; }
-                    ulong x = ulong.Parse(args[0]);
                     var aaa = (await Context.Client.GetGuild(x).GetInvitesAsync()).First().Url;
                     await Context.User.SendMessageAsync(aaa);
                 }
                 catch
                 {
-                    await ReplyAsync("no");
+                    await ReplyAsync($"I don't fricking have perms, but hey u can DM the owner. He is <@{Context.Client.GetGuild(x).OwnerId}>");
                 }
             }
         }

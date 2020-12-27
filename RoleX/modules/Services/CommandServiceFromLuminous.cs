@@ -962,6 +962,7 @@ namespace Public_Bot
         }
         public static Tuple<GuildPermission, bool> GetPermission(string perm)
         {
+            perm = perm.Replace("admin", "administrator");
             if (Enum.TryParse(perm, true, out GuildPermission Gp))
             {
                 return new Tuple<GuildPermission, bool>(Gp, true);
