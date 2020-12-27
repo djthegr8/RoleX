@@ -48,7 +48,12 @@ namespace RoleX.Modules
                           isTick = Reaction.Emote.ToString() == tick.ToString();
                           if (!isTick)
                           {
-                              await Context.Channel.SendMessageAsync("https://i.imgflip.com/2o7z0r.jpg?a446944");
+                              await Context.Channel.SendMessageAsync("", false, new EmbedBuilder
+                              {
+                                  Title = "Alright then...",
+                                  Color = Blurple,
+                                  ImageUrl = "https://media.discordapp.net/attachments/758922634749542420/792611702885449748/unknown.png"
+                              }.WithCurrentTimestamp().Build());
                               Program.Client.ReactionAdded -= weird;
                               return;
                           } else

@@ -2,14 +2,13 @@ using Discord;
 using Discord.WebSocket;
 using Public_Bot;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using GuildPermissions = Public_Bot.GuildPermissions;
-namespace RoleX.Modules{
+namespace RoleX.Modules
+{
     [DiscordCommandClass("Channel Editor", "Edit Channel-wise perms of a Role using these commands!")]
     public class Categorydelete : CommandModuleBase
     {
+        [Alt("catdel")]
         [DiscordCommand("categorydelete", commandHelp = "categorydelete <category-name>", description = "Deletes given category and all its channels", example = "categorydelete Useless")]
         public async Task CatDel(string aa)
         {
@@ -47,7 +46,12 @@ namespace RoleX.Modules{
                         isTick = Reaction.Emote.ToString() == tick.ToString();
                         if (!isTick)
                         {
-                            await Context.Channel.SendMessageAsync("https://i.imgflip.com/2o7z0r.jpg?a446944");
+                            await Context.Channel.SendMessageAsync("", false, new EmbedBuilder
+                            {
+                                Title = "Alright then...",
+                                Color = Blurple,
+                                ImageUrl = "https://media.discordapp.net/attachments/758922634749542420/792611702885449748/unknown.png"
+                            }.WithCurrentTimestamp().Build());
                             Program.Client.ReactionAdded -= weird;
                             return;
                         }
