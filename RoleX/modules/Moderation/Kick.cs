@@ -8,12 +8,13 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
 using static RoleX.Modules.SqliteClass;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Kick : CommandModuleBase
     {
+        [RequiredUserPermissions(new GuildPermission[] { GuildPermission.KickMembers, GuildPermission.ManageGuild })]
         [DiscordCommand("kick", commandHelp = "kick <@user> <reason>", example = "kick @NotAScammer Scamming my friend", description = "Kicks the specified user")]
         public async Task Kicker(params string[] args)
         {

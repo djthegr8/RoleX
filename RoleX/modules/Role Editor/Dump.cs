@@ -6,12 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Role Editor", "Class for editing of Roles!")]
     public class Dump : CommandModuleBase
     {
+        [RequiredUserPermissions(GuildPermission.ManageGuild)]
         [DiscordCommand("dump", commandHelp = "dump @role", description = "Literally dumps the people with that role", example = "dump @Dumdums")]
         public async Task D(params string[] args)
         {

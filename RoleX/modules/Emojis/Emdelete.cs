@@ -3,12 +3,13 @@ using Public_Bot;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Linq;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Emote Editor", "For complete management of server emotes!")]
     public class Emdelete : CommandModuleBase
     {
+        [RequiredUserPermissions(new[] { GuildPermission.ManageGuild, GuildPermission.ManageEmojis})]
         [DiscordCommand("emdelete", description ="Deletes given emoji.", example ="emdelete kekw", commandHelp ="emrename emoji_name")]
         public async Task EMDEL(params string[] args)
         {

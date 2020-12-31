@@ -5,12 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Channel Editor", "Edit Channel-wise perms of a Role using these commands!")]
     public class Channelperms : CommandModuleBase
     {
+        [Alt("chperms")]
+        [RequiredUserPermissions(GuildPermission.ManageChannels)]
         [DiscordCommand("channelperms", commandHelp = "channelperms <#channel> <@role/@user> <Permission> <yes,no,inherit>", description = "Edits the Channel-wise perms of the given Role or Member", example = "channelperms @Moderator viewChannel no")]
         public async Task ChannelPermEdit(params string[] args)
         {

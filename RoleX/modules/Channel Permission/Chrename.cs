@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Channel Editor", "Edit Channel-wise perms of a Role using these commands!")]
@@ -13,7 +13,8 @@ namespace RoleX.Modules
     {
         [DiscordCommand("chrename", commandHelp = "chrename <#channel> <multi-word-string>")]
         [Alt("channelrename")]
-        [Alt("chr")]
+        [Alt("chre")]
+        [RequiredUserPermissions(new[] { GuildPermission.ManageChannels})]
         public async Task RenameChannel(params string[] args)
         {
             if (args.Length == 0 || args.Length == 1)

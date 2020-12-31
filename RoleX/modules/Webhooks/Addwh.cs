@@ -5,12 +5,13 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Webhook Manager", "Helps manage all webhooks!")]
     public class Addwh : CommandModuleBase
     {
+        [RequiredUserPermissions(GuildPermission.ManageWebhooks)]
         [DiscordCommand("addwh", commandHelp = "addwh <#channel> <Webhook-Name> <WebhookAvatarUrl>", description = "Creates a new webhook in given channel of given name, avatar & DMs the Webhook URL", example = "addwh #memes MemeWebhook https://tiny.cc/joketoyou")]
         public async Task AddWH(params string[] args)
         {

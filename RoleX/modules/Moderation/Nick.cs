@@ -8,12 +8,13 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
 using static RoleX.Modules.SqliteClass;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Nick : CommandModuleBase
     {
+        [RequiredUserPermissions(GuildPermission.ManageNicknames)]
         [DiscordCommand("nick", commandHelp = "nick @User <multi-word-string>", example ="nick @DJ001 Weird Dumbass")]
         [Alt("nickname")]
         public async Task RNick(params string[] args)

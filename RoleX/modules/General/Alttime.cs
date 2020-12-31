@@ -7,12 +7,13 @@ using Public_Bot;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using Discord;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("General", "General commands for all!")]
     public class Alttime : CommandModuleBase
     {
+        [RequiredUserPermissions(GuildPermission.ManageGuild)]
         [DiscordCommand("alttime", commandHelp ="alttime num_months", description ="Sets the number of months for flagging as alt", example ="alttime 4")]
         public async Task Alttimes(params string[] args)
         {

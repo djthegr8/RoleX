@@ -8,12 +8,13 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
 using static RoleX.Modules.SqliteClass;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Lock : CommandModuleBase
     {
+        [RequiredUserPermissions(new GuildPermission[] { GuildPermission.ManageChannels, GuildPermission.ManageRoles})]
         [DiscordCommand("lock", commandHelp = "lock <#channel>", description = "locks the mentioned channel", example = "lock #heistchan")]
         public async Task Lockchan(params string[] args)
         {

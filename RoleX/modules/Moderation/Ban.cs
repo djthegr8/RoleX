@@ -8,12 +8,13 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
 using static RoleX.Modules.SqliteClass;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Ban : CommandModuleBase
     {
+        [RequiredUserPermissions(new[] {GuildPermission.ManageGuild, GuildPermission.BanMembers })]
         [DiscordCommand("ban", commandHelp = "ban <@user> <reason>", example = "ban @Scammer Scamming me friend", description = "Bans the specified user")]
         public async Task Banner(params string[] args)
         {

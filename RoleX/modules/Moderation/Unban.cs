@@ -8,12 +8,13 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
 using static RoleX.Modules.SqliteClass;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Unban : CommandModuleBase
     {
+        [RequiredUserPermissions(new[] { GuildPermission.ManageGuild, GuildPermission.BanMembers})]
         [DiscordCommand("unban", commandHelp = "unban <@user>", example = "unban ForgivenDude", description = "Unbans given user")]
         public async Task Unbn(params string[] args)
         {

@@ -6,12 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Role Editor", "Class for editing of Roles!")]
     public class Removeperms : CommandModuleBase
     {
+        [RequiredUserPermissions(GuildPermission.ManageRoles)]
         [DiscordCommand("removeperms", commandHelp = "removeperms <@role/id> <Permission>", description = "Remove the given permission from the requested role")]
         [Alt("rperms")]
         public async Task RemovePerms(params string[] args)

@@ -22,7 +22,7 @@ namespace RoleX.Modules
                     xyz += $"## {x.Key}\n*{x.Value}*\n";
                     foreach (var y in Commands.Where(y => y.ModuleName == x.Key))
                     {
-                        xyz += $"### r{y.CommandName}         \nDescription: {(string.IsNullOrEmpty(y.CommandDescription) ? "None" : y.CommandDescription)}          \nAlts: `{(string.IsNullOrEmpty(string.Join(", ",y.Alts)) ? "None" : string.Join(", ", y.Alts))}`          \nExamples: `{(string.IsNullOrEmpty(y.example) ? "None" : y.example)}`          \n";
+                        xyz += $"### r{y.CommandName}         \nDescription: {(string.IsNullOrEmpty(y.CommandDescription) ? "None" : y.CommandDescription)}          \n{(y.RequireUsrPerm != null ? $"Permissions required: ```\n{string.Join(",\n",y.RequireUsrPerm.Select(k => k.ToString()))}```                \n" : "")}Alts: `{(string.IsNullOrEmpty(string.Join(", ",y.Alts)) ? "None" : string.Join(", ", y.Alts))}`          \nExamples: `{(string.IsNullOrEmpty(y.example) ? "None" : y.example)}`          \n";
                     }
                     FileStream fst = new FileStream($"../Data/{x.Key}.md", FileMode.Create);
                     StreamWriter swr = new StreamWriter(fst);

@@ -7,7 +7,7 @@ using Public_Bot;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using Discord;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("General", "General commands for all!")]

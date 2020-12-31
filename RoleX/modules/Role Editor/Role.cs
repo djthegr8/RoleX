@@ -6,12 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Role Editor", "Class for editing of Roles!")]
     public class Role : CommandModuleBase
     {
+        [RequiredUserPermissions(GuildPermission.ManageRoles)]
         [DiscordCommand("role", commandHelp = "role <@user> <@role>", description = "Adds/Removes the role to the given user", example = "role @DJ001 @Criminal")]
         public async Task Additive(params string[] args)
         {

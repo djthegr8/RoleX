@@ -8,6 +8,7 @@ namespace RoleX.Modules
     [DiscordCommandClass("Channel Editor", "Edit Channel-wise perms of a Role using these commands!")]
     public class Channeldelete : CommandModuleBase
     {
+        [RequiredUserPermissions(GuildPermission.ManageChannels)]
         [Alt("chdel")]
         [DiscordCommand("channeldelete", description = "Deletes given channel", example = "channeldelete #WeirdChan", commandHelp = "channeldelete <#channel>")]
         public async Task Cdel(string ags)

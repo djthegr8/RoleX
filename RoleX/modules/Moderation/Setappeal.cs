@@ -8,12 +8,13 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
 using static RoleX.Modules.SqliteClass;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Setappeal : CommandModuleBase
     {
+        [RequiredUserPermissions(new[] {GuildPermission.ManageGuild })]
         [DiscordCommand("setappeal", commandHelp = "setappeal <link>", example = "setappeal https://gforms.com/bah", description = "Sets the appeal link sent to punished members")]
         public async Task R_Setappeal(params string[] args)
         {

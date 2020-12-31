@@ -8,12 +8,13 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
 using static RoleX.Modules.SqliteClass;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Slowmode : CommandModuleBase
     {
+        [RequiredUserPermissions(new[] { GuildPermission.ManageGuild, GuildPermission.ManageChannels})]
         [DiscordCommand("slowmode", commandHelp = "slowmode <channel/category> <time>`\n`slowmode <time>", description = "Sets the channel or category slowmode", example = "slowmode 10s")]
         public async Task Sm(params string[] args)
         {

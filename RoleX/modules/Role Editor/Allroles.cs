@@ -6,12 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Role Editor", "Class for editing of Roles!")]
     public class Allroles : CommandModuleBase
     {
+        [RequiredUserPermissions(GuildPermission.Administrator)]
         [DiscordCommand("allroles", description = "Lists all roles", commandHelp = "allroles", example = "allroles")]
         public async Task AllRoles(params string[] _)
         {

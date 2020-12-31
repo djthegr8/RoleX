@@ -5,12 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Channel Editor", "Edit Channel-wise perms of a Role using these commands!")]
     public class Overwrites : CommandModuleBase
     {
+        [RequiredUserPermissions(new[] { GuildPermission.ManageChannels})]
         [DiscordCommand("overwrites", commandHelp = "overwrites <#channel>", description = "Shows the Channel-wise overwrites", example = "overwrites #channel")]
         public async Task Os(params string[] args)
         {

@@ -50,11 +50,11 @@ namespace Public_Bot
         }
     }
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public class GuildPermissions : Attribute
+    public class RequiredUserPermissions : Attribute
     {
         public GuildPermission[] Permissions { get; set; }
 
-        public GuildPermissions(params GuildPermission[] perms)
+        public RequiredUserPermissions(params GuildPermission[] perms)
             => this.Permissions = perms;
     }
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
@@ -233,7 +233,7 @@ namespace Public_Bot
             public DiscordCommand attribute { get; set; }
             public CommandClassobj parent { get; set; }
 
-            public GuildPermissions perms { get; set; }
+            public RequiredUserPermissions perms { get; set; }
             public RequiredBotPermission bperms { get; set; }
         }
         private class CommandClassobj
@@ -266,7 +266,7 @@ namespace Public_Bot
                 currentSettings.CustomGuildPermissionMethod = new Dictionary<ulong, Func<SocketCommandContext, bool>>();
             CommandModuleBase.CommandDescriptions = new Dictionary<string, string>();
             CommandModuleBase.CommandHelps = new Dictionary<string, string>();
-            CommandModuleBase.Commands = new List<ICommands>();
+            CommandModuleBase.Commands = new List<Commands>();
             Dictionary<MethodInfo, Type> CommandMethods = new Dictionary<MethodInfo, Type>();
             var types = Assembly.GetEntryAssembly().GetTypes();
             var CommandClasses = types.Where(x => x.CustomAttributes.Any(x => x.AttributeType == typeof(DiscordCommandClass)));
@@ -331,8 +331,8 @@ namespace Public_Bot
                     },
                     Paramaters = item.Key.GetParameters(),
                     RequirePermission = cmdat.RequiredPermission,
-                    perms = item.Key.CustomAttributes.Any(x => x.AttributeType == typeof(GuildPermissions))
-                          ? item.Key.GetCustomAttribute<GuildPermissions>()
+                    perms = item.Key.CustomAttributes.Any(x => x.AttributeType == typeof(RequiredUserPermissions))
+                          ? item.Key.GetCustomAttribute<RequiredUserPermissions>()
                           : null,
                     bperms = item.Key.CustomAttributes.Any(x => x.AttributeType == typeof(RequiredBotPermission))
                           ? item.Key.GetCustomAttribute<RequiredBotPermission>()
@@ -345,6 +345,9 @@ namespace Public_Bot
                     CommandName = cmdat.commandName,
                     CommandDescription = cmdat.description,
                     CommandHelpMessage = cmdat.commandHelp,
+                    RequireUsrPerm = item.Key.CustomAttributes.Any(x => x.AttributeType == typeof(RequiredUserPermissions))
+                          ? item.Key.GetCustomAttribute<RequiredUserPermissions>().Permissions
+                          : null,
                     example = cmdat.example,
                     Prefixes = parat.prefix == '\0' ? cmdobj.Prefixes : cmdobj.Prefixes.Append(parat.prefix).ToArray(),
                     RequiresPermission = cmdat.RequiredPermission,
@@ -663,6 +666,7 @@ namespace Public_Bot
             public string CommandDescription { get; set; }
             public string CommandHelpMessage { get; set; }
             public bool RequiresPermission { get; set; }
+            public GuildPermission[] RequireUsrPerm { get; set; }
             public string example { get; set; }
             public char[] Prefixes { get; set; }
             public string ModuleName { get; set; }
@@ -710,7 +714,7 @@ namespace Public_Bot
         /// <summary>
         /// The superlist with all the commands
         /// </summary>
-        public static List<ICommands> Commands { get; internal set; }
+        public static List<Commands> Commands { get; internal set; }
         public static List<ICommands> ReadCurrentCommands(string prefix)
         {
             List<ICommands> cmds = new List<ICommands>();
@@ -723,6 +727,7 @@ namespace Public_Bot
                     CommandHelpMessage = cmd.CommandHelpMessage?.Replace("(PREFIX)", prefix),
                     Prefixes = cmd.Prefixes,
                     RequiresPermission = cmd.RequiresPermission,
+                    RequireUsrPerm = cmd.RequireUsrPerm,
                     ModuleName = cmd.ModuleName,
                     Alts = cmd.Alts
                 };

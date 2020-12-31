@@ -6,7 +6,7 @@ using Public_Bot;
 using System.Collections.Generic;
 using static RoleX.Program;
 using System.Text.RegularExpressions;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 using System.Linq;
 using System.Threading.Tasks;
 using static RoleX.Modules.SqliteClass;

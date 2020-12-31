@@ -5,12 +5,13 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Webhook Manager", "Helps manage all webhooks!")]
     public class Deletewh : CommandModuleBase
     {
+        [RequiredUserPermissions(GuildPermission.ManageWebhooks)]
         [DiscordCommand("deletewh", commandHelp = "deletewh <webhook-name/id>", description = "Deletes the first webhook of given name or ID", example = "deletewh MyWebhook")]
         public async Task DeleteWh(params string[] args)
         {

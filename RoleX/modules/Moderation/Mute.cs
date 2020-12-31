@@ -8,12 +8,13 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
 using static RoleX.Modules.SqliteClass;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Mute : CommandModuleBase
     {
+        [RequiredUserPermissions(new[] { GuildPermission.ManageGuild, GuildPermission.ManageRoles})]
         [DiscordCommand("mute", description = "Mutes the given user", example = "mute @Dumbkid 5m For trying to ping everyone", commandHelp = "mute <@user> <time> <reason>")]
         public async Task RMute(params string[] args)
         {

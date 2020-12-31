@@ -7,12 +7,13 @@ using Public_Bot;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using Discord;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("General", "General commands for all!")]
     public class Altchan : CommandModuleBase
     {
+        [RequiredUserPermissions(GuildPermission.ManageGuild)]
         [DiscordCommand("altchan", commandHelp = "altchan #channel", description = "Sets the channel for alt alerts", example = "altchan #staff-announcements`\n`altchan remove")]
         public async Task AltChan(params string[] args)
         {

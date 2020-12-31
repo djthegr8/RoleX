@@ -6,12 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Role Editor", "Class for editing of Roles!")]
     public class Delete : CommandModuleBase
     {
+        [RequiredUserPermissions(new[] { GuildPermission.ManageGuild, GuildPermission.ManageRoles})]
         [DiscordCommand("delete", commandHelp = "delete <@role/id>", description = "Deletes the mentioned role", example = "delete @DumbRole")]
         public async Task DelRole(params string[] args)
         {

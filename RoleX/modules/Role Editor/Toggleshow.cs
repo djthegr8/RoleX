@@ -6,12 +6,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Role Editor", "Class for editing of Roles!")]
     public class Toggleshow : CommandModuleBase
     {
+        [RequiredUserPermissions(GuildPermission.ManageRoles)]
+        [Alt("ts")]
         [DiscordCommand("toggleshow", commandHelp = "toggleshow @Role", example = "toggleshow @WeirdRoleThatWasHidden", description = "Toggles the given role's visibility in the list")]
         public async Task ShowRole(params string[] args)
         {

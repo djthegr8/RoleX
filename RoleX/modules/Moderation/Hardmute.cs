@@ -8,12 +8,13 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
 using static RoleX.Modules.SqliteClass;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Hardmute : CommandModuleBase
     {
+        [RequiredUserPermissions(new GuildPermission[]{GuildPermission.BanMembers, GuildPermission.KickMembers, GuildPermission.ManageRoles})]
         [DiscordCommand("hardmute", description = "Mutes the given user after removing all roles", example = "hardmute @Dumbkid 5m For trying to ping everyone", commandHelp = "hardmute <@user> <time> <reason>")]
         public async Task HardMute(params string[] args)
         {

@@ -6,12 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Role Editor", "Class for editing of Roles!")]
     public class RColor : CommandModuleBase
     {
+        [RequiredUserPermissions(GuildPermission.ManageRoles)]
         [DiscordCommand("color", description = "Changes the color of specified role", commandHelp = "color <@role> <hex/None>", example = "color @LightPurple #bb86fc")]
         public async Task ChangeRole(params string[] args)
         {

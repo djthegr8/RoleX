@@ -8,12 +8,13 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
 using static RoleX.Modules.SqliteClass;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Unmute : CommandModuleBase
     {
+        [RequiredUserPermissions(new[] { GuildPermission.ManageGuild, GuildPermission.ManageRoles })]
         [DiscordCommand("unmute", commandHelp = "unmute <@user>", example = "unmute @RegretfulMan", description = "Unmutes given user")]
         public async Task RUnmute(params string[] args)
         {

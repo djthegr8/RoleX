@@ -3,12 +3,13 @@ using Public_Bot;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Linq;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Emote Editor", "For complete management of server emotes!")]
     public class Emrename : CommandModuleBase
     {
+        [RequiredUserPermissions(GuildPermission.ManageEmojis)]
         [DiscordCommand("emrename", commandHelp = "emrename :old_emote: new_emote_name", description = "Renames given emoji :)", example ="emrename kek kekw")]
         public async Task EmRename(params string[] args)
         {

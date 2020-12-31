@@ -8,12 +8,13 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
 using static RoleX.Modules.SqliteClass;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Softban : CommandModuleBase
     {
+        [RequiredUserPermissions(new[] { GuildPermission.BanMembers, GuildPermission.ManageGuild})]
         [DiscordCommand("softban", commandHelp = "softban <@user> <days>", example = "softban @Dumbass 7", description = "Bans the specified user and unbans immediately, for deletion of messages")]
         public async Task SBanner(params string[] args)
         {

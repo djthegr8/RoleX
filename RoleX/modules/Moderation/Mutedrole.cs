@@ -8,12 +8,13 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
 using static RoleX.Modules.SqliteClass;
-using GuildPermissions = Public_Bot.GuildPermissions;
+
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Mutedrole : CommandModuleBase
     {
+        [RequiredUserPermissions(new[] { GuildPermission.ManageRoles, GuildPermission.ManageGuild})]
         [DiscordCommand("mutedrole", commandHelp = "mutedrole <create/role>", description = "Sets the roles for mutes", example = "mutedrole create`\n`mutedrole @Muted")]
         public async Task SMutedRole(params string[] args)
         {
