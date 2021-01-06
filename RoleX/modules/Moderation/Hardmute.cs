@@ -14,6 +14,7 @@ namespace RoleX.Modules
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Hardmute : CommandModuleBase
     {
+        [Alt("hm")]
         [RequiredUserPermissions(new GuildPermission[]{GuildPermission.BanMembers, GuildPermission.KickMembers, GuildPermission.ManageRoles})]
         [DiscordCommand("hardmute", description = "Mutes the given user after removing all roles", example = "hardmute @Dumbkid 5m For trying to ping everyone", commandHelp = "hardmute <@user> <time> <reason>")]
         public async Task HardMute(params string[] args)

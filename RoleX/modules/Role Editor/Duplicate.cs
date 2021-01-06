@@ -12,6 +12,7 @@ namespace RoleX.Modules
     [DiscordCommandClass("Role Editor", "Class for editing of Roles!")]
     public class Duplicate : CommandModuleBase
     {
+        [Alt("dup")]
         [RequiredUserPermissions(new[] { GuildPermission.ManageRoles, GuildPermission.ManageGuild})]
         [DiscordCommand("duplicate", commandHelp = "duplicate <@role-to-be-duplicated> <@role-to-be-placed-above>", description = "Duplicates a role and places it above the given second role", example = "duplicate @Admin @Moderator")]
         public async Task CreateRole(params string[] args)

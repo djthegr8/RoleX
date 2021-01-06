@@ -12,6 +12,7 @@ namespace RoleX.Modules
     [DiscordCommandClass("Role Editor", "Class for editing of Roles!")]
     public class Delete : CommandModuleBase
     {
+        [Alt("del")]
         [RequiredUserPermissions(new[] { GuildPermission.ManageGuild, GuildPermission.ManageRoles})]
         [DiscordCommand("delete", commandHelp = "delete <@role/id>", description = "Deletes the mentioned role", example = "delete @DumbRole")]
         public async Task DelRole(params string[] args)

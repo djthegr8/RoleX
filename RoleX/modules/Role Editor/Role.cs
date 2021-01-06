@@ -12,6 +12,7 @@ namespace RoleX.Modules
     [DiscordCommandClass("Role Editor", "Class for editing of Roles!")]
     public class Role : CommandModuleBase
     {
+        [Alt("add")]
         [RequiredUserPermissions(GuildPermission.ManageRoles)]
         [DiscordCommand("role", commandHelp = "role <@user> <@role>", description = "Adds/Removes the role to the given user", example = "role @DJ001 @Criminal")]
         public async Task Additive(params string[] args)

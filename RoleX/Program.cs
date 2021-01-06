@@ -39,7 +39,7 @@ namespace RoleX
             //}
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
             Client = new DiscordShardedClient(new DiscordSocketConfig { AlwaysDownloadUsers = true, LargeThreshold = 250, GuildSubscriptions = true });
-            CL2 = new DiscordRestClient();
+            CL2 = new DiscordRestClient(new DiscordSocketConfig{ AlwaysDownloadUsers = true, LargeThreshold = 250, GuildSubscriptions = true });
             Client.Log += Log;
 
             Client.MessageReceived += HandleCommandAsync;
@@ -51,7 +51,20 @@ namespace RoleX
             Client.ShardReady += HandleReadyAsync;
 
             Client.UserJoined += AltAlertAsync;
+
+            Client.GuildMemberUpdated += async (previous, later) => {
+                if (previous.Status != later.Status && later.Status != UserStatus.Offline && await SqliteClass.TrackCDAllUlongIDs($"select UserID from track_cd where TUserID = {later.Id};") != new System.Collections.Generic.List<ulong>())
+                {
+                    var lis = await SqliteClass.TrackCDAllUlongIDs($"select UserID from track_cd where TUserID = {later.Id};");
+                    foreach (var user in lis)
+                    {
+                        await Client.GetUser(user)
+                                    .SendMessageAsync($"<@{later.Id}> is now {later.Status}! Chat with them now!");
+                    }
+                }
+            };
             await CL2.LoginAsync(TokenType.Bot, token);
+            var _x = await CL2.GetApplicationInfoAsync();
             await Client.LoginAsync(TokenType.Bot, token);
             await Client.StartAsync();
             await Client.SetGameAsync("Supervising Roles!", null, ActivityType.Playing);

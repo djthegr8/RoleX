@@ -1,108 +1,104 @@
-using System;
-using static RoleX.Modules.SqliteClass;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using Public_Bot;
-using System.Threading.Tasks;
-using Discord.WebSocket;
 using Discord;
-
+using Discord.Rest;
+using Discord.WebSocket;
+using Public_Bot;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 namespace RoleX.Modules
 {
     [DiscordCommandClass("General", "General commands for all!")]
     public class Whois : CommandModuleBase
     {
-        [DiscordCommand("whois", description = "Shows information about the mentioned user", commandHelp = "whois <@user>", example ="whois DJ001")]
+        [DiscordCommand("whois", description = "Shows information about the mentioned user", commandHelp = "whois <@user>", example = "whois DJ001")]
         public async Task WhoIs(params string[] user)
         {
-            SocketGuildUser userAccount;
+            RestUser userAccount;
+            SocketGuildUser userGuildAccount = null;
             if (user.Length == 0)
-                userAccount = Context.User as SocketGuildUser;
-            else userAccount = await GetUser(user[0]);
+            {
+                userGuildAccount = Context.User as SocketGuildUser;
+                userAccount = await Program.CL2.GetUserAsync(userGuildAccount.Id);
+            }
+            else
+            {
+                userGuildAccount = await GetUser(user[0]);
+                userAccount = userGuildAccount == null ? null : await Program.CL2.GetUserAsync(userGuildAccount.Id);
+            }
 
             if (userAccount == null)
             {
-                EmbedBuilder error = new EmbedBuilder()
+                if (ulong.TryParse(user[0], out ulong ide))
                 {
-                    Title = "That user is invalid ¯\\_(ツ)_/¯",
-                    Description = "Please provide a valid user",
-                    Color = Color.Red
-                };
-                await Context.Channel.SendMessageAsync("", false, error.Build());
-                return;
+                    userAccount = await Program.CL2.GetUserAsync(ide);
+                }
+                if (userAccount == null)
+                {
+                    EmbedBuilder error = new EmbedBuilder()
+                    {
+                        Title = "That user is invalid ¯\\_(ツ)_/¯",
+                        Description = "Please provide a valid user",
+                        Color = Color.Red
+                    };
+                    await Context.Channel.SendMessageAsync("", false, error.Build());
+                    return;
+                }
+            }
+            string mutualServers = "";
+            var gwUser = Program.Client.GetUser(userAccount.Id);
+            if (gwUser != null &&
+                gwUser.MutualGuilds.Count >= 1 &&
+                gwUser.MutualGuilds.Any(ree => Context.User.MutualGuilds.Any(r2 => r2.Id == ree.Id))
+                )
+            {
+                var dry = gwUser.MutualGuilds.Where(ree => Context.User.MutualGuilds.Any(r2 => r2.Id == ree.Id));
+                foreach (var gld in dry.Take(5)) {
+                    await gld.DownloadUsersAsync();
+                    var gUser = gld.GetUser(userAccount.Id);
+                    mutualServers += $"{(string.IsNullOrEmpty(gUser.Nickname) ? "" : $"`{gUser.Nickname}` in ")}" + $"**{gld.Name}** ({gld.Id})\n";
+                }
+                mutualServers += dry.Count() <= 5 ? "" : $"and {dry.Count() - 5} other(s)";
             }
             string perms = "```\n";
             string permsRight = "";
-            var props = typeof(Discord.GuildPermissions).GetProperties();
-            var boolProps = props.Where(x => x.PropertyType == typeof(bool));
-            var pTypes = boolProps.Where(x => (bool)x.GetValue(userAccount.GuildPermissions) == true).ToList();
-            var nTypes = boolProps.Where(x => (bool)x.GetValue(userAccount.GuildPermissions) == false).ToList();
-            var pd = boolProps.Max(x => x.Name.Length) + 1;
-            if (nTypes.Count == 0)
-                perms += "Administrator: ✅```";
-            else
-            {
-                foreach (var perm in pTypes)
-                    perms += $"{perm.Name}:".PadRight(pd) + " ✅\n";
-                perms += "```";
-                permsRight = "```\n";
-                foreach (var nperm in nTypes)
-                    permsRight += $"{nperm.Name}:".PadRight(pd) + " ❌\n";
-                permsRight += "```";
-            }
-            var orderedroles = userAccount.Roles.OrderBy(x => x.Position * -1).ToArray();
+            var orderedroles = userGuildAccount == null ? null : userGuildAccount.Roles.OrderBy(x => x.Position * -1).ToArray();
             string roles = "";
-            for (int i = 0; i < orderedroles.Count(); i++)
+            if (orderedroles != null)
             {
-                var role = orderedroles[i];
-                if (roles.Length + role.Mention.Length < 256)
-                    roles += role.Mention + "\n";
-                else
+                for (int i = 0; i < orderedroles.Count(); i++)
                 {
-                    roles += $"+ {orderedroles.Length - i + 1} more";
-                    break;
+                    var role = orderedroles[i];
+                    if (roles.Length + role.Mention.Length < 120)
+                        roles += role.Mention + "\n";
+                    else
+                    {
+                        roles += $"+ {orderedroles.Length - i + 1} more";
+                        break;
+                    }
                 }
             }
-            string stats = $"Nickname: {(userAccount.Nickname == null ? "None" : userAccount.Nickname)}\n" +
+            string stats = $"{(userGuildAccount == null ? "" : ($"Nickname: {(userGuildAccount.Nickname == null ? "None" : userGuildAccount.Nickname)}\n"))}" +
                               $"Id: {userAccount.Id}\n" +
-                              $"Creation Date: {userAccount.CreatedAt.UtcDateTime.ToString("r")}\n" +
-                              $"Joined At: {userAccount.JoinedAt.Value.UtcDateTime.ToString("r")}\n";
-
+                              $"Creation Date: {userAccount.CreatedAt.UtcDateTime:r}\n";
             EmbedBuilder whois = new EmbedBuilder()
             {
                 Author = new EmbedAuthorBuilder()
                 {
-                    Name = userAccount.ToString(),
+                    Name = userAccount.ToString() + (Program.Client.GetUser(userAccount.Id) != null ? (" (" + Program.Client.GetUser(userAccount.Id).Status.ToString() + ")") : ""),
                     IconUrl = userAccount.GetAvatarUrl()
                 },
                 Color = Blurple,
-                Description = permsRight == "" ? "**Stats**\n" + stats : "",
-                Fields = permsRight == "" ? new List<EmbedFieldBuilder>()
+                Description = "**Stats**\n" + stats,
+                Fields = userGuildAccount == null ? new List<EmbedFieldBuilder>() : new List<EmbedFieldBuilder>()
                 {
                     new EmbedFieldBuilder()
                     {
-                        Name = "Roles",
-                        Value = roles,
-                    }
-                } : new List<EmbedFieldBuilder>()
-                {
-                    new EmbedFieldBuilder()
-                    {
-                        Name = "Stats",
-                        Value = stats,
-                        IsInline = true,
-
-                    },
-                    new EmbedFieldBuilder()
-                    {
-                        Name = "Roles",
-                        Value = roles,
-                        IsInline = false,
-
+                        Name="Roles",
+                        Value = roles
                     }
                 }
             }.WithCurrentTimestamp();
+            if (mutualServers != "") whois.AddField("Shared Servers", mutualServers, true);
             await Context.Channel.SendMessageAsync("", false, whois.Build());
         }
     }
