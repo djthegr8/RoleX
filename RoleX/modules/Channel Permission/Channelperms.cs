@@ -12,6 +12,7 @@ namespace RoleX.Modules
     public class Channelperms : CommandModuleBase
     {
         [Alt("chperms")]
+        [Alt("chp")]
         [RequiredUserPermissions(GuildPermission.ManageChannels)]
         [DiscordCommand("channelperms", commandHelp = "channelperms <#channel> <@role/@user> <Permission> <yes,no,inherit>", description = "Edits the Channel-wise perms of the given Role or Member", example = "channelperms @Moderator viewChannel no")]
         public async Task ChannelPermEdit(params string[] args)
