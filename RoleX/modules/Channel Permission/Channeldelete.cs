@@ -10,6 +10,8 @@ namespace RoleX.Modules
     {
         [RequiredUserPermissions(GuildPermission.ManageChannels)]
         [Alt("chdel")]
+        [Alt("chdelete")]
+        
         [DiscordCommand("channeldelete", description = "Deletes given channel", example = "channeldelete #WeirdChan", commandHelp = "channeldelete <#channel>")]
         public async Task Cdel(string ags)
         {
