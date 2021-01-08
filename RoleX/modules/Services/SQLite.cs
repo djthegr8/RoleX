@@ -14,6 +14,17 @@ namespace RoleX.Modules
             Buying,
             Selling
         }
+        public class Reminder
+        {
+            public ulong UserID { get; set; }
+            public TimeSpan TimeS { get; internal set; }
+            public string Time { set { TimeS = TimeSpan.Parse(value); } }
+            public string Reason { get; set; } = "Not given";
+            /// <summary>
+            /// Empty Constructor for usage
+            /// </summary>
+            public Reminder() { }
+        }
         public class Infraction
         {
             public ulong GuildID { get; set; }
@@ -98,10 +109,39 @@ namespace RoleX.Modules
             await con.CloseAsync();
             return retval;
         }
+        public static async Task AddReminder(Reminder rmdr) => await NonQueryFunctionCreator($"INSERT INTO reminders VALUES ({rmdr.UserID}, \"{rmdr.TimeS:o}\", {rmdr.Reason});");
+        public static async Task<List<Reminder>> GetReminders(string cmdtext)
+        {
+            List<Reminder> retvals = new List<Reminder>();
+            using var con = new SqliteConnection(fph);
+            await con.OpenAsync();
+            using var cmd = new SqliteCommand
+            {
+                Connection = con,
+                CommandText = cmdtext
+            };
+            var read = await cmd.ExecuteReaderAsync();
+            await read.ReadAsync();
+            if (!read.HasRows || await read.IsDBNullAsync(0)) return new List<Reminder>();
+            else
+            {
+                do
+                {
+                    retvals.Add(new Reminder
+                    {
+                        UserID = Convert.ToUInt64(read.GetInt64(0)),
+                        Time = read.GetString(1),
+                        Reason = read.GetString(2)
+                    });
+                } while (await read.ReadAsync());
+            }
+            await read.CloseAsync();
+            await con.CloseAsync();
+            return retvals;
+        }
         /// <summary>
         /// Creates a MULTI LINE Reader (Query) function skeleton
         /// </summary>
-        /// <typeparam name="T">The return SQLite Dtype</typeparam>
         /// <param name="cmdtext">Command text to execute in SQLite</param>
         /// <param name="defval">Default value if no rows are found</param>
         /// <returns>The query reply (if exists) or default value</returns>
