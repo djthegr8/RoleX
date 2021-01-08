@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 namespace RoleX.Modules
 {
     [DiscordCommandClass("Channel Editor", "Edit Channel-wise perms of a Role using these commands!")]
+    [Alt("pinc")]
     public class Pincount : CommandModuleBase
     {
         [DiscordCommand("pincount", description = "Gets the number of pins in the channel", commandHelp = "pincount #channel", example = "pincount #media")]
