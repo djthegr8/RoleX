@@ -12,6 +12,7 @@ namespace RoleX.Modules
     public class Overwrites : CommandModuleBase
     {
         [RequiredUserPermissions(new[] { GuildPermission.ManageChannels})]
+        [Alt("ow")]
         [DiscordCommand("overwrites", commandHelp = "overwrites <#channel>", description = "Shows the Channel-wise overwrites", example = "overwrites #channel")]
         public async Task Os(params string[] args)
         {
