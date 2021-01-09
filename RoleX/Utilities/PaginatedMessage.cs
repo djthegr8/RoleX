@@ -177,7 +177,6 @@ namespace RoleX.Utilities {
                 await Message!.AddReactionAsync(Options.Back);
                 await Message!.AddReactionAsync(Options.Next);
                 await Message!.AddReactionAsync(Options.Last);
-
                 var manageMessages = Channel is IGuildChannel guildChannel &&
                                      (await guildChannel.GetUserAsync(Program.Client.CurrentUser.Id)).GetPermissions(guildChannel).ManageMessages;
 
@@ -373,22 +372,20 @@ namespace RoleX.Utilities {
         public IEmote Back = new Emoji("◀️");
         public bool DisplayInformationIcon;
         public IEmote First = new Emoji("⏮️");
-
-
         public string FooterFormat = "{0}/{1}";
         public IEmote Info = new Emoji("ℹ️");
         public string InformationText = "This is a paginator. React with the respective icons to change page.";
         public TimeSpan InfoTimeout = TimeSpan.FromSeconds(30);
         public IEmote Jump = new Emoji("🔢");
 
-        public JumpDisplayOptions JumpDisplayOptions = JumpDisplayOptions.WithManageMessages;
+        public JumpDisplayOptions JumpDisplayOptions = JumpDisplayOptions.Never;
         public IEmote Last = new Emoji("⏭️");
-        public IEmote Next = new Emoji("⏮️");
+        public IEmote Next = new Emoji("▶️");
 
         public bool StopEnabled = true;
         public IEmote Stop = new Emoji("⏹️");
 
-        public TimeSpan? Timeout = null;
+        public TimeSpan? Timeout = TimeSpan.FromMinutes(1);
         public PaginatedAppearanceOptions() { }
 
         public PaginatedAppearanceOptions(string informationText) {

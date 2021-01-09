@@ -4,6 +4,7 @@ using Discord.WebSocket;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using RoleX.Utilities;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -1057,22 +1058,12 @@ namespace Public_Bot
                 {
                     return await Context.Channel.SendMessageAsync(embed: embed.WithTitle(embed.Title.Substring(0, EmbedBuilder.MaxTitleLength - 5) + "...").Build());
                 }
-                else if (embed?.Fields?.Count >= EmbedBuilder.MaxFieldCount)
+                else if (embed?.Fields?.Count >= 6)
                 {
-                    IUserMessage xyz = null;
-                    try
-                    {
-                        xyz = await Context.Channel.SendMessageAsync(message, isTTS);
-                    }
-                    catch { }
-                    var batches = embed.Fields.Batch(10);
-                    foreach(var batch in batches)
-                    {
-                        embed.Fields = batch.ToList();
-                        xyz = await Context.Channel.SendMessageAsync(message, isTTS, embed.Build());
-                        await Task.Delay(500);
-                    }
-                    return xyz;
+                    var pM = new PaginatedMessage(PaginatedAppearanceOptions.Default, Context.Channel);
+                    var lofb = embed.Fields;
+                    pM.SetPages(embed.Description, lofb, 5);
+                    await pM.Resend();
                 }
                 else if (embed?.Length >= EmbedBuilder.MaxEmbedLength)
                 {
