@@ -39,7 +39,7 @@ namespace RoleX
             //}
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
             Client = new DiscordShardedClient(new DiscordSocketConfig { AlwaysDownloadUsers = true, LargeThreshold = 250, GuildSubscriptions = true });
-            CL2 = new DiscordRestClient(new DiscordSocketConfig{ AlwaysDownloadUsers = true, LargeThreshold = 250, GuildSubscriptions = true });
+            CL2 = new DiscordRestClient(new DiscordSocketConfig { AlwaysDownloadUsers = true, LargeThreshold = 250, GuildSubscriptions = true });
             Client.Log += Log;
 
             Client.MessageReceived += HandleCommandAsync;
@@ -52,7 +52,33 @@ namespace RoleX
 
             Client.UserJoined += AltAlertAsync;
 
-            Client.GuildMemberUpdated += async (previous, later) => {
+            var Timer = new Timer(new TimerCallback(async x =>
+            {
+                var currTime = DateTime.UtcNow;
+                var allRems = await SqliteClass.GetReminders($"Select * from reminders where Finished = 0 and Time = \"{currTime:u}\"");
+                if (allRems.Count > 0)
+                {
+                    allRems.ForEach(async x =>
+                    {
+                        try
+                        {
+                            await Client.GetUser(x.UserID).SendMessageAsync("", false, new EmbedBuilder
+                            {
+                                Title = "The time has come.",
+                                Description = $"You asked to be reminded about `{x.Reason}...`, and it's time!",
+                                Color = CommandModuleBase.Blurple
+                            }.WithCurrentTimestamp().Build());
+                        } catch
+                        {
+
+                        }
+                        await SqliteClass.ReminderFinished(x);
+                    });
+                }
+            }),null, 0,1000);
+
+            Client.GuildMemberUpdated += async (previous, later) =>
+            {
                 if (previous.Status != later.Status && later.Status != UserStatus.Offline && await SqliteClass.TrackCDAllUlongIDs($"select UserID from track_cd where TUserID = {later.Id};") != new System.Collections.Generic.List<ulong>())
                 {
                     var lis = await SqliteClass.TrackCDAllUlongIDs($"select UserID from track_cd where TUserID = {later.Id};");
@@ -94,7 +120,19 @@ namespace RoleX
 
         private async Task HandleReadyAsync(DiscordSocketClient _)
         {
-            await Client.Guilds.First(x => x.Id == 755076971041652786).GetTextChannel(762554740491026444).SendMessageAsync("We're back on bois!");
+            try
+            {
+                await Client.Guilds.First(x => x.Id == 755076971041652786).GetTextChannel(762554740491026444).SendMessageAsync("We're back on bois!");
+                var lor = await SqliteClass.GetReminders("Select * from reminders where Finished = 0;");
+                foreach (var idek in lor)
+                {
+                    if (idek.TimeS.CompareTo(DateTime.UtcNow) > 0)
+                    {
+                        await SqliteClass.ReminderFinished(idek);
+                        Console.WriteLine($"Ignoring reminder {idek.ID}, was offline.");
+                    }
+                }
+            } catch { }
         }
 
         private async Task HandleGuildJoinAsync(SocketGuild arg)
@@ -205,7 +243,7 @@ namespace RoleX
                 return "Failed";
             return "Unknown";
         }
-        
+
         public async Task HandleCommandAsync(SocketMessage s)
         {
 #pragma warning disable IDE0019 // Use pattern matching

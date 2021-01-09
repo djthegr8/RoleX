@@ -1,8 +1,7 @@
 using Discord;
 using Discord.WebSocket;
-using Public_Bot;
 using System;
-using System.Collections.Generic;
+using Public_Bot;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,60 +10,46 @@ namespace RoleX.Modules
     [DiscordCommandClass("Channel Editor", "Edit Channel-wise perms of a Role using these commands!")]
     public class Overwrites : CommandModuleBase
     {
-        [RequiredUserPermissions(new[] { GuildPermission.ManageChannels})]
+        [RequiredUserPermissions(new[] { GuildPermission.ManageChannels })]
         [Alt("ow")]
         [DiscordCommand("overwrites", commandHelp = "overwrites <#channel>", description = "Shows the Channel-wise overwrites", example = "overwrites #channel")]
         public async Task Os(params string[] args)
         {
-            /*switch (args.Length)
+            var channe = Context.Channel as SocketGuildChannel;
+            SocketGuildChannel channez = null;
+            if (args.Length > 0) channez = GetChannel(args[0]);
+            if (channez == null) channez = channe;
+            var eb = new EmbedBuilder
             {
-                case 0 or 1:
-                    await ReplyAsync("", false, new EmbedBuilder
-                    {
-                        Title = "Insufficient Parameters!",
-                        Description = $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}overwrites <#channel> <@role/@member>`",
-                        Color = Color.Red
-                    }.WithCurrentTimestamp());
-                    return;
-            }*/
-            if (args.Length == 0)
+                Title = "Permission Overwrites",
+                Color = Blurple
+            }.AddField("Channel", $"<#{channez.Id}>");
+            var pos = channez.PermissionOverwrites;
+            string rpos = "";
+            var i = 0;
+            foreach (var ov in pos.Where(x => x.TargetType == PermissionTarget.Role))
             {
-                var Embed = new EmbedBuilder
-                {
-                    Title = $"Overwrites for <#{Context.Channel.Id}>",
-                    Color = Blurple,
+                i++;
+                var allowstr = string.Join('\n', ov.Permissions.ToAllowList().Select(x => $"{x}"));
+                var deniedstr = string.Join('\n', ov.Permissions.ToDenyList().Select(x => $"{x}"));
+                Console.WriteLine(i % 2);
+                eb.AddField(GetRole(ov.TargetId.ToString()) == null ? "everyone" : GetRole(ov.TargetId.ToString()).Name,$"```\nAllowed Permissions\n{(allowstr == "" ? "None" : allowstr)}\nDenied Permissions\n{(deniedstr == "" ? "None" : deniedstr)}```\n", i == 3 ? false : true);
+                if (i == 3) i = -1;
+            }
+            string upos = "";
+            foreach (var ov in pos.Where(x => x.TargetType == PermissionTarget.User))
+            {
+                i++;
+                var allowstr = string.Join('\n', ov.Permissions.ToAllowList().Select(x => $"{x}"));
+                var deniedstr = string.Join('\n', ov.Permissions.ToDenyList().Select(x => $"{x}"));
+                Console.WriteLine(i % 2);
+                eb.AddField((await GetUser(ov.TargetId.ToString())).ToString(), $"```\nAllowed Permissions\n{(allowstr == "" ? "None" : allowstr)}\nDenied Permissions\n{(deniedstr == "" ? "None" : deniedstr)}```\n", i == 3 ? false : true);
+                if (i == 3) i = -1;
+            }
+            if (rpos != "") eb.AddField("Role Overwrites", rpos);
+            if (upos != "") eb.AddField("User Overwrites", upos);
+            await ReplyAsync(embed:eb.WithCurrentTimestamp());
 
-                };
-            }
-            else
-            {
-                var channe = Context.Channel as SocketGuildChannel;
-                var channez = GetChannel(args[0]);
-                if (channez != null) channe = channez;
-                var pos = channe.PermissionOverwrites;
-                string rpos = "```";
-                foreach (var ov in pos.Where(x => x.TargetType == PermissionTarget.Role))
-                {
-                    rpos += $"<@&{ov.TargetId}>\n";
-                    rpos += ov.Permissions.ToAllowList().Count > 0 ? "✅ " : "" + string.Join("\n✅", ov.Permissions.ToAllowList()) + "\n" + (ov.Permissions.ToDenyList().Count > 0 ? "❌ " : "") + string.Join("\n❌ ", ov.Permissions.ToDenyList());
-                }
-                rpos += "```";
-                string upos = "```";
-                foreach (var ov in pos.Where(x => x.TargetType == PermissionTarget.User))
-                {
-                    upos += $"<@{ov.TargetId}>\n";
-                    upos += ov.Permissions.ToAllowList().Count > 0 ? "✅ " : "" + string.Join("\n✅", ov.Permissions.ToAllowList()) + "\n" + (ov.Permissions.ToDenyList().Count > 0 ? "❌ " : "") + string.Join("\n❌ ", ov.Permissions.ToDenyList());
-                }
-                upos += "```";
-                await ReplyAsync("", false, new EmbedBuilder
-                {
-                    Title = "Permission Overwrites",
-                    Color = Blurple
-                }.AddField("Channel", $"<#{channe.Id}>")
-                .AddField("Role Overwrites", rpos)
-                .AddField("User Overwrites", upos)
-                .WithCurrentTimestamp());
-            }
         }
     }
 }

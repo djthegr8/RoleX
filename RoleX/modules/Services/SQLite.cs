@@ -14,11 +14,23 @@ namespace RoleX.Modules
             Buying,
             Selling
         }
-        public class Reminder
-        {
+        public class Reminder {
+            /// <summary>
+            /// The Reminder ID.
+            /// </summary>
+            public string ID { get; set; } = Guid.NewGuid().ToString();
+            /// <summary>
+            /// ID of User who set the Reminder 
+            /// </summary>
             public ulong UserID { get; set; }
-            public TimeSpan TimeS { get; internal set; }
-            public string Time { set { TimeS = TimeSpan.Parse(value); } }
+            /// <summary>
+            /// Time when reminder to DM!
+            /// </summary>
+            public DateTime TimeS { get; internal set; }
+            public string Time { set { TimeS = DateTime.Parse(value); } }
+            /// <summary>
+            /// Reason why reminder was set, or "Not given"
+            /// </summary>
             public string Reason { get; set; } = "Not given";
             /// <summary>
             /// Empty Constructor for usage
@@ -109,7 +121,13 @@ namespace RoleX.Modules
             await con.CloseAsync();
             return retval;
         }
-        public static async Task AddReminder(Reminder rmdr) => await NonQueryFunctionCreator($"INSERT INTO reminders VALUES ({rmdr.UserID}, \"{rmdr.TimeS:o}\", {rmdr.Reason});");
+        public static async Task ReminderFinished(Reminder rmdr) => await NonQueryFunctionCreator($"UPDATE reminders SET Finished = 1 WHERE ID = \"{rmdr.ID}\";");
+        public static async Task AddReminder(Reminder rmdr) => await NonQueryFunctionCreator($"INSERT INTO reminders VALUES (\"{rmdr.ID}\",{rmdr.UserID}, \"{rmdr.TimeS:u}\", \"{rmdr.Reason}\", 0);");
+        /// <summary>
+        /// Gets all reminders meeting pattern. Note that Finished? isn't a property.
+        /// </summary>
+        /// <param name="cmdtext">The text to execute</param>
+        /// <returns>List of reminders meeting <paramref name="cmdtext"/></returns>
         public static async Task<List<Reminder>> GetReminders(string cmdtext)
         {
             List<Reminder> retvals = new List<Reminder>();
@@ -129,9 +147,10 @@ namespace RoleX.Modules
                 {
                     retvals.Add(new Reminder
                     {
-                        UserID = Convert.ToUInt64(read.GetInt64(0)),
-                        Time = read.GetString(1),
-                        Reason = read.GetString(2)
+                        ID = read.GetString(0),
+                        UserID = Convert.ToUInt64(read.GetInt64(1)),
+                        Time = read.GetString(2),
+                        Reason = read.GetString(3)
                     });
                 } while (await read.ReadAsync());
             }

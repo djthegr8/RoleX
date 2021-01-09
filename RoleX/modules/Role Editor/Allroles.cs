@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using RoleX.Utilities;
 using System.Threading.Tasks;
 
 namespace RoleX.Modules
@@ -17,23 +18,25 @@ namespace RoleX.Modules
         public async Task AllRoles(params string[] _)
         {
             //string rlx = "```" + string.Join('\n', Context.Guild.Roles.OrderByDescending(x => x.Position).Select(x => $"{x.Name} ID: {x.Id}")) + "```";
-            var mbed = new EmbedBuilder
+            var paginatedMessage = new PaginatedMessage(PaginatedAppearanceOptions.Default, Context.Channel, new PaginatedMessage.MessagePage("Loading..."))
             {
                 Title = $"All roles in {Context.Guild.Name}",
+                Timestamp = DateTimeOffset.Now,
                 Color = Blurple
-            }.WithCurrentTimestamp();
+            };
+            var embb = new List<EmbedFieldBuilder>();
             for (int y = 0; y < Context.Guild.Roles.Count; y++)
             {
                 var x = Context.Guild.Roles.OrderByDescending(x => x.Position).ElementAt(y);
-                mbed.Fields.Add(new EmbedFieldBuilder()
+                embb.Add(new EmbedFieldBuilder()
                 {
                     Name = x.Name,
                     Value = $"ID: {x.Id}\nPermValue: [{x.Permissions.RawValue}](http://discordapi.com/permissions.html#{x.Permissions.RawValue})\n",
                     IsInline = (y % 2 == 0)
                 });
             };
-            Console.WriteLine(mbed.Fields.Count);
-            await ReplyAsync("", false, mbed);
+            paginatedMessage.SetPages("Here's a list of all roles in the Server", embb, 5);
+            await paginatedMessage.Resend();
         }
     }
 }
