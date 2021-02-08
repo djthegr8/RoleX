@@ -1,16 +1,10 @@
-using Discord;
-using Discord.WebSocket;
-using System;
-using System.Timers;
-using Public_Bot;
 using System.Collections.Generic;
-using static RoleX.Program;
-using System.Text.RegularExpressions;
-
 using System.Linq;
 using System.Threading.Tasks;
-using static RoleX.Modules.SqliteClass;
-namespace RoleX.Modules
+using Discord;
+using RoleX.Modules.Services;
+using static RoleX.Modules.Services.SqliteClass;
+namespace RoleX.Modules.Trading
 {
     [DiscordCommandClass("Trading", "Class with trading related commands")]
     public partial class Tradinglist : CommandModuleBase
@@ -41,14 +35,13 @@ namespace RoleX.Modules
                 }.WithCurrentTimestamp());
                 return;
             }
-            else
+
+            var gu = await GetUser(lc[0]);
+            await ReplyAsync(embed: new EmbedBuilder
             {
-                var gu = await GetUser(lc[0]);
-                await ReplyAsync(embed: new EmbedBuilder
-                {
-                    Title = $"**{gu.Username}#{gu.Discriminator}**'s Trading List",
-                    Color = Blurple,
-                    Fields = new List<EmbedFieldBuilder>
+                Title = $"**{gu.Username}#{gu.Discriminator}**'s Trading List",
+                Color = Blurple,
+                Fields = new List<EmbedFieldBuilder>
                 {
                     new EmbedFieldBuilder
                     {
@@ -61,8 +54,7 @@ namespace RoleX.Modules
                         Value = $"{(await StringGetter(gu.Id, TradeTexts.Selling) == "" ? "*None*": string.Join('\n',(await StringGetter(gu.Id, TradeTexts.Selling)).Remove(0,1).Split(';').Select((al, idx) => $"{idx+1}) {al}")))}"
                     }
                 }
-                }.WithCurrentTimestamp());
-            }
+            }.WithCurrentTimestamp());
         }
     }
 }

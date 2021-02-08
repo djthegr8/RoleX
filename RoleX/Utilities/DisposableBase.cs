@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reactive.Subjects;
 
-namespace Common.Utils {
+namespace RoleX.Utilities {
     public class DisposableBase : IDisposable {
         public ISubject<DisposableBase> Disposed { get; private set; } = new Subject<DisposableBase>();
         public bool IsDisposed { get; private set; }

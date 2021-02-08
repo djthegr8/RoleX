@@ -1,11 +1,10 @@
-using Discord;
-using Public_Bot;
 using System.IO;
-using System;
 using System.Linq;
-using MoreLinq;
 using System.Threading.Tasks;
-namespace RoleX.Modules
+using Discord;
+using RoleX.Modules.Services;
+
+namespace RoleX.Modules.Developer
 {
     [DiscordCommandClass("Developer", "Dev commands that you can't use 🤣!")]
     public class Sqlite : CommandModuleBase

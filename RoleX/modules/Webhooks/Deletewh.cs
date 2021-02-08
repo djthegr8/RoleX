@@ -1,12 +1,9 @@
-using Discord;
-using Discord.WebSocket;
-using Public_Bot;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
+using Discord;
+using RoleX.Modules.Services;
 
-namespace RoleX.Modules
+namespace RoleX.Modules.Webhooks
 {
     [DiscordCommandClass("Webhook Manager", "Helps manage all webhooks!")]
     public class Deletewh : CommandModuleBase
@@ -37,7 +34,8 @@ namespace RoleX.Modules
                 }.WithCurrentTimestamp());
                 return;
             }
-            else if (iGTSW.Count == 1)
+
+            if (iGTSW.Count == 1)
             {
                 var reqwh = iGTSW[0];
                 await ReplyAsync("", false, new EmbedBuilder
@@ -49,22 +47,19 @@ namespace RoleX.Modules
                 await reqwh.DeleteAsync();
                 return;
             }
-            else
+            var emb = new EmbedBuilder
             {
-                var emb = new EmbedBuilder
-                {
-                    Title = "Multiple Webhooks found!",
-                    Description = $"We found multiple webhooks by your query `{args[0]}`",
-                    Color = Color.Red
-                }.WithCurrentTimestamp();
-                for (int i = 0; i < iGTSW.Count; i++)
-                {
-                    Discord.Rest.RestWebhook rw = iGTSW[i];
-                    emb.AddField($"{i + 1}) " + rw.Name, $"Channel: <#{rw.ChannelId}>\nCreated By: {rw.Creator.Username}#{rw.Creator.Discriminator}\nAvatar: [link]({(string.IsNullOrEmpty(rw.GetAvatarUrl()) ? "https://discord.com/assets/6debd47ed13483642cf09e832ed0bc1b.png" : rw.GetAvatarUrl())})");
-                }
-                await ReplyAsync("", false, emb);
-                return;
+                Title = "Multiple Webhooks found!",
+                Description = $"We found multiple webhooks by your query `{args[0]}`",
+                Color = Color.Red
+            }.WithCurrentTimestamp();
+            for (int i = 0; i < iGTSW.Count; i++)
+            {
+                Discord.Rest.RestWebhook rw = iGTSW[i];
+                emb.AddField($"{i + 1}) " + rw.Name, $"Channel: <#{rw.ChannelId}>\nCreated By: {rw.Creator.Username}#{rw.Creator.Discriminator}\nAvatar: [link]({(string.IsNullOrEmpty(rw.GetAvatarUrl()) ? "https://discord.com/assets/6debd47ed13483642cf09e832ed0bc1b.png" : rw.GetAvatarUrl())})");
             }
+            await ReplyAsync("", false, emb);
+            return;
         }
     }
 }

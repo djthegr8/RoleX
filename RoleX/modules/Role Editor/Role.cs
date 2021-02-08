@@ -1,13 +1,10 @@
+using System.Linq;
+using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
-using Public_Bot;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using RoleX.Modules.Services;
 
-namespace RoleX.Modules
+namespace RoleX.Modules.Role_Editor
 {
     [DiscordCommandClass("Role Editor", "Class for editing of Roles!")]
     public class Role : CommandModuleBase
@@ -24,7 +21,7 @@ namespace RoleX.Modules
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "Insufficient Parameters",
-                        Description = $"The way to use the command is `{await SqliteClass.PrefixGetter(Context.Guild.Id)}add <@user> <@role>`",
+                        Description = $"The way to use the command is `{await SqliteClass.PrefixGetter(Context.Guild.Id)}role <@user> <@role>`",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
                     return;

@@ -1,12 +1,10 @@
-using Discord;
-using Discord.WebSocket;
-using Public_Bot;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Discord;
+using Discord.WebSocket;
+using RoleX.Modules.Services;
 
-namespace RoleX.Modules
+namespace RoleX.Modules.Channel_Permission
 {
     [DiscordCommandClass("Channel Editor", "Edit Channel-wise perms of a Role using these commands!")]
     public class Chdesc : CommandModuleBase
@@ -37,6 +35,9 @@ namespace RoleX.Modules
                 args = argsL.ToArray();
             }
             var bchname = string.Join(' ', args.Skip(1));
+            if (cha as SocketTextChannel == null){ await ReplyAsync("You can't do this to VCs. Just no.");
+                return;
+            }
             await (cha as SocketTextChannel).ModifyAsync(d => d.Topic = bchname);
             await ReplyAsync("", false, new EmbedBuilder
             {

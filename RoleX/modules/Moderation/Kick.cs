@@ -1,15 +1,12 @@
-using Discord;
-using Discord.Rest;
-using Discord.WebSocket;
-using Public_Bot;
 using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Timers;
-using static RoleX.Modules.SqliteClass;
+using Discord;
+using Discord.WebSocket;
+using RoleX.Modules.Services;
+using static RoleX.Modules.Services.SqliteClass;
 
-namespace RoleX.Modules
+namespace RoleX.Modules.Moderation
 {
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Kick : CommandModuleBase
@@ -67,7 +64,8 @@ namespace RoleX.Modules
                     await AddToModlogs(Context.Guild.Id, gUser.Id, Context.User.Id, Punishment.Kick, DateTime.Now, args.Length > 1 ? string.Join(' ', args.Skip(1)) : $"");
                     return;
                 }
-                else if (gUser.Hierarchy == (Context.User as SocketGuildUser).Hierarchy)
+
+                if (gUser.Hierarchy == (Context.User as SocketGuildUser).Hierarchy)
                 {
                     await ReplyAsync("", false, new EmbedBuilder
                     {
@@ -77,27 +75,22 @@ namespace RoleX.Modules
                     }.WithCurrentTimestamp());
                     return;
                 }
-                else
-                {
-                    await ReplyAsync("", false, new EmbedBuilder
-                    {
-                        Title = "Not gonna happen",
-                        Description = "That person is above you!?",
-                        Color = Color.Red
-                    }.WithCurrentTimestamp());
-                    return;
-                }
-            }
-            else
-            {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
-                    Title = "What user?",
-                    Description = "That user isn't valid :(",
+                    Title = "Not gonna happen",
+                    Description = "That person is above you!?",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
             }
+
+            await ReplyAsync("", false, new EmbedBuilder
+            {
+                Title = "What user?",
+                Description = "That user isn't valid :(",
+                Color = Color.Red
+            }.WithCurrentTimestamp());
+            return;
         }
     }
 }

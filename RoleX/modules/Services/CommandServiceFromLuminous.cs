@@ -1,10 +1,10 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using RoleX.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using RoleX.Utilities;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -12,9 +12,9 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static MoreLinq.Extensions.BatchExtension;
-using static Public_Bot.CustomCommandService;
+using static RoleX.Modules.Services.CustomCommandService;
 
-namespace Public_Bot
+namespace RoleX.Modules.Services
 {
     public enum Punishment
     {
@@ -414,15 +414,19 @@ namespace Public_Bot
         /// <returns>The <see cref="ICommandResult"/> containing what the status of the execution is </returns>
         public async Task<ICommandResult> ExecuteAsync(SocketCommandContext context, string pref)
         {
-            bool IsMentionCommand = context.Message.Content.StartsWith($"<@{context.Client.CurrentUser.Id}>") || (context.Message.Content.StartsWith($"<@!{context.Client.CurrentUser.Id}>"));
-            string[] param = IsMentionCommand
-                ? context.Message.Content.Replace($"<@{context.Client.CurrentUser.Id}>", string.Empty).Replace($"<@!{context.Client.CurrentUser.Id}>", "").Trim().Split(' ')
-                : context.Message.Content.Split(' ');
-
+            bool IsMentionCommand = false;
+            var msgcontent = context.Message.Content;
+            if (!msgcontent.Split(' ')[0].Contains("alias"))
+            {
+                var alss = await SqliteClass.GuildAliasGetter(context.Guild.Id);
+                foreach (var (aliasName, aliasContent) in alss)
+                {
+                    msgcontent = msgcontent.Replace(aliasName, aliasContent);
+                }
+            }
+            string[] param = msgcontent.Split(' ');
             param = param.TakeLast(param.Length - 1).ToArray();
-            string command = IsMentionCommand
-                ? context.Message.Content.Replace($"<@{context.Client.CurrentUser.Id}>", string.Empty).Replace($"<@!{context.Client.CurrentUser.Id}>", "").Trim().Split(' ')[0]
-                : context.Message.Content.Remove(0, pref.Length).Split(' ')[0];
+            string command = msgcontent.Remove(0, pref.Length).Split(' ')[0];
             var commandobj = CommandList.Where(x => x.CommandName.ToLower() == command);
             var altob = CommandList.Where(x => x.alts.Any(x => x.ToLower() == command));
             if (!commandobj.Any())
@@ -446,9 +450,15 @@ namespace Public_Bot
             try
             {
                 // Add more flags here
-                if (idegk.RemoveAll(idegc => idegc == "-q") >= 1) await context.Message.DeleteAsync();
+                if (idegk.IndexOf("-q") != -1)
+                {
+                    idegk.RemoveAt(idegk.LastIndexOf("-q"));
+                    await context.Message.DeleteAsync();
+                }
             }
-            catch { }
+            catch
+            { // ignore
+            }
             param = idegk.ToArray();
             foreach (var cmd in commandobj)
             {
@@ -458,8 +468,7 @@ namespace Public_Bot
                 return results.First(x => x.IsSuccess);
             if (results.Count == 1)
                 return results[0];
-            else
-                return new CommandResult() { Results = results.ToArray(), MultipleResults = true, IsSuccess = false };
+            return new CommandResult() { Results = results.ToArray(), MultipleResults = true, IsSuccess = false };
         }
         private async Task<CommandResult> ExecuteCommand(Command cmd, SocketCommandContext context, string[] param)
         {
@@ -522,7 +531,8 @@ namespace Public_Bot
                     return new CommandResult() { Exception = ex, Result = CommandStatus.Error, IsSuccess = false };
                 }
             }
-            else if (cmd.Paramaters.Length == 0 && param.Length > 0)
+
+            if (cmd.Paramaters.Length == 0 && param.Length > 0)
                 return new CommandResult() { Result = CommandStatus.InvalidParams, IsSuccess = false };
             if (cmd.Paramaters.Last().GetCustomAttributes(typeof(ParamArrayAttribute), false).Length > 0)
             {
@@ -591,8 +601,7 @@ namespace Public_Bot
                         Task.Run(async () => await s).Wait();
                         if (s.Exception == null)
                             return new CommandResult() { Result = CommandStatus.Success, IsSuccess = true };
-                        else
-                            return new CommandResult() { Exception = s.Exception.InnerException, Result = CommandStatus.Error, IsSuccess = false };
+                        return new CommandResult() { Exception = s.Exception.InnerException, Result = CommandStatus.Error, IsSuccess = false };
 
                     }
                     catch (Exception ex)
@@ -602,8 +611,8 @@ namespace Public_Bot
                     }
 
                 }
-                else
-                    return new CommandResult() { Result = CommandStatus.InvalidParams, IsSuccess = false };
+
+                return new CommandResult() { Result = CommandStatus.InvalidParams, IsSuccess = false };
             }
             if (cmd.Paramaters.Length == param.Length)
             {
@@ -643,8 +652,7 @@ namespace Public_Bot
                         Task.Run(async () => await s).Wait();
                         if (s.Exception == null)
                             return new CommandResult() { Result = CommandStatus.Success, IsSuccess = true };
-                        else
-                            return new CommandResult() { Exception = s.Exception.InnerException, Result = CommandStatus.Error, IsSuccess = false };
+                        return new CommandResult() { Exception = s.Exception.InnerException, Result = CommandStatus.Error, IsSuccess = false };
 
                     }
                     catch (TargetInvocationException ex)
@@ -654,12 +662,12 @@ namespace Public_Bot
                     }
 
                 }
-                else
-                    return new CommandResult() { Result = CommandStatus.InvalidParams, IsSuccess = false };
+
+                return new CommandResult() { Result = CommandStatus.InvalidParams, IsSuccess = false };
 
             }
-            else
-                return new CommandResult() { Result = CommandStatus.NotEnoughParams, IsSuccess = false };
+
+            return new CommandResult() { Result = CommandStatus.NotEnoughParams, IsSuccess = false };
         }
         public class Commands : ICommands
         {
@@ -676,10 +684,9 @@ namespace Public_Bot
             {
                 if (CommandName == name)
                     return true;
-                else if (Alts.Contains(name))
+                if (Alts.Contains(name))
                     return true;
-                else
-                    return false;
+                return false;
             }
         }
     }
@@ -693,6 +700,14 @@ namespace Public_Bot
             701029647760097361,
             615873008959225856
         };
+        /// <summary>
+        /// Number of aliases allowed for non-premium users
+        /// </summary>
+        public static readonly ushort AllowedAliasesNonPremium = 20;
+        /// <summary>
+        /// Number of premium aliases allowed
+        /// </summary>
+        public static readonly ushort AllowedAliasesPremium = 50;
         public static readonly Color Blurple = new Color(114, 137, 218);
         /// <summary>
         /// If the user has execute permission based on the <see cref="CustomCommandService.Settings.HasPermissionMethod"/>
@@ -739,17 +754,18 @@ namespace Public_Bot
         public async Task<GuildEmote> GetEmote(string str)
         {
             var replstr = str.Replace("a:", "").Replace("<", "").Replace(">", "").Replace(":", "");
+            Console.WriteLine(replstr);
             if (Context.Guild.Emotes.Any(x => replstr.ToLower().StartsWith(x.Name.ToLower()))) return Context.Guild.Emotes.First(x => replstr.ToLower().StartsWith(x.Name.ToLower()));
             Console.WriteLine(replstr);
             try
             {
                 var resultString = ulong.Parse(Regex.Match(replstr, @"\d+").Value);
-            
-            if (resultString == 0 || await Context.Guild.GetEmoteAsync(resultString) == null)
-            {
-                return null;
-            }
-            return await Context.Guild.GetEmoteAsync(resultString);
+
+                if (resultString == 0 || await Context.Guild.GetEmoteAsync(resultString) == null)
+                {
+                    return null;
+                }
+                return await Context.Guild.GetEmoteAsync(resultString);
             }
             catch { return null; }
 
@@ -794,8 +810,7 @@ namespace Public_Bot
             }
             if (ulong.TryParse(name, out var res))
                 return Context.Guild.CategoryChannels.Any(x => x.Id == res) ? Context.Guild.CategoryChannels.First(x => x.Id == res) : null;
-            else
-                return Context.Guild.CategoryChannels.Any(x => x.Name.ToLower().StartsWith(name.ToLower())) ? Context.Guild.CategoryChannels.First(x => x.Name.ToLower().StartsWith(name.ToLower())) : null;
+            return Context.Guild.CategoryChannels.Any(x => x.Name.ToLower().StartsWith(name.ToLower())) ? Context.Guild.CategoryChannels.First(x => x.Name.ToLower().StartsWith(name.ToLower())) : null;
 
 
         }
@@ -808,28 +823,26 @@ namespace Public_Bot
                 var u = Context.Guild.GetUser(ulong.Parse(regex.Match(user).Groups[1].Value));
                 return u;
             }
-            else
+
+            user = user.ToLower();
+            if (Context.Message.MentionedUsers.Any())
             {
-                user = user.ToLower();
-                if (Context.Message.MentionedUsers.Any())
-                {
-                    return Context.Message.MentionedUsers.First() as SocketGuildUser;
-                }
-                else if (Context.Guild.Users.Any(x => x.Username.ToLower().StartsWith(user)))
-                {
-                    return Context.Guild.Users.First(x => x.Username.ToLower().StartsWith(user));
-                }
-                else if (Context.Guild.Users.Any(x => x.ToString().ToLower().StartsWith(user)))
-                {
-                    return Context.Guild.Users.First(x => x.ToString().ToLower().StartsWith(user));
-                }
-                else if (Context.Guild.Users.Any(x => x.Nickname != null && x.Nickname.ToLower().StartsWith(user)))
-                {
-                    return Context.Guild.Users.First(x => x.Nickname != null && x.Nickname.ToLower().StartsWith(user));
-                }
-                else
-                    return null;
+                return Context.Message.MentionedUsers.First() as SocketGuildUser;
             }
+
+            if (Context.Guild.Users.Any(x => x.Username.ToLower().StartsWith(user)))
+            {
+                return Context.Guild.Users.First(x => x.Username.ToLower().StartsWith(user));
+            }
+            if (Context.Guild.Users.Any(x => x.ToString().ToLower().StartsWith(user)))
+            {
+                return Context.Guild.Users.First(x => x.ToString().ToLower().StartsWith(user));
+            }
+            if (Context.Guild.Users.Any(x => x.Nickname != null && x.Nickname.ToLower().StartsWith(user)))
+            {
+                return Context.Guild.Users.First(x => x.Nickname != null && x.Nickname.ToLower().StartsWith(user));
+            }
+            return null;
         }
         public async Task<IUser> GetBannedUser(string uname)
         {
@@ -973,7 +986,8 @@ namespace Public_Bot
             {
                 return new Tuple<GuildPermission, bool>(Gp, true);
             }
-            else return new Tuple<GuildPermission, bool>(GuildPermission.AddReactions, false);
+
+            return new Tuple<GuildPermission, bool>(GuildPermission.AddReactions, false);
         }
         public static Tuple<ChannelPermission, bool> GetChannelPermission(string perm)
         {
@@ -981,7 +995,8 @@ namespace Public_Bot
             {
                 return new Tuple<ChannelPermission, bool>(Gp, true);
             }
-            else return new Tuple<ChannelPermission, bool>(ChannelPermission.AddReactions, false);
+
+            return new Tuple<ChannelPermission, bool>(ChannelPermission.AddReactions, false);
         }
         public SocketRole GetRole(string role)
         {
@@ -989,17 +1004,15 @@ namespace Public_Bot
             if (regex.IsMatch(role))
             {
                 var u = Context.Guild.GetRole(ulong.Parse(regex.Match(role).Groups[1].Value));
-                if (!u.IsEveryone) return u;
-                else return null;
-            }
-            else
-                if (Context.Guild.Roles.Any(x => !x.IsEveryone && x.Name.ToLower().StartsWith(role.ToLower())))
-                return Context.Guild.Roles.First(x => x.Name.ToLower().StartsWith(role.ToLower()));
-            else
-                    if (Context.Guild.Roles.Any(x => !x.IsEveryone && x.Name.ToLower().StartsWith(role.ToLower())))
-                return Context.Guild.Roles.First(x => x.Name.ToLower().StartsWith(role.ToLower()));
-            else
+                if (u != null && !u.IsEveryone) return u;
                 return null;
+            }
+
+            if (Context.Guild.Roles.Any(x => !x.IsEveryone && x.Name.ToLower().StartsWith(role.ToLower())))
+                return Context.Guild.Roles.First(x => x.Name.ToLower().StartsWith(role.ToLower()));
+            if (Context.Guild.Roles.Any(x => !x.IsEveryone && x.Name.ToLower().StartsWith(role.ToLower())))
+                return Context.Guild.Roles.First(x => x.Name.ToLower().StartsWith(role.ToLower()));
+            return null;
         }
         /// <summary>
         /// Takes an Context, and sends a message to the channel it was sent in, while customizing the embed to fit parameters.
@@ -1040,13 +1053,17 @@ namespace Public_Bot
                 if (embed?.Description?.Length >= EmbedBuilder.MaxDescriptionLength)
                 {
                     //devids.Select(async x => await (await GetUser(x.ToString())).SendMessageAsync($"yet another too long description. ```{Context.Message.Content}```"));
-                    int chunkSize = 2000;
+                    const int chunkSize = 2000;
                     var chunks = embed.Description.Batch(chunkSize).Select(r => new string(r.ToArray()));
                     IUserMessage xyz = null;
                     try
                     {
                         xyz = await Context.Channel.SendMessageAsync(message, isTTS);
-                    } catch { }
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
                     foreach (var chunk in chunks)
                     {
                         xyz = await Context.Channel.SendMessageAsync("", false, embed.WithDescription(chunk).Build());
@@ -1054,11 +1071,12 @@ namespace Public_Bot
                     }
                     return xyz;
                 }
-                else if (embed?.Title?.Length >= EmbedBuilder.MaxTitleLength)
+
+                if (embed?.Title?.Length >= EmbedBuilder.MaxTitleLength)
                 {
                     return await Context.Channel.SendMessageAsync(embed: embed.WithTitle(embed.Title.Substring(0, EmbedBuilder.MaxTitleLength - 5) + "...").Build());
                 }
-                else if (embed?.Fields?.Count >= 6)
+                if (embed?.Fields?.Count >= 6)
                 {
                     var pM = new PaginatedMessage(PaginatedAppearanceOptions.Default, Context.Channel);
                     var lofb = embed.Fields;
@@ -1086,12 +1104,12 @@ namespace Public_Bot
             }
             var here = await Context.Channel.SendMessageAsync(message, isTTS, embed?.Build(), options).ConfigureAwait(false);
             var ranjom = new Random();
-            var irdk = ranjom.Next(10);
-            if (irdk == 1 && !await RoleX.Modules.Services.TopGG.HasVoted(Context.User.Id))
+            var irdk = ranjom.Next(8);
+            if (irdk == 1 && !await TopGG.HasVoted(Context.User.Id))
             {
                 var idk = ranjom.Next(2);
-                if (idk == 1 || (await RoleX.Program.CL2.GetGuildsAsync()).Any(x => x.Id == 591660163229024287 && x.GetUserAsync(Context.User.Id) != null)) await Context.Channel.SendMessageAsync("", false, new EmbedBuilder { Title = "Vote for RoleX TODAY (LIKE SRSLY TODAY)", Url="https://tiny.cc/rolexdsl", Description = "Support RoleX by [voting](http:/tiny.cc/rolexdsl) for it in top.gg!", Color = Blurple}.WithCurrentTimestamp().Build());
-                else await Context.Channel.SendMessageAsync("", false, new EmbedBuilder { Title = "Join our support server!", Url = "https://tiny.cc/rolexdsl", Description = "Support RoleX by [voting](http:/tiny.cc/rolexdsl) for it in top.gg!", Color = Blurple }.WithCurrentTimestamp().Build());
+                if (idk == 1 || (await RoleX.Program.CL2.GetGuildsAsync()).Any(x => x.Id == 591660163229024287 && x.GetUserAsync(Context.User.Id) != null)) await Context.Channel.SendMessageAsync("", false, new EmbedBuilder { Title = "Vote for RoleX!", Url = "https://tiny.cc/rolexdsl", Description = "Support RoleX by [voting](http:/tiny.cc/rolexdsl) for it in top.gg!", ImageUrl = "https://media.discordapp.net/attachments/745266816179241050/808311320373624832/B22rOemKFGmIAAAAAElFTkSuQmCC.png", Color = Blurple }.WithCurrentTimestamp().Build());
+                else await Context.Channel.SendMessageAsync("", false, new EmbedBuilder { Title = "Join our support server!", Url = "https://tiny.cc/rolexdsl", Description = "Support RoleX by [voting](http:/tiny.cc/rolexdsl) for it on top.gg!", Color = Blurple }.WithCurrentTimestamp().Build());
             }
             return here;
         }

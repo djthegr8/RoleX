@@ -1,15 +1,12 @@
-using Discord;
-using Discord.Rest;
-using Discord.WebSocket;
-using Public_Bot;
 using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Timers;
-using static RoleX.Modules.SqliteClass;
+using Discord;
+using Discord.WebSocket;
+using RoleX.Modules.Services;
+using static RoleX.Modules.Services.SqliteClass;
 
-namespace RoleX.Modules
+namespace RoleX.Modules.Moderation
 {
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Slowmode : CommandModuleBase
@@ -47,7 +44,7 @@ namespace RoleX.Modules
             else if (xcatg == null)
             {
                 // Channel is not null
-                if (xchnl as SocketTextChannel == null)
+                if (!(xchnl is SocketTextChannel))
                 {
                     await ReplyAsync(embed: new EmbedBuilder
                     {
@@ -97,7 +94,8 @@ namespace RoleX.Modules
                 }.WithCurrentTimestamp());
                 return;
             }
-            else if (int.TryParse(string.Join("", args[k].SkipLast(1)), out int timezar))
+
+            if (int.TryParse(string.Join("", args[k].SkipLast(1)), out int timezar))
             {
                 ts = args[k].Last() switch
                 {

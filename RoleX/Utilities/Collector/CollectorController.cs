@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Bot.Utilities.Collector {
+namespace RoleX.Utilities.Collector {
     public class CollectorController {
         public event EventHandler<CollectorEventArgsBase>? RemoveArgsFailed;
         private Timer? _timer;

@@ -1,15 +1,13 @@
-using Discord;
-using Discord.Rest;
-using Discord.WebSocket;
-using Public_Bot;
 using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
-using static RoleX.Modules.SqliteClass;
+using Discord;
+using Discord.WebSocket;
+using RoleX.Modules.Services;
+using static RoleX.Modules.Services.SqliteClass;
 
-namespace RoleX.Modules
+namespace RoleX.Modules.Moderation
 {
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Mute : CommandModuleBase
@@ -18,7 +16,7 @@ namespace RoleX.Modules
         [DiscordCommand("mute", description = "Mutes the given user", example = "mute @Dumbkid 5m For trying to ping everyone", commandHelp = "mute <@user> <time> <reason>")]
         public async Task RMute(params string[] args)
         {
-            if (await MutedRoleIDGetter(Context.Guild.Id) == 0)
+            if (await MutedRoleIdGetter(Context.Guild.Id) == 0)
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
@@ -57,7 +55,8 @@ namespace RoleX.Modules
                     }.WithCurrentTimestamp());
                     return;
                 }
-                else if (int.TryParse(string.Join("", args[1].SkipLast(1)), out int timezar))
+
+                if (int.TryParse(string.Join("", args[1].SkipLast(1)), out int timezar))
                 {
                     ts = args[1].Last() switch
                     {
@@ -115,7 +114,7 @@ namespace RoleX.Modules
                     catch { }
                     string guildName = Context.Guild.Name;
                     await AddToModlogs(Context.Guild.Id, gUser.Id, Context.User.Id, Punishment.Mute, DateTime.Now, args.Length > 2 ? string.Join(' ', args.Skip(2)) : "");
-                    await gUser.AddRoleAsync(Context.Guild.GetRole(await MutedRoleIDGetter(Context.Guild.Id)));
+                    await gUser.AddRoleAsync(Context.Guild.GetRole(await MutedRoleIdGetter(Context.Guild.Id)));
                     if (!isValidTime)
                     {
                         return;
@@ -130,44 +129,40 @@ namespace RoleX.Modules
                     {
                         try
                         {
-                            await gUser.RemoveRoleAsync(Context.Guild.GetRole(await MutedRoleIDGetter(Context.Guild.Id)));
+                            await gUser.RemoveRoleAsync(Context.Guild.GetRole(await MutedRoleIdGetter(Context.Guild.Id)));
                             await gUser.SendMessageAsync($"**You have been unmuted on {guildName}**");
                         }
                         catch { }
                     };
                     return;
                 }
-                else if (gUser.Hierarchy == (Context.User as SocketGuildUser).Hierarchy)
+
+                if (gUser.Hierarchy == (Context.User as SocketGuildUser).Hierarchy)
                 {
                     await ReplyAsync("", false, new EmbedBuilder
                     {
-                        Title = $"Seriously??",
+                        Title = $"Seriously?? <a:clapjohn:785371886695612427>",
                         Color = Color.Red,
-                        ImageUrl = "https://cdn.discordapp.com/attachments/758922634749542420/760180089870090320/unknown.png"
+                        ImageUrl = "https://media.discordapp.net/attachments/758922634749542420/798424027370094652/unknown.png"
                     }.WithCurrentTimestamp());
                     return;
                 }
-                else
-                {
-                    await ReplyAsync("", false, new EmbedBuilder
-                    {
-                        Title = "Not gonna happen",
-                        Description = "That person is above you!?",
-                        Color = Color.Red
-                    }.WithCurrentTimestamp());
-                    return;
-                }
-            }
-            else
-            {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
-                    Title = "What user?",
-                    Description = "That user isn't valid :(",
+                    Title = "Not gonna happen",
+                    Description = "That person is above you!?",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
             }
+
+            await ReplyAsync("", false, new EmbedBuilder
+            {
+                Title = "What user?",
+                Description = "That user isn't valid :(",
+                Color = Color.Red
+            }.WithCurrentTimestamp());
+            return;
         }
     }
 }

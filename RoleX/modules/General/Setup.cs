@@ -1,14 +1,9 @@
-using System;
-using static RoleX.Modules.SqliteClass;
-using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using Public_Bot;
 using System.Threading.Tasks;
-using Discord.WebSocket;
 using Discord;
+using RoleX.Modules.Services;
 
-namespace RoleX.Modules
+namespace RoleX.Modules.General
 {
     [DiscordCommandClass("General", "General commands for all!")]
     public class Setup : CommandModuleBase
@@ -16,7 +11,7 @@ namespace RoleX.Modules
         [DiscordCommand("setup", commandHelp ="setup", description ="Helps set the bot up!")]
         public async Task RSetup(params string[] _)
         {
-            string x = "";
+            var x = "";
             x += $"Admin:        {(Context.Guild.CurrentUser.GuildPermissions.Administrator ? "✅" : "❌")}\n";
             x += $"Kick:         {(Context.Guild.CurrentUser.GuildPermissions.KickMembers ? "✅" : "❌")}\n";
             x += $"Ban:          {(Context.Guild.CurrentUser.GuildPermissions.BanMembers ? "✅" : "❌")}\n";
@@ -29,8 +24,8 @@ namespace RoleX.Modules
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "Setting Up RoleX",
-                ThumbnailUrl = Context.Client.CurrentUser.GetAvatarUrl(),
-                Description = "RoleX is a bot that requires various permissions to do various tasks.",
+                ThumbnailUrl = Context.Client == null ? "" : Context.Client.CurrentUser.GetAvatarUrl(),
+                Description = (await SqliteClass.PremiumOrNot(Context.Guild.Id)) ? "Whoa you're premium 🤩" : "RoleX is a bot that requires various permissions to do various tasks.",
                 Fields = {new EmbedFieldBuilder()
                 {
                     Name = "Permissions",

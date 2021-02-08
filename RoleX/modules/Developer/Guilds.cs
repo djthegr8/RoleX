@@ -1,11 +1,10 @@
-using Discord;
-using Public_Bot;
 using System.IO;
-using System;
 using System.Linq;
-using MoreLinq;
 using System.Threading.Tasks;
-namespace RoleX.Modules
+using Discord;
+using RoleX.Modules.Services;
+
+namespace RoleX.Modules.Developer
 {
     [DiscordCommandClass("Developer", "Dev commands that you can't use 🤣!")]
     public class Guilds : CommandModuleBase
@@ -16,17 +15,19 @@ namespace RoleX.Modules
             if (devids.Any(x => x == Context.User.Id))
             {
                 string st = "```";
-                foreach (var srver in Context.Client.Guilds)
+                foreach (var srver in Program.Client.Guilds)
                 {
-
-                    /*string inv;
                     try
                     {
-                        inv = (await srver.GetInvitesAsync()).First().Url;
-                    }
-                    catch { inv = "No Perms LMAO!"; }*/
-                    /*st += $"{srver.Name}\t{inv}\n";*/
-                    st += $"{srver.Name} (ID: {srver.Id})\n{srver.MemberCount} members (Perms: {srver.CurrentUser.GuildPermissions.RawValue})\n";
+                        /*string inv;
+                        try
+                        {
+                            inv = (await srver.GetInvitesAsync()).First().Url;
+                        }
+                        catch { inv = "No Perms LMAO!"; }*/
+                        /*st += $"{srver.Name}\t{inv}\n";*/
+                        st += $"{srver.Name} (ID: {srver.Id})\n{srver.MemberCount} members (Perms: {(srver?.CurrentUser?.GuildPermissions == null ? "idk" : srver?.CurrentUser?.GuildPermissions)})\n";
+                    } catch { }
                 }
                 st += "```";
                 string filePath = "nice.txt";
@@ -37,7 +38,7 @@ namespace RoleX.Modules
                 await Context.Channel.SendFileAsync(filePath,
                     embed: new EmbedBuilder
                     {
-                        Title = $"All RoleX Guilds LMAO (total: {Context.Client.Guilds.Count})",
+                        Title = $"All RoleX Guilds LMAO (total: {Program.Client.Guilds.Count})",
                         Description = st.Length < 2000 ? st : "Ig i sent it as a file",
                         Color = Blurple
                     }.WithCurrentTimestamp().Build());

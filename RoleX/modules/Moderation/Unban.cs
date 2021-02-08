@@ -1,15 +1,10 @@
-using Discord;
-using Discord.Rest;
-using Discord.WebSocket;
-using Public_Bot;
 using System;
-using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Timers;
-using static RoleX.Modules.SqliteClass;
+using Discord;
+using RoleX.Modules.Services;
+using static RoleX.Modules.Services.SqliteClass;
 
-namespace RoleX.Modules
+namespace RoleX.Modules.Moderation
 {
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Unban : CommandModuleBase

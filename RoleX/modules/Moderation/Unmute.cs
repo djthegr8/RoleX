@@ -1,15 +1,9 @@
-using Discord;
-using Discord.Rest;
-using Discord.WebSocket;
-using Public_Bot;
-using System;
-using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Timers;
-using static RoleX.Modules.SqliteClass;
+using Discord;
+using RoleX.Modules.Services;
+using static RoleX.Modules.Services.SqliteClass;
 
-namespace RoleX.Modules
+namespace RoleX.Modules.Moderation
 {
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Unmute : CommandModuleBase
@@ -28,7 +22,8 @@ namespace RoleX.Modules
                 }.WithCurrentTimestamp());
                 return;
             }
-            else if (await GetUser(args[0]) == null)
+
+            if (await GetUser(args[0]) == null)
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
@@ -38,21 +33,18 @@ namespace RoleX.Modules
                 }.WithCurrentTimestamp());
                 return;
             }
-            else
+            try
             {
-                try
-                {
-                    await (await GetUser(args[0])).RemoveRoleAsync(Context.Guild.GetRole(await MutedRoleIDGetter(Context.Guild.Id)));
-                }
-                catch { }
-                await ReplyAsync("", false, new EmbedBuilder
-                {
-                    Title = "User unmuted successfully!",
-                    Description = $"{await GetUser(args[0])} was successfully unmuted :)",
-                    Color = Blurple
-                }.WithCurrentTimestamp());
-                return;
+                await (await GetUser(args[0])).RemoveRoleAsync(Context.Guild.GetRole(await MutedRoleIdGetter(Context.Guild.Id)));
             }
+            catch { }
+            await ReplyAsync("", false, new EmbedBuilder
+            {
+                Title = "User unmuted successfully!",
+                Description = $"{await GetUser(args[0])} was successfully unmuted :)",
+                Color = Blurple
+            }.WithCurrentTimestamp());
+            return;
         }
     }
 }

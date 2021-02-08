@@ -1,11 +1,11 @@
-using Discord;
-using Discord.WebSocket;
 using System;
-using Public_Bot;
 using System.Linq;
 using System.Threading.Tasks;
+using Discord;
+using Discord.WebSocket;
+using RoleX.Modules.Services;
 
-namespace RoleX.Modules
+namespace RoleX.Modules.Channel_Permission
 {
     [DiscordCommandClass("Channel Editor", "Edit Channel-wise perms of a Role using these commands!")]
     public class Overwrites : CommandModuleBase

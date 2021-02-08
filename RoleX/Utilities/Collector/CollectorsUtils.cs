@@ -1,19 +1,13 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using Discord;
-using System.Reactive;
-using System.Reactive.Subjects;
-using Discord.Commands;
 using Discord.WebSocket;
-using RoleX;
 
 #pragma warning disable 1998
 
-namespace Bot.Utilities.Collector {
+namespace RoleX.Utilities.Collector {
     public static class CollectorsUtils {
         private static Subject<(Cacheable<IUserMessage, ulong>, ISocketMessageChannel, SocketReaction)> ReactionAdded =
             new Subject<(Cacheable<IUserMessage, ulong>, ISocketMessageChannel, SocketReaction)>();

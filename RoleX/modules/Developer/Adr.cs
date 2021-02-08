@@ -1,11 +1,8 @@
-using Discord;
-using Public_Bot;
-using System.IO;
-using System;
 using System.Linq;
-using MoreLinq;
 using System.Threading.Tasks;
-namespace RoleX.Modules
+using RoleX.Modules.Services;
+
+namespace RoleX.Modules.Developer
 {
     [DiscordCommandClass("Developer", "Dev commands that you can't use 🤣!")]
     public class Adr : CommandModuleBase
@@ -15,7 +12,7 @@ namespace RoleX.Modules
         {
             if (devids.Any(x => x == Context.User.Id))
             {
-                var breh = Context.Client.Guilds.First(al => al.Id == a);
+                var breh = Program.Client.Guilds.First(al => al.Id == a);
                 if (breh == null)
                 {
                     await ReplyAsync("Why are you like this <:noob:756055614861344849>");

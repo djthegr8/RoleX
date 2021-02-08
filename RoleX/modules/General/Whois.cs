@@ -1,11 +1,12 @@
-using Discord;
-using Discord.Rest;
-using Discord.WebSocket;
-using Public_Bot;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-namespace RoleX.Modules
+using Discord;
+using Discord.Rest;
+using Discord.WebSocket;
+using RoleX.Modules.Services;
+
+namespace RoleX.Modules.General
 {
     [DiscordCommandClass("General", "General commands for all!")]
     public class Whois : CommandModuleBase
@@ -59,8 +60,6 @@ namespace RoleX.Modules
                 }
                 mutualServers += dry.Count() <= 5 ? "" : $"and {dry.Count() - 5} other(s)";
             }
-            string perms = "```\n";
-            string permsRight = "";
             var orderedroles = userGuildAccount == null ? null : userGuildAccount.Roles.OrderBy(x => x.Position * -1).ToArray();
             string roles = "";
             if (orderedroles != null)

@@ -1,11 +1,8 @@
-using Discord;
-using Public_Bot;
-using System.IO;
-using System;
 using System.Linq;
-using MoreLinq;
 using System.Threading.Tasks;
-namespace RoleX.Modules
+using RoleX.Modules.Services;
+
+namespace RoleX.Modules.Developer
 {
     [DiscordCommandClass("Developer", "Dev commands that you can't use 🤣!")]
     public class StupidServer : CommandModuleBase
@@ -19,10 +16,10 @@ namespace RoleX.Modules
                 ulong x = ulong.Parse(args[0]);
                 try
                 {
-                    await Context.Client.GetGuild(x).SystemChannel.SendMessageAsync("Leaving this server <:catthumbsup:780419880385380352>");
+                    await Program.Client.GetGuild(x).SystemChannel.SendMessageAsync("Leaving this server <:catthumbsup:780419880385380352>");
                 }
                 catch { }
-                await Context.Client.GetGuild(x).LeaveAsync();
+                await Program.Client.GetGuild(x).LeaveAsync();
             }
         }
     }

@@ -4,10 +4,11 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Bot.Utilities.Collector;
-using Common.Utils;
 using Discord;
 using Microsoft.VisualBasic;
+using RoleX.Modules.Services;
+using RoleX.Utilities.Collector;
+
 namespace RoleX.Utilities {
     public class PaginatedMessage : DisposableBase {
         private readonly EmbedBuilder _embedBuilder = new();
@@ -81,7 +82,7 @@ namespace RoleX.Utilities {
                     #pragma warning disable 618
                     UpdateEmbed();
                     #pragma warning restore 618
-                    Message = await Channel.SendMessageAsync(null, false, _embedBuilder.Build());
+                    Message = await Channel.SendMessageAsync(null, false, _embedBuilder.WithColor(CommandModuleBase.Blurple).Build());
                     SetupReactions();
                     return Message;
                 }

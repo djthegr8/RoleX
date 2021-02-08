@@ -1,15 +1,13 @@
-using Discord;
-using Discord.Rest;
-using Discord.WebSocket;
-using Public_Bot;
 using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
-using static RoleX.Modules.SqliteClass;
+using Discord;
+using Discord.WebSocket;
+using RoleX.Modules.Services;
+using static RoleX.Modules.Services.SqliteClass;
 
-namespace RoleX.Modules
+namespace RoleX.Modules.Moderation
 {
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Hardmute : CommandModuleBase
@@ -19,7 +17,7 @@ namespace RoleX.Modules
         [DiscordCommand("hardmute", description = "Mutes the given user after removing all roles", example = "hardmute @Dumbkid 5m For trying to ping everyone", commandHelp = "hardmute <@user> <time> <reason>")]
         public async Task HardMute(params string[] args)
         {
-            if (await MutedRoleIDGetter(Context.Guild.Id) == 0)
+            if (await MutedRoleIdGetter(Context.Guild.Id) == 0)
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
@@ -58,7 +56,8 @@ namespace RoleX.Modules
                     }.WithCurrentTimestamp());
                     return;
                 }
-                else if (int.TryParse(string.Join("", args[1].SkipLast(1)), out int timezar))
+
+                if (int.TryParse(string.Join("", args[1].SkipLast(1)), out int timezar))
                 {
                     ts = args[1].Last() switch
                     {
@@ -115,7 +114,7 @@ namespace RoleX.Modules
                     await gUser.RemoveRolesAsync(formerroles);
                     try
                     {
-                        await gUser.AddRoleAsync(Context.Guild.GetRole(await MutedRoleIDGetter(Context.Guild.Id)));
+                        await gUser.AddRoleAsync(Context.Guild.GetRole(await MutedRoleIdGetter(Context.Guild.Id)));
                     } catch
                     {
                         await ReplyAsync("", false, new EmbedBuilder { Title = "okay ur muted role is messed", Description = "wth man.", Color = Color.Red });
@@ -134,7 +133,7 @@ namespace RoleX.Modules
                     {
                         try
                         {
-                            await gUser.RemoveRoleAsync(Context.Guild.GetRole(await MutedRoleIDGetter(Context.Guild.Id)));
+                            await gUser.RemoveRoleAsync(Context.Guild.GetRole(await MutedRoleIdGetter(Context.Guild.Id)));
                             await gUser.AddRolesAsync(formerroles);
                             await gUser.SendMessageAsync($"**You have been unmuted on {guildName}**");
                             return;
@@ -156,9 +155,9 @@ namespace RoleX.Modules
                 {
                     await ReplyAsync("", false, new EmbedBuilder
                     {
-                        Title = $"Seriously??",
+                        Title = $"Seriously? <a:clapjohn:785371886695612427>",
                         Color = Color.Red,
-                        ImageUrl = "https://cdn.discordapp.com/attachments/758922634749542420/760180089870090320/unknown.png"
+                        ImageUrl = "https://media.discordapp.net/attachments/758922634749542420/798424027370094652/unknown.png"
                     }.WithCurrentTimestamp());
                     return;
                 }

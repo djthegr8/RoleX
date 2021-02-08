@@ -1,11 +1,10 @@
-using Discord;
-using Public_Bot;
-using System.IO;
 using System;
 using System.Linq;
-using MoreLinq;
 using System.Threading.Tasks;
-namespace RoleX.Modules
+using Discord;
+using RoleX.Modules.Services;
+
+namespace RoleX.Modules.Developer
 {
     [DiscordCommandClass("Developer", "Dev commands that you can't use 🤣")]
     public class Getinvite : CommandModuleBase
@@ -19,7 +18,7 @@ namespace RoleX.Modules
                 ulong x = ulong.Parse(args[0]);
                 try
                 {
-                    var gild = Context.Client.GetGuild(x);
+                    var gild = Program.Client.GetGuild(x);
                     if (gild == null) throw new ArgumentException();
                     var aaa = (await gild.GetInvitesAsync()).FirstOrDefault();
                     if (aaa == default(Discord.Rest.RestInviteMetadata))
@@ -34,7 +33,7 @@ namespace RoleX.Modules
                 }
                 catch
                 {
-                    await ReplyAsync($"I don't fricking have perms, but hey u can DM the owner. He is <@{Context.Client.GetGuild(x).OwnerId}>");
+                    await ReplyAsync($"I don't fricking have perms, but hey u can DM the owner. He is <@{Program.Client.GetGuild(x).OwnerId}>");
                 } 
             }
         }

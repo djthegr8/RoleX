@@ -1,9 +1,10 @@
-using Discord;
-using Discord.WebSocket;
-using Public_Bot;
 using System;
 using System.Threading.Tasks;
-namespace RoleX.Modules
+using Discord;
+using Discord.WebSocket;
+using RoleX.Modules.Services;
+
+namespace RoleX.Modules.Channel_Permission
 {
     [DiscordCommandClass("Channel Editor", "Edit Channel-wise perms of a Role using these commands!")]
     public class Categorydelete : CommandModuleBase
@@ -56,23 +57,21 @@ namespace RoleX.Modules
                             Program.Client.ReactionAdded -= weird;
                             return;
                         }
-                        else
+
+                        isTick = false;
+                        foreach (var ch in alf.Channels)
                         {
-                            isTick = false;
-                            foreach (var ch in alf.Channels)
-                            {
-                                await ch.DeleteAsync();
-                            }
-                            await alf.DeleteAsync();
-                            await ReplyAsync("", false, new EmbedBuilder
-                            {
-                                Title = "Delete successful!",
-                                Description = $"Your category was deleted along with all its channels",
-                                Color = Blurple
-                            }.WithCurrentTimestamp());
-                            Program.Client.ReactionAdded -= weird;
-                            return;
+                            await ch.DeleteAsync();
                         }
+                        await alf.DeleteAsync();
+                        await ReplyAsync("", false, new EmbedBuilder
+                        {
+                            Title = "Delete successful!",
+                            Description = $"Your category was deleted along with all its channels",
+                            Color = Blurple
+                        }.WithCurrentTimestamp());
+                        Program.Client.ReactionAdded -= weird;
+                        return;
                     }
                 };
             Program.Client.ReactionAdded += weird;

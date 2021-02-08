@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using RoleX.Utilities;
 
 #pragma warning disable 8606
 
-namespace Bot.Utilities.Collector {
+namespace RoleX.Utilities.Collector {
     public class CollectorsGroup {
         public event EventHandler<CollectorEventArgsBase>? RemoveArgsFailed;
 

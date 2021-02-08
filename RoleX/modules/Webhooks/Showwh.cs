@@ -1,12 +1,10 @@
+using System.Linq;
+using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
-using Public_Bot;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
+using RoleX.Modules.Services;
 
-namespace RoleX.Modules
+namespace RoleX.Modules.Webhooks
 {
     [DiscordCommandClass("Webhook Manager", "Helps manage all webhooks!")]
     public class Showwh : CommandModuleBase
@@ -28,25 +26,23 @@ namespace RoleX.Modules
                     }.WithCurrentTimestamp());
                     return;
                 }
-                else
-                {
-                    var emb = new EmbedBuilder
-                    {
-                        Title = "All Guild Webhooks",
-                        Description = $"*Below is the complete list of webhooks in your server*",
-                        Color = Blurple
-                    }.WithCurrentTimestamp();
 
-                    for (int i = 0; i < allGWH.Count; i++)
-                    {
-                        Discord.Rest.RestWebhook rw = allGWH[i];
-                        emb.Fields.Add(new EmbedFieldBuilder {
-                            Name = $"{i + 1}) " + rw.Name,
-                            Value = $"Channel: <#{rw.ChannelId}>\nCreated By: {rw.Creator.Mention}\nAvatar: [link]({(string.IsNullOrEmpty(rw.GetAvatarUrl()) ? "https://discord.com/assets/6debd47ed13483642cf09e832ed0bc1b.png" : rw.GetAvatarUrl())})" });
-                    }
-                    await ReplyAsync("", false, emb);
-                    return;
+                var emb = new EmbedBuilder
+                {
+                    Title = "All Guild Webhooks",
+                    Description = $"*Below is the complete list of webhooks in your server*",
+                    Color = Blurple
+                }.WithCurrentTimestamp();
+
+                for (int i = 0; i < allGWH.Count; i++)
+                {
+                    Discord.Rest.RestWebhook rw = allGWH[i];
+                    emb.Fields.Add(new EmbedFieldBuilder {
+                        Name = $"{i + 1}) " + rw.Name,
+                        Value = $"Channel: <#{rw.ChannelId}>\nCreated By: {rw.Creator.Mention}\nAvatar: [link]({(string.IsNullOrEmpty(rw.GetAvatarUrl()) ? "https://discord.com/assets/6debd47ed13483642cf09e832ed0bc1b.png" : rw.GetAvatarUrl())})" });
                 }
+                await ReplyAsync("", false, emb);
+                return;
             }
             var chn = GetChannel(args[0]);
             if (chn == null)

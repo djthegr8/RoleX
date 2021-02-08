@@ -1,11 +1,11 @@
-﻿using Discord;
-using Public_Bot;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Discord;
+using RoleX.Modules.Services;
 
-namespace RoleX.Modules
+namespace RoleX.Modules.General
 {
     [DiscordCommandClass("General", "General Commands for all!")]
-    class Untrack : CommandModuleBase
+    internal class Untrack : CommandModuleBase
     {
         [DiscordCommand("untrack", commandHelp = "untrack <@user>", description = "Untracks the given user", example = "Untrack @weirdDude")]
         public async Task UntrackCommand(params string[] args)

@@ -4,9 +4,8 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using RoleX.Utilities;
 
-namespace Bot.Utilities.Collector {
+namespace RoleX.Utilities.Collector {
     public abstract class CollectorEventArgsBase : EventArgs {
         protected CollectorEventArgsBase(CollectorController controller) {
             Controller = controller;

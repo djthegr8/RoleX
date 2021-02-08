@@ -1,13 +1,9 @@
-using Discord;
-using Discord.WebSocket;
-using Public_Bot;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Discord;
+using RoleX.Modules.Services;
 
-namespace RoleX.Modules
+namespace RoleX.Modules.Role_Editor
 {
     [DiscordCommandClass("Role Editor", "Class for editing of Roles!")]
     public class Dump : CommandModuleBase

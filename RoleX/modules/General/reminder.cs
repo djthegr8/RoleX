@@ -1,16 +1,14 @@
-﻿using Discord;
-using Discord.WebSocket;
-using Public_Bot;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Discord;
+using RoleX.Modules.Services;
 
-namespace RoleX.Modules
+namespace RoleX.Modules.General
 {
     [DiscordCommandClass("General", "General commands for all!")]
-    class Reminder : CommandModuleBase
+    internal class Reminder : CommandModuleBase
     {
         [Alt("rm")]
         [DiscordCommand("reminder", commandHelp = "reminder <time> <reason>`\n`reminder list`\n`reminder remove <id>", example = "reminder 10m Think about life", description = "Reminds the user to do something after specified time!")]
@@ -21,7 +19,7 @@ namespace RoleX.Modules
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Your current reminders!",
-                    Description = $"{((await SqliteClass.GetReminders($"SELECT * FROM reminders WHERE UserID = {Context.User.Id} AND Finished IS 0;")).Count == 0 ? "User has no reminders" : ("```\n" + string.Join('\n',(await SqliteClass.GetReminders($"SELECT * FROM reminders WHERE UserID = {Context.User.Id} AND Finished IS 0;")).Select(x => $"ID: {x.ID}\tTime: {x.TimeS:U}\tReason:{x.Reason}")) + "```"))}",
+                    Description = $"{((await SqliteClass.GetReminders($"SELECT * FROM reminders WHERE UserID = {Context.User.Id} AND Finished IS 0;")).Count == 0 ? "User has no reminders" : ("```\n" + string.Join('\n',(await SqliteClass.GetReminders($"SELECT * FROM reminders WHERE UserID = {Context.User.Id} AND Finished IS 0;")).Select(x => $"ID: {x.Id}\tTime: {x.TimeS:U}\tReason:{x.Reason}")) + "```"))}",
                     Color = Blurple
                 }.WithCurrentTimestamp());
                 return;
@@ -41,9 +39,9 @@ namespace RoleX.Modules
                 var lor = await SqliteClass.GetReminders($"SELECT * FROM reminders WHERE UserID = {Context.User.Id} AND Finished IS 0;");
                 if (lor != new List<SqliteClass.Reminder>())
                 {
-                    if (lor.Any(k => k.ID == args[1]))
+                    if (lor.Any(k => k.Id == args[1]))
                     {
-                        await SqliteClass.ReminderFinished(lor.First(k => k.ID == args[1]));
+                        await SqliteClass.ReminderFinished(lor.First(k => k.Id == args[1]));
                         cudFind = true;
                     }
                 }
@@ -72,7 +70,8 @@ namespace RoleX.Modules
                 }.WithCurrentTimestamp());
                 return;
             }
-            else if (int.TryParse(string.Join("", args[0].SkipLast(1)), out int timezar))
+
+            if (int.TryParse(string.Join("", args[0].SkipLast(1)), out int timezar))
             {
                 ts = args[0].Last() switch
                 {
@@ -94,7 +93,7 @@ namespace RoleX.Modules
                 }.WithCurrentTimestamp());
                 return;
             }
-            await SqliteClass.AddReminder(new SqliteClass.Reminder { UserID = Context.User.Id, TimeS = DateTime.UtcNow.Add(ts), Reason = args.Length > 1 ? string.Join("", string.Join(' ',args.Skip(1)).Take(25)) : "Not given" });
+            await SqliteClass.AddReminder(new SqliteClass.Reminder { UserId = Context.User.Id, TimeS = DateTime.UtcNow.Add(ts), Reason = args.Length > 1 ? string.Join("", string.Join(' ',args.Skip(1)).Take(25)) : "Not given" });
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "Reminder added!",

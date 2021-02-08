@@ -1,12 +1,11 @@
-using Discord;
-using Discord.WebSocket;
-using Public_Bot;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Discord;
+using Discord.WebSocket;
+using RoleX.Modules.Services;
 
-namespace RoleX.Modules
+namespace RoleX.Modules.Webhooks
 {
     [DiscordCommandClass("Webhook Manager", "Helps manage all webhooks!")]
     public class Addwh : CommandModuleBase

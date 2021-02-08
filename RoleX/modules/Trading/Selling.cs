@@ -1,16 +1,9 @@
-using Discord;
-using Discord.WebSocket;
-using System;
-using System.Timers;
-using Public_Bot;
-using System.Collections.Generic;
-using static RoleX.Program;
-using System.Text.RegularExpressions;
-
 using System.Linq;
 using System.Threading.Tasks;
-using static RoleX.Modules.SqliteClass;
-namespace RoleX.Modules
+using Discord;
+using RoleX.Modules.Services;
+using static RoleX.Modules.Services.SqliteClass;
+namespace RoleX.Modules.Trading
 {
     // Commented as not required in Partial class
     // [DiscordCommandClass("Trading", "Class with trading related commands")]

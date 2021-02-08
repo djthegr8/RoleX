@@ -1,11 +1,12 @@
-﻿using Discord;
-using System.Linq;
-using Public_Bot;
+﻿using System.Linq;
 using System.Threading.Tasks;
-namespace RoleX.Modules
+using Discord;
+using RoleX.Modules.Services;
+
+namespace RoleX.Modules.General
 {
     [DiscordCommandClass("General", "General Commands for all!")]
-    class OnlineTrack : CommandModuleBase
+    internal class OnlineTrack : CommandModuleBase
     {
         [DiscordCommand("track", commandHelp = "track <@User>", description = "DMs you next time that user gets online or DND!", example = "track @weirdDude")]
         public async Task Track(params string[] args)
@@ -29,7 +30,7 @@ namespace RoleX.Modules
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = $"List of users tracked by `{Context.User}`",
-                    Description = $"You`re tracking ~\n<@{SqliteClass.TrackCDGetUser(Context.User.Id)}>",
+                    Description = $"You`re tracking ~\n<@{SqliteClass.TrackCdGetUser(Context.User.Id)}>",
                     Color = Blurple
                 }.WithCurrentTimestamp());
                 return;
@@ -39,7 +40,7 @@ namespace RoleX.Modules
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "You're on tracking cooldown!",
-                    Description = $"You can only track one person at a time right now, and you're tracking <@{await SqliteClass.TrackCDGetUser(Context.User.Id)}>.\n Stay tuned for RoleX Premium for more!",
+                    Description = $"You can only track one person at a time right now, and you're tracking <@{await SqliteClass.TrackCdGetUser(Context.User.Id)}>.\n Stay tuned for RoleX Premium for more!",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;

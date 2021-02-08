@@ -1,10 +1,10 @@
-using Discord;
-using Public_Bot;
-using System.Threading.Tasks;
-using System.Text.RegularExpressions;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Discord;
+using RoleX.Modules.Services;
 
-namespace RoleX.Modules
+namespace RoleX.Modules.Emojis
 {
     [DiscordCommandClass("Emote Editor", "For complete management of server emotes!")]
     public class Emrename : CommandModuleBase

@@ -1,13 +1,10 @@
+using System.Linq;
+using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
-using Public_Bot;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using RoleX.Modules.Services;
 
-namespace RoleX.Modules
+namespace RoleX.Modules.Role_Editor
 {
     [DiscordCommandClass("Role Editor", "Class for editing of Roles!")]
     public class Delete : CommandModuleBase
@@ -59,17 +56,15 @@ namespace RoleX.Modules
                 }.WithCurrentTimestamp());
                 return;
             }
-            else
+
+            var nm = DeleteRole.Name;
+            await DeleteRole.DeleteAsync();
+            await ReplyAsync("", false, new EmbedBuilder
             {
-                var nm = DeleteRole.Name;
-                await DeleteRole.DeleteAsync();
-                await ReplyAsync("", false, new EmbedBuilder
-                {
-                    Title = $"Role deleted successfully!",
-                    Description = $"The role `{nm}` was successfully deleted",
-                    Color = Blurple
-                }.WithCurrentTimestamp());
-            }
+                Title = $"Role deleted successfully!",
+                Description = $"The role `{nm}` was successfully deleted",
+                Color = Blurple
+            }.WithCurrentTimestamp());
         }
     }
 }

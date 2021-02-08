@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace RoleX.Modules.Services
 {
-    class TopGG
+    internal class TopGG
     {
         public static AuthDiscordBotListApi DblApi = new AuthDiscordBotListApi(744766526225252435, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc0NDc2NjUyNjIyNTI1MjQzNSIsImJvdCI6dHJ1ZSwiaWF0IjoxNjA4NTUzMjA5fQ.ShvKIo4A2rVXpLEJVUjsobUzdfMg4-B3o7qLvz8aROg");
         public static async Task<bool> HasVoted(ulong ide)
