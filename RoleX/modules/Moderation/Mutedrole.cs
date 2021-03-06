@@ -34,7 +34,7 @@ namespace RoleX.Modules.Moderation
                     Title = "Creating muted role.......",
                     Color = Blurple
                 }.WithCurrentTimestamp());
-                var rl = await Context.Guild.CreateRoleAsync("Muted by RoleX", new Discord.GuildPermissions(), new Color(0, 0, 0), false, null);
+                var rl = await Context.Guild.CreateRoleAsync("Muted by RoleX", new GuildPermissions(), new Color(0, 0, 0), false, null);
                 foreach (var chnl in Context.Guild.Channels)
                 {
                     await chnl.AddPermissionOverwriteAsync(rl, new OverwritePermissions(sendMessages: PermValue.Deny, speak: PermValue.Deny));

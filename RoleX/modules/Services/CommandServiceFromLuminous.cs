@@ -751,11 +751,12 @@ namespace RoleX.Modules.Services
             }
             return cmds;
         }
-        public async Task<GuildEmote> GetEmote(string str)
+        public async Task<GuildEmote> GetEmote(string str, SocketGuild Guild = null)
         {
+            Guild ??= Context.Guild;
             var replstr = str.Replace("a:", "").Replace("<", "").Replace(">", "").Replace(":", "");
             Console.WriteLine(replstr);
-            if (Context.Guild.Emotes.Any(x => replstr.ToLower().StartsWith(x.Name.ToLower()))) return Context.Guild.Emotes.First(x => replstr.ToLower().StartsWith(x.Name.ToLower()));
+            if (Guild.Emotes.Any(x => replstr.ToLower().StartsWith(x.Name.ToLower()))) return Guild.Emotes.First(x => replstr.ToLower().StartsWith(x.Name.ToLower()));
             Console.WriteLine(replstr);
             try
             {
@@ -765,7 +766,7 @@ namespace RoleX.Modules.Services
                 {
                     return null;
                 }
-                return await Context.Guild.GetEmoteAsync(resultString);
+                return await Guild.GetEmoteAsync(resultString);
             }
             catch { return null; }
 
@@ -776,26 +777,17 @@ namespace RoleX.Modules.Services
             if (regex.IsMatch(name))
             {
                 var u = Context.Guild.GetChannel(ulong.Parse(regex.Match(name).Groups[1].Value));
-                if (u as SocketCategoryChannel != null) return null;
-                return u;
+                return u is SocketCategoryChannel ? null : u;
             }
             if (ulong.TryParse(name, out var res))
             {
-                var x = Context.Guild.Channels.Any(x => x.Id == res) ? Context.Guild.Channels.First(x => x.Id == res) : null;
-                if (x != null)
-                {
-                    if (x as SocketCategoryChannel != null) return null;
-                }
-                return x;
+                var x = Context.Guild.Channels.FirstOrDefault(x => x.Id == res);
+                return x is SocketCategoryChannel ? null : x;
             }
             else
             {
-                var x = Context.Guild.Channels.Any(x => x.Name.ToLower().StartsWith(name.ToLower())) ? Context.Guild.Channels.First(x => x.Name.ToLower().StartsWith(name.ToLower())) : null;
-                if (x != null)
-                {
-                    if (x as SocketCategoryChannel != null) return null;
-                }
-                return x;
+                var x = Context.Guild.Channels.FirstOrDefault(x => x.Name.ToLower().StartsWith(name.ToLower()));
+                return x is SocketCategoryChannel ? null : x;
             }
 
 
@@ -809,8 +801,8 @@ namespace RoleX.Modules.Services
                 return u;
             }
             if (ulong.TryParse(name, out var res))
-                return Context.Guild.CategoryChannels.Any(x => x.Id == res) ? Context.Guild.CategoryChannels.First(x => x.Id == res) : null;
-            return Context.Guild.CategoryChannels.Any(x => x.Name.ToLower().StartsWith(name.ToLower())) ? Context.Guild.CategoryChannels.First(x => x.Name.ToLower().StartsWith(name.ToLower())) : null;
+                return Context.Guild.CategoryChannels.FirstOrDefault(x => x.Id == res);
+            return Context.Guild.CategoryChannels.FirstOrDefault(x => x.Name.ToLower().StartsWith(name.ToLower()));
 
 
         }
@@ -878,7 +870,7 @@ namespace RoleX.Modules.Services
                 ChannelPermission.Speak => eop.Modify(speak: pv),
                 ChannelPermission.UseExternalEmojis => eop.Modify(useExternalEmojis: pv),
                 ChannelPermission.UseVAD => eop.Modify(useVoiceActivation: pv),
-                ChannelPermission.PrioritySpeaker => eop
+                ChannelPermission.PrioritySpeaker => eop,
             };
             return x;
         }
@@ -1024,16 +1016,25 @@ namespace RoleX.Modules.Services
         /// <returns></returns>
         protected virtual async Task<IUserMessage> ReplyAsync(string message = null, bool isTTS = false, EmbedBuilder embed = null, RequestOptions options = null)
         {
-            if (Context.Message.Content.EndsWith("-q"))
+            var msgcontent = Context.Message.Content;
+            if (!msgcontent.Split(' ')[0].Contains("alias"))
+            {
+                var alss = await SqliteClass.GuildAliasGetter(Context.Guild.Id);
+                foreach (var (aliasName, aliasContent) in alss)
+                {
+                    msgcontent = msgcontent.Replace(aliasName, aliasContent);
+                }
+            }
+            if (msgcontent.EndsWith("-q"))
             {
                 return null;
             }
             if (message?.Length >= 2000)
             {
-                string filePath = "message.txt";
-                using (StreamWriter sw = File.CreateText(filePath))
+                const string filePath = "message.txt";
+                await using (var sw = File.CreateText(filePath))
                 {
-                    sw.WriteLine(message);
+                    await sw.WriteLineAsync(message);
                 }
                 await Context.Channel.SendFileAsync(filePath);
                 message = null;

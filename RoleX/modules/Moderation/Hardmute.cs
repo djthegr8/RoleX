@@ -102,7 +102,7 @@ namespace RoleX.Modules.Moderation
                         await gUser.SendMessageAsync("", false, new EmbedBuilder
                         {
                             Title = "Oops, you were muted!",
-                            Description = $"You were muted {(isValidTime ? $"for {ts.Days} days, {ts.Minutes} minutes and {ts.Seconds} seconds" : "indefinitely")} from **{Context.Guild.Name}** by {Context.User.Mention} {(args.Length > 1 ? $"Reason:{args[1]}" : "")}{(await AppealGetter(Context.Guild.Id) == "" ? "" : "\n[Click here to appeal]" + (await AppealGetter(Context.Guild.Id)))})",
+                            Description = $"You were muted {(isValidTime ? $"for {ts.Days} days, {ts.Minutes} minutes and {ts.Seconds} seconds" : "indefinitely")} from **{Context.Guild.Name}** by {Context.User.Mention} Reason: {(args.Length > 2 ? string.Join(' ', args.Skip(2)) : "Not given")} {(await AppealGetter(Context.Guild.Id) == "" ? "" : "\n[Click here to appeal](" + (await AppealGetter(Context.Guild.Id)))})",
                             Color = Color.Red
                         }.WithCurrentTimestamp().Build());
                     }

@@ -35,7 +35,7 @@ namespace RoleX.Modules.Channel_Permission
                 return;
             }
             var bchname = string.Join('-', args.Skip(1));
-            if (!System.Text.RegularExpressions.Regex.IsMatch(bchname, "[a-z0-9-_]{2,100}"))
+            if (!System.Text.RegularExpressions.Regex.IsMatch(bchname, "[a-zA-Z0-9-_]{2,100}"))
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {

@@ -14,10 +14,23 @@ namespace RoleX.Modules.Developer
             var bk = string.Join(' ', args);
             if (devids.Any(x => x == Context.User.Id))
             {
-                ProcessStartInfo startInfo = new() { FileName = "/bin/bash", Arguments = bk };
-                Process proc = new() { StartInfo = startInfo, };
-                var re = proc.Start();
-                await ReplyAsync(re.ToString());
+                var escapedArgs = bk.Replace("\"", "\\\"");
+
+                var process = new Process()
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "/bin/bash",
+                        Arguments = $"-c \"{escapedArgs}\"",
+                        RedirectStandardOutput = true,
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                    }
+                };
+                process.Start();
+                var result = await process.StandardOutput.ReadToEndAsync();
+                await process.WaitForExitAsync();
+                await ReplyAsync(result);
             }
         }
     }

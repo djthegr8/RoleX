@@ -1,14 +1,16 @@
-﻿using Discord;
-using Discord.Commands;
-using Discord.Rest;
-using Discord.WebSocket;
-using RoleX.Modules;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Discord;
+using Discord.Commands;
+using Discord.Rest;
+using Discord.WebSocket;
+using Newtonsoft.Json;
 using RoleX.Modules.Services;
 
 namespace RoleX
@@ -28,7 +30,8 @@ namespace RoleX
         }
         public static DiscordShardedClient Client;
         public static DiscordRestClient CL2;
-        public static CustomCommandService _service = new (new Settings());
+        public static CustomCommandService _service = new(new Settings());
+
         public async Task MainlikeAsync()
         {
             //Console.WriteLine("The list of databases on this server is: ");
@@ -38,7 +41,7 @@ namespace RoleX
             //    Console.WriteLine(db);
             //}
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-            Client = new DiscordShardedClient(new DiscordSocketConfig { AlwaysDownloadUsers = true, LargeThreshold = 250, GuildSubscriptions = true, TotalShards = 3});
+            Client = new DiscordShardedClient(new DiscordSocketConfig { AlwaysDownloadUsers = true, LargeThreshold = 250, GuildSubscriptions = true, TotalShards = 3 });
             CL2 = new DiscordRestClient(new DiscordSocketConfig { AlwaysDownloadUsers = true, LargeThreshold = 250, GuildSubscriptions = true });
             Client.Log += Log;
 
@@ -56,6 +59,11 @@ namespace RoleX
 
             var __ = new Timer(async _ =>
             {
+                if (Client.LoginState != LoginState.LoggedIn)
+                {
+                    return;
+                }
+                // Reminder thingies
                 var currTime = DateTime.UtcNow;
                 var allRems = await SqliteClass.GetReminders($"Select * from reminders where Finished = 0 and Time = \"{currTime:u}\"");
                 if (allRems.Count > 0)
@@ -70,14 +78,209 @@ namespace RoleX
                                 Description = $"You asked to be reminded about `{x.Reason}...`, and it's time!",
                                 Color = CommandModuleBase.Blurple
                             }.WithCurrentTimestamp().Build());
-                        } catch
+                        }
+                        catch
                         {
 
                         }
                         await SqliteClass.ReminderFinished(x);
                     });
                 }
-            },null, 0,1000);
+                // Giveaway thingies
+                /*
+                var logs = await SqliteClass.GetGiveaways("SELECT * from giveaways WHERE Running = 1;");
+                if (logs.Count > 0)
+                {
+                    if (logs.Any(f =>
+                        f.EndingTime.Hour == currTime.Hour && f.EndingTime.Minute == currTime.Minute &&
+                        f.EndingTime.Second == currTime.Second))
+                    {
+                        var whereGiveaways = logs.Where(f =>
+                            f.EndingTime.Hour == currTime.Hour && f.EndingTime.Minute == currTime.Minute &&
+                            f.EndingTime.Second == currTime.Second);
+                        foreach (var k in whereGiveaways)
+                        {
+                            await SqliteClass.GiveawayRemover(k);
+                            var guild = Client.GetGuild(k.GuildID);
+                            var channel = guild?.GetTextChannel(k.ChannelID);
+                            var msg = Client.GetGuild(k.GuildID)?.GetTextChannel(k.ChannelID)
+                                ?.GetMessageAsync(k.MessageID);
+                            if (msg == null) return;
+                            if (await msg is not IUserMessage mymsg) return;
+                            
+                            var noc = mymsg.GetReactionUsersAsync(new Emoji("🎉"), int.MaxValue);
+                                if (noc == null) return;
+                                var allWhoReacted = await noc.FlattenAsync();
+                            if (guild == null) return;
+                            var allWhoReactedButDidntLeave = allWhoReacted
+                                .Where(user => guild.GetUser(user.Id) is not null && !user.IsBot)
+                                .Select(o => guild.GetUser(o.Id));
+                            var andAllWhoMetRequirements = allWhoReactedButDidntLeave.Where(kden =>
+                                k.RoleReqs.All(role => kden.Roles.Any(m => m.Id == role.Id))).ToList();
+
+                            if (k.WeeklyAmariRequirement != 0 || k.AmariLevelRequirement != 0)
+                            {
+                                do
+                                {
+                                    await Task.Delay(5000);
+                                } while (!(lastAmariRequest.AddSeconds(5).CompareTo(DateTime.UtcNow) < 0));
+
+                                lastAmariRequest = DateTime.UtcNow;
+                                var amariString = await GetAsync($"http://litochee.com:3000/api/guild/{k.GuildID}");
+
+                                var obj = JsonConvert.DeserializeObject<AmariWeeklyParser>(amariString);
+                                foreach (var ReactingUser in andAllWhoMetRequirements)
+                                {
+                                    var user = obj.data.FirstOrDefault(
+                                        i => i.userID.ToString() == ReactingUser.Id.ToString());
+                                    if (k.AmariLevelRequirement != 0)
+                                    {
+
+                                        if (user == null || user.uLevel < k.AmariLevelRequirement)
+                                        {
+                                            andAllWhoMetRequirements.Remove(ReactingUser);
+
+                                        }
+                                    }
+
+                                    if (k.WeeklyAmariRequirement == 0) continue;
+                                    if (user == null || int.Parse(user.weeklyPoints) < k.WeeklyAmariRequirement)
+                                    {
+                                        andAllWhoMetRequirements.Remove(ReactingUser);
+
+                                    }
+
+                                }
+
+                                Random rnd = new();
+                                string mentions = "";
+                                if (k.Winners == 0 || !andAllWhoMetRequirements.Any())
+                                {
+                                    mentions = "nobody";
+                                }
+                                else
+                                {
+                                    for (int i = 0; i < k.Winners; i++)
+                                    {
+                                        var usr = andAllWhoMetRequirements.ElementAt(rnd.Next(0,
+                                            andAllWhoMetRequirements.Count() - 1));
+                                        await usr.SendMessageAsync("", false, new EmbedBuilder
+                                        {
+                                            Title = $"You have won **{k.Title}** in {guild.Name}!",
+                                            Description = $"DM <@{k.StarterID}> for your prize",
+                                            Color = CommandModuleBase.Blurple,
+                                            Url =
+                                                $"https://discord.com/channels/{k.GuildID}/{k.ChannelID}/{k.MessageID}"
+                                        }.WithCurrentTimestamp().Build());
+                                        mentions += mentions == "" ? usr.Mention : $", {usr.Mention}";
+
+                                    }
+                                }
+                                await mymsg.ModifyAsync(msgprop =>
+                                {
+                                    msgprop.Content = mymsg.Content.Replace("GIVEAWAY", "GIVEAWAY ENDED");
+                                    var existingEmbed = mymsg.Embeds.First();
+                                    msgprop.Embed = new EmbedBuilder
+                                    {
+                                        Title = existingEmbed.Title,
+                                        Description = existingEmbed.Description.Split('\n')[0] + "\n" + $"Winner(s): {mentions}\n" +
+                                                      string.Join('\n', existingEmbed.Description.Split('\n').Skip(2)),
+                                        Color = existingEmbed.Color
+                                    }.WithCurrentTimestamp().Build();
+                                });
+                                await mymsg.Channel.SendMessageAsync(
+                                    $"Congratulations {mentions}. You have won {k.Title}");
+                                var strt = Client.GetUser(k.StarterID);
+                                if (strt == null) return;
+                                await strt.SendMessageAsync("", false, new EmbedBuilder
+                                {
+                                    Title = "Your giveaway ended.",
+                                    Description = $"Your winner(s) are {mentions}",
+                                    Color = CommandModuleBase.Blurple,
+                                    Url = $"https://discord.com/channels/{k.GuildID}/{k.ChannelID}/{k.MessageID}"
+                                }.WithCurrentTimestamp().Build());
+                            }
+                        }
+
+                    }
+                    else {
+                        logs.ForEach(async k =>
+                        {
+                            if (k.EndingTime.CompareTo(currTime) < 0)
+                            {
+                                await SqliteClass.GiveawayRemover(k);
+                                return;
+                            }
+                            var guild = Client.GetGuild(k.GuildID);
+                            var channel = guild?.GetTextChannel(k.ChannelID);
+                            var msg = Client.GetGuild(k.GuildID)?.GetTextChannel(k.ChannelID)
+                                ?.GetMessageAsync(k.MessageID);
+                            if (msg == null) return;
+                            if (await msg is not IUserMessage mymsg) return;
+                            await mymsg.ModifyAsync(msgprop =>
+                            {
+                                var existingEmbed = mymsg.Embeds.First();
+                                try
+                                {
+                                    var es = existingEmbed.Description.Split('\n')[1].Replace("Time left:", "").Replace(" ", "").Replace("and", "").Replace("*", "");
+
+                                    if (es.Contains("hour(s)"))
+                                    {
+                                        var pH = es.IndexOf("hour(s)", StringComparison.Ordinal);
+                                        var numHours = string.Join("", es.Take(pH));
+                                        if ((k.EndingTime - currTime).Hours > int.Parse(numHours)) return;
+                                        if ((k.EndingTime - currTime).Hours == int.Parse(numHours))
+                                        {
+                                            es = es.Replace("hour(s)", "");
+                                            var pM = es.IndexOf("minutes", StringComparison.Ordinal);
+                                            var numMinutes = string.Join("", es.Take(pM));
+                                            if ((k.EndingTime - currTime).Minutes > int.Parse(numMinutes)) return;
+                                        }
+                                    }
+                                    else if (es.Contains("minutes"))
+                                    {
+                                        var pM = es.IndexOf("minutes", StringComparison.Ordinal);
+                                        var numMinutes = string.Join("", es.Take(pM));
+                                        if ((k.EndingTime - currTime).Minutes > int.Parse(numMinutes)) return;
+                                        if ((k.EndingTime - currTime).Minutes == int.Parse(numMinutes))
+                                        {
+                                            es = es.Replace("minutes", "");
+                                            var pS = es.IndexOf("seconds", StringComparison.Ordinal);
+                                            var numSeconds = string.Join("", es.Take(pS));
+                                            if ((k.EndingTime - currTime).Seconds > int.Parse(numSeconds)) return;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        int pS = es.IndexOf("seconds", StringComparison.Ordinal);
+
+                                        var numSeconds = string.Join("", es.Take(pS));
+                                        if ((k.EndingTime - currTime).Seconds > int.Parse(numSeconds))
+                                        {
+                                            return;
+                                        }
+                                    }
+                                    msgprop.Embed = new EmbedBuilder
+                                    {
+                                        Title = existingEmbed.Title,
+                                        Description = existingEmbed.Description.Split('\n')[0] +
+                                                      $"\nTime left: {(((k.EndingTime - currTime).TotalHours >= 1) ? $"**{(k.EndingTime - currTime).Hours}** hour(s) and **{(k.EndingTime - currTime).Minutes}** minutes" : ((k.EndingTime - currTime).Minutes >= 1 ? $"**{(k.EndingTime - currTime).Minutes}** minutes and **{(k.EndingTime - currTime).Seconds}** seconds" : $"**{(k.EndingTime - currTime).Seconds}** seconds"))}" + "\n" + string.Join("\n", existingEmbed.Description.Split('\n').Skip(2)),
+                                        Color = existingEmbed.Color,
+                                        ThumbnailUrl = existingEmbed.ToEmbedBuilder().ThumbnailUrl,
+                                        Timestamp = existingEmbed.Timestamp,
+                                        Footer = new EmbedFooterBuilder { Text = existingEmbed.ToEmbedBuilder().Footer.Text }
+                                    }.Build();
+                
+                                }
+                                catch
+                                { // ignore
+                                }
+                            });
+
+                        });
+            }
+                }*/
+            }, null, 0, 1000);
 
             Client.GuildMemberUpdated += async (previous, later) =>
             {
@@ -85,7 +288,7 @@ namespace RoleX
                 {
                     new Thread(async () =>
                     {
-                        if (previous.Status != later.Status && later.Status != UserStatus.Offline && await SqliteClass.TrackCdAllUlongIDs($"select UserID from track_cd where TUserID = {later.Id};") != new System.Collections.Generic.List<ulong>())
+                        if (previous.Status != later.Status && later.Status != UserStatus.Offline && await SqliteClass.TrackCdAllUlongIDs($"select UserID from track_cd where TUserID = {later.Id};") != new List<ulong>())
                         {
                             var lis = await SqliteClass.TrackCdAllUlongIDs($"select UserID from track_cd where TUserID = {later.Id};");
                             foreach (var user in lis)
@@ -96,7 +299,8 @@ namespace RoleX
                             }
                         }
                     }).Start();
-                } catch { }
+                }
+                catch { }
             };
             await CL2.LoginAsync(TokenType.Bot, token);
             await Client.LoginAsync(TokenType.Bot, token);
@@ -105,6 +309,7 @@ namespace RoleX
             await Task.Delay(-1);
         }
 
+        public DateTime lastAmariRequest = DateTime.MinValue;
 
         private async Task HandleReactionAsync(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
         {
@@ -112,38 +317,119 @@ namespace RoleX
             {
                 new Thread(async () =>
                 {
-                    var msgid = arg1.Id;
-                    var chnlId = arg2.Id;
-                    var stc = arg2 as SocketTextChannel;
-                    var usr = stc?.GetUser(arg3.UserId);
-                    if (usr == null) return;
                     try
                     {
-                        if (usr.Id == Client?.CurrentUser?.Id) return;
-                        var msg = await stc.GetMessageAsync(msgid);
-                        if (msg == null) return;
-                        var reros = await SqliteClass.GetReactRoleAsync(
-                            $"SELECT * FROM reactroles WHERE ChannelID = {chnlId} AND MessageID = {msgid};");
-                        if (reros.Count == 0) return;
-                        var rero = reros[0];
-                        var index = rero.Emojis.IndexOf(arg3.Emote.ToString());
-                        if (index == -1) return;
-                        var role = stc.Guild.GetRole(rero.Roles[index]);
-                        if (role == null) return;
-                        if (rero.BlackListedRoles.Length != 0 &&
-                            usr.Roles.Any(k => rero.BlackListedRoles.Any(l => l == k.Id))) return;
-                        if (rero.WhiteListedRoles.Length != 0 &&
-                            !usr.Roles.Any(k => rero.WhiteListedRoles.Any(l => l == k.Id))) return;
-                        // Just add the role i guess.
-                        if (usr.Roles.All(x => x.Id == role.Id)) await usr.AddRoleAsync(role);
-                        else await usr.RemoveRoleAsync(role);
-                        await msg.RemoveReactionAsync(arg3.Emote, usr);
+                        var msgid = arg1.Id;
+                        var chnlId = arg2.Id;
+                        /*
+                        if (arg3.Emote.Name == "🎉" && arg2 is SocketTextChannel channel && arg3.User.IsSpecified &&
+                            !arg3.User.Value.IsBot)
+                        {
+                            var gld = channel.Guild;
+                            var mes = await (arg2 as SocketTextChannel).GetMessageAsync(msgid);
+                            if (mes == null) return;
+                            var log = (await SqliteClass.GetGiveaways(
+                                    $"SELECT * from giveaways WHERE ChannelID = {chnlId} AND MessageID = {msgid} AND GuildID = {gld.Id} AND Running = 1;")
+                                ).FirstOrDefault();
+                            if (log != null)
+                            {
+                                var roleReqs = log.RoleRequirementString == ""
+                                    ? new List<SocketRole>()
+                                    : log.RoleRequirementString.Split('|')
+                                        .Select(whatever => gld.GetRole(ulong.Parse(whatever)));
+                                SocketGuildUser ReactingUser = gld.GetUser(arg3.UserId);
+                                if (ReactingUser != null)
+                                {
+                                    var all = roleReqs.Any()
+                                        ? roleReqs.All(f => ReactingUser.Roles.Any(k => k.Id == f.Id))
+                                        : true;
+                                    if (!all)
+                                    {
+                                        var rrw = roleReqs.Where(f => ReactingUser.Roles.All(k => k.Id != f.Id));
+                                        await DontMeetRequirements(arg3, mes, ReactingUser, log,
+                                            $"Role `{rrw.First().Name}` {(rrw.Count() > 1 ? $" and {rrw.Count() - 1} others " : "")}are missing");
+                                        return;
+                                    }
+
+                                    if (log.AmariLevelRequirement != 0 || log.WeeklyAmariRequirement != 0)
+                                    {
+                                        do
+                                        {
+                                            await Task.Delay(5000);
+                                        } while (!(lastAmariRequest.AddSeconds(5).CompareTo(DateTime.UtcNow) < 0));
+
+                                        lastAmariRequest = DateTime.UtcNow;
+                                        var amariString =
+                                            await GetAsync($"http://litochee.com:3000/api/guild/{gld.Id}");
+
+                                        var obj = JsonConvert.DeserializeObject<AmariWeeklyParser>(amariString);
+                                        var user = obj.data.FirstOrDefault(
+                                            i => i.userID.ToString() == ReactingUser.Id.ToString());
+                                        if (log.AmariLevelRequirement != 0)
+                                        {
+
+                                            if (user == null || user.uLevel < log.AmariLevelRequirement)
+                                            {
+                                                await DontMeetRequirements(arg3, mes, ReactingUser, log,
+                                                    $"Amari Level Requirement {log.AmariLevelRequirement} is more than your current {user.uLevel} by {log.AmariLevelRequirement - user.uLevel}");
+                                                return;
+
+                                            }
+
+                                        }
+
+                                        if (log.WeeklyAmariRequirement != 0)
+                                        {
+                                            if (user == null ||
+                                                int.Parse(user
+                                                    .weeklyPoints) < log.AmariLevelRequirement)
+                                            {
+                                                await DontMeetRequirements(arg3, mes, ReactingUser, log,
+                                                    $"Weekly Amari Requirement {log.WeeklyAmariRequirement} is more than your current {user.weeklyPoints} by {log.WeeklyAmariRequirement - int.Parse(user.weeklyPoints)}");
+                                                return;
+
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        */
+                        var stc = arg2 as SocketTextChannel;
+                        var usr = stc?.GetUser(arg3.UserId);
+                        if (usr == null) return;
+                        try
+                        {
+                            if (usr.Id == Client?.CurrentUser?.Id) return;
+                            var msg = await stc.GetMessageAsync(msgid);
+                            if (msg == null) return;
+                            var reros = await SqliteClass.GetReactRoleAsync(
+                                $"SELECT * FROM reactroles WHERE ChannelID = {chnlId} AND MessageID = {msgid};");
+                            if (reros.Count == 0) return;
+                            var rero = reros[0];
+                            var index = rero.Emojis.IndexOf(arg3.Emote.ToString());
+                            if (index == -1) return;
+                            var role = stc.Guild.GetRole(rero.Roles[index]);
+                            if (role == null) return;
+                            if (rero.BlackListedRoles.Length != 0 &&
+                                usr.Roles.Any(k => rero.BlackListedRoles.Any(l => l == k.Id))) return;
+                            if (rero.WhiteListedRoles.Length != 0 &&
+                                !usr.Roles.Any(k => rero.WhiteListedRoles.Any(l => l == k.Id))) return;
+                            // Just add the role i guess.
+                            if (usr.Roles.All(x => x.Id == role.Id)) await usr.AddRoleAsync(role);
+                            else await usr.RemoveRoleAsync(role);
+                            await msg.RemoveReactionAsync(arg3.Emote, usr);
+                        }
+                        catch
+                        {
+                            //ignore
+                        }
+
                     }
                     catch
                     {
-                        //ignore
                     }
-
                 }).Start();
             }
             catch
@@ -151,6 +437,33 @@ namespace RoleX
                 // continue to ignore
             }
         }
+        public async Task<string> GetAsync(string uri)
+        {
+            var request = (HttpWebRequest)WebRequest.Create(uri);
+            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+
+            using var response = (HttpWebResponse)await request.GetResponseAsync();
+            await using var stream = response.GetResponseStream();
+            using var reader = new StreamReader(stream);
+            return await reader.ReadToEndAsync();
+        }
+        private enum RequirementType
+        {
+            RoleReq,
+            WeeklyReq,
+            AmariLevelReq
+        }
+        /*
+        private static async Task DontMeetRequirements(SocketReaction arg3, IMessage smg, SocketGuildUser ReactingUser, gstart.Giveaway log, string Info = "")
+        {
+            await smg.RemoveReactionAsync(arg3.Emote, ReactingUser);
+            await ReactingUser.SendMessageAsync("", false, new EmbedBuilder
+            {
+                Title = "You do not meet the requirements for the giveaway!",
+                Description = $"The {Info}, which makes an unmet requirement for the `{log.Title}` giveaway!",
+                Color = Color.Red
+            }.WithCurrentTimestamp().Build());
+        }*/
 
         private async Task LeftGuildAsync(SocketGuild arg)
         {
@@ -158,8 +471,9 @@ namespace RoleX
             {
                 await Client.GetUser(701029647760097361).SendMessageAsync($"I left {arg.Name}, a Guild of {arg.MemberCount} members.");
                 await Client.GetUser(615873008959225856).SendMessageAsync($"I left {arg.Name}, a Guild of {arg.MemberCount} members.");
-                await Modules.Services.TopGG.topGGUPD(Client.Guilds.Count);
-            } catch { }
+                await TopGG.topGGUPD(Client.Guilds.Count);
+            }
+            catch { }
         }
 
         private async Task AltAlertAsync(SocketGuildUser arg)
@@ -178,7 +492,8 @@ namespace RoleX
                         }
                     }
                 }).Start();
-            } catch { }
+            }
+            catch { }
         }
 
         private async Task HandleReadyAsync(DiscordSocketClient _)
@@ -198,14 +513,15 @@ namespace RoleX
                         Console.WriteLine($"Ignoring reminder {idek.Id}, was offline.");
                     }
                 }
-            } catch { }
+            }
+            catch { }
         }
 
         private async Task HandleGuildJoinAsync(SocketGuild arg)
         {
             try
             {
-                await Modules.Services.TopGG.topGGUPD(Client.Guilds.Count);
+                await TopGG.topGGUPD(Client.Guilds.Count);
                 // <@701029647760097361> or <@615873008959225856>
                 await Client.GetUser(701029647760097361).SendMessageAsync($"I joined {arg.Name}, a Guild of {arg.MemberCount} members.");
                 await Client.GetUser(615873008959225856).SendMessageAsync($"I joined {arg.Name}, a Guild of {arg.MemberCount} members.");
@@ -221,7 +537,8 @@ namespace RoleX
                     await arg.CurrentUser.ModifyAsync(async idk => idk.Nickname = $"[{await SqliteClass.PrefixGetter(arg.Id)}] RoleX");
                 }
                 catch { }
-            } catch { }
+            }
+            catch { }
         }
 
         internal static async Task HandleCommandResult(CustomCommandService.ICommandResult result, SocketUserMessage msg, string prefi)
@@ -242,7 +559,17 @@ namespace RoleX
                         };
                         eb.Footer.Text = "Command Autogen";
                         eb.Footer.IconUrl = Client.CurrentUser?.GetAvatarUrl();
-                        await Client.GetGuild(755076971041652786).GetTextChannel(758230822057934878).SendMessageAsync("", false, eb.Build());
+                        try
+                        {
+                            if (Client == null) break;
+                            var g = Client.GetGuild(755076971041652786);
+                            if (g == null) break;
+                            await g.GetTextChannel(758230822057934878).SendMessageAsync("", false, eb.Build());
+                        }
+                        catch
+                        { // ignore
+                        }
+
                         break;
                     case CommandStatus.BotMissingPermissions:
                         await msg.Channel.SendMessageAsync("", false, new EmbedBuilder
@@ -261,7 +588,7 @@ namespace RoleX
                             {
                                 Color = Color.Red,
                                 Title = "**I don't have permissions!!!**",
-                                Description = $"RoleX does not have the permission to do execute your command...\nThis may be because: \n1) You haven't given RoleX the needed permission for the command\n2) The user you want to mute/ban/kick is above RoleX"
+                                Description = "RoleX does not have the permission to do execute your command...\nThis may be because: \n1) You haven't given RoleX the needed permission for the command\n2) The user you want to mute/ban/kick is above RoleX"
                             }.WithCurrentTimestamp();
                             try
                             {
@@ -277,13 +604,13 @@ namespace RoleX
                         {
                             Color = Color.Red,
                             Title = $"**An error occured in <#{msg.Channel.Id}> of ${(msg.Channel as SocketGuildChannel).Guild.Id}**",
-                            Description = $"We are on towards fixing it! In case of any problem, DM <@701029647760097361> or <@615873008959225856>" + $"\nRefer to the below error message: ```{ string.Join("", result.Exception.Message.Take(1000))}```",
+                            Description = "We are on towards fixing it! In case of any problem, DM <@701029647760097361> or <@615873008959225856>" + $"\nRefer to the below error message: ```{ string.Join("", result.Exception.Message.Take(1000))}```",
                         }.WithCurrentTimestamp();
                         await msg.Channel.SendMessageAsync(embed: emb.Build());
-                        await Client.GetUser(701029647760097361).SendMessageAsync(embed: emb.WithDescription($"We are on towards fixing it! In case of any problem, DM <@701029647760097361> or <@615873008959225856>" + $"\nRefer to the below error message: ```{ string.Join("", result.Exception.ToString())}```").Build());
+                        await Client.GetUser(701029647760097361).SendMessageAsync(embed: emb.WithDescription("We are on towards fixing it! In case of any problem, DM <@701029647760097361> or <@615873008959225856>" + $"\nRefer to the below error message: ```{ string.Join("", result.Exception.ToString())}```").Build());
                         break;
                     case CommandStatus.MissingGuildPermission:
-                        await msg.Channel.SendMessageAsync("", false, new EmbedBuilder()
+                        await msg.Channel.SendMessageAsync("", false, new EmbedBuilder
                         {
                             Title = "**:lock: You're Missing Permissions :lock:**",
                             Color = Color.Red,
@@ -292,7 +619,7 @@ namespace RoleX
                         break;
                     case CommandStatus.NotEnoughParams or CommandStatus.InvalidParams:
                         var pref = await SqliteClass.PrefixGetter((msg.Channel as SocketGuildChannel).Guild.Id);
-                        await msg.Channel.SendMessageAsync("", false, new EmbedBuilder()
+                        await msg.Channel.SendMessageAsync("", false, new EmbedBuilder
                         {
                             Title = "**That isn't how to use that command**",
                             Color = Color.Red,
@@ -305,7 +632,8 @@ namespace RoleX
                         await Client.GetUser(701029647760097361).SendMessageAsync($"See kid Idk what happened but here it is {result.Result}\n{result.ResultMessage}\n{result.Exception}");
                         break;
                 }
-            } catch { }
+            }
+            catch { }
         }
         internal static string Resultformat(bool isSuccess)
         {

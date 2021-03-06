@@ -52,7 +52,12 @@ namespace RoleX.Modules.General
                 gwUser.MutualGuilds.Any(ree => Context.User.MutualGuilds.Any(r2 => r2.Id == ree.Id))
                 )
             {
-                var dry = gwUser.MutualGuilds.Where(ree => Context.User.MutualGuilds.Any(r2 => r2.Id == ree.Id));
+                //var dry = gwUser.MutualGuilds.Where(ree => Context.User.MutualGuilds.Any(r2 => r2.Id == ree.Id));
+                var dry = Program.Client.Guilds.Where(gld =>
+                {
+                    gld.DownloadUsersAsync();
+                    return gld.GetUser(gwUser.Id) != null;
+                });
                 foreach (var gld in dry.Take(5)) {
                     await gld.DownloadUsersAsync();
                     var gUser = gld.GetUser(userAccount.Id);
@@ -60,7 +65,7 @@ namespace RoleX.Modules.General
                 }
                 mutualServers += dry.Count() <= 5 ? "" : $"and {dry.Count() - 5} other(s)";
             }
-            var orderedroles = userGuildAccount == null ? null : userGuildAccount.Roles.OrderBy(x => x.Position * -1).ToArray();
+            var orderedroles = userGuildAccount?.Roles.OrderBy(x => x.Position * -1).ToArray();
             string roles = "";
             if (orderedroles != null)
             {

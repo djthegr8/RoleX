@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using Microsoft.Data.Sqlite;
+using Newtonsoft.Json;
 using P = RoleX.Modules.Services.Punishment;
 
 namespace RoleX.Modules.Services
@@ -81,6 +82,7 @@ namespace RoleX.Modules.Services
             /// Reason why reminder was set, or "Not given"
             /// </summary>
             public string Reason { get; set; } = "Not given";
+            public bool Finished { get; set; } = false;
             /// <summary>
             /// Empty Constructor for usage
             /// </summary>
@@ -193,12 +195,14 @@ namespace RoleX.Modules.Services
             if (!read.HasRows || await read.IsDBNullAsync(0)) return new List<Reminder>();
             do
             {
+                if (read.GetString(2) == "") continue;
                 retvals.Add(new Reminder
                 {
                     Id = read.GetString(0),
                     UserId = Convert.ToUInt64(read.GetInt64(1)),
                     Time = read.GetString(2),
-                    Reason = read.GetString(3)
+                    Reason = read.GetString(3),
+                    Finished = read.GetInt32(4) == 1
                 });
             } while (await read.ReadAsync());
             await read.CloseAsync();
@@ -307,13 +311,51 @@ namespace RoleX.Modules.Services
             await con.CloseAsync();
         }
         // All getters
+        /*
+        public static async Task<List<Giveaway>> GetGiveaways(string cmdtext)
+        {
+            List<Giveaway> rl = new();
+            await using var con = new SqliteConnection(FilePath);
+            await con.OpenAsync();
+            await using var cmd = new SqliteCommand
+            {
+                Connection = con,
+                CommandText = cmdtext
+            };
+            var read = await cmd.ExecuteReaderAsync();
+            await read.ReadAsync();
+            if (!read.HasRows || await read.IsDBNullAsync(0)) return new List<Giveaway>();
+            do
+            {
+                rl.Add(
+                    new Giveaway()
+                    {
+                        GuildID = ulong.Parse(read.GetInt64(0).ToString()),
+                        ChannelID = ulong.Parse(read.GetInt64(1).ToString()),
+                        MessageID = ulong.Parse(read.GetInt64(2).ToString()),
+                        StarterID = ulong.Parse(read.GetInt64(3).ToString()),
+                        Winners = read.GetInt32(4),
+                        RoleRequirementString = read.GetString(5),
+                        Title = read.GetString(6),
+                        EndingTime = DateTime.Parse(read.GetString(7)),
+                        AmariLevelRequirement = read.GetInt32(8),
+                        WeeklyAmariRequirement = read.GetInt32(9),
+                        NoNitroReq = read.GetInt32(10) == 1
+                    }
+                );
+            } while (await read.ReadAsync());
+            await read.CloseAsync();
+            await con.CloseAsync();
+            return rl;
+        }
+        */
         /// <summary>
         /// Gets whether user is on Trade Cooldown
         /// </summary>
         /// <param name="guildId"></param>
         /// <param name="userId"></param>
         /// <returns>A boolean saying whether on Trade Cooldown <c>true</c> if yes, else <c>false</c></returns>
-        public static async Task<bool> CooldownGetter(ulong guildId, ulong userId) => await QueryFunctionCreator($"select GuildID from cooldown where guildid = {guildId} and UserID = {userId}", long.Parse("0")) == 0;
+        public static async Task<bool> CooldownGetter(ulong guildId, ulong userId) => await QueryFunctionCreator($"select GuildID from cooldown where guildid = {guildId} and UserID = {userId}", long.Parse("0")) == 1;
         public static async Task<bool> TrackCooldownGetter(ulong userId) => await QueryFunctionCreator($"select count(*) from track_cd where UserID = {userId}", long.Parse("0")) != 0;
         public static async Task<long> TrackCdGetUser(ulong userId) => await QueryFunctionCreator($"select TUserID from track_cd where UserID = {userId}", long.Parse("0"));
         public static async Task<List<ulong>> TrackCdAllUlongIDs(string cmdtext)
@@ -343,6 +385,7 @@ namespace RoleX.Modules.Services
         /// <param name="guilId"></param>
         /// <returns></returns>
         public static async Task<string> PrefixGetter(ulong guilId) => await QueryFunctionCreator($"select Prefix from prefixes where guildid = {guilId}", "r");
+
         public static async Task<string> AppealGetter(ulong guilId) => await QueryFunctionCreator($"select appeal from prefixes where guildid = {guilId}", "");
         public static async Task<long> AltTimePeriodGetter(ulong guildId) => await QueryFunctionCreator($"select AltTimeMonths from prefixes where guildid = {guildId}", long.Parse("3"));
         public static async Task<long> SlowdownTimeGetter(ulong guildId) => await QueryFunctionCreator($"select Slowdown from prefixes where guildid = {guildId}", long.Parse("15"));
@@ -407,10 +450,7 @@ namespace RoleX.Modules.Services
             }
             CurrentAliases.Add(new Tuple<string, string>(aliasName, aliasContent));
             var toAddArray = CurrentAliases.Select(k => k.Item1 + "|" + k.Item2);
-            if (CurrentAliases.Count() > 1)
-                await NonQueryFunctionCreator(
-                    $"UPDATE alias SET aliases = \"{string.Join('^', toAddArray)}\" WHERE GuildID = {GuildID}");
-            else await NonQueryFunctionCreator($"REPLACE into alias Values({GuildID}, \"{string.Join('^', toAddArray)}\")");
+            await NonQueryFunctionCreator($"REPLACE into alias Values({GuildID}, \"{string.Join('^', toAddArray)}\")");
         }
 
         public static async Task<int> AliasRemover(ulong GuildID, string aliasName)
@@ -426,29 +466,56 @@ namespace RoleX.Modules.Services
             else await NonQueryFunctionCreator($"UPDATE alias SET aliases = \"{string.Join('^', toAddArray)}\" WHERE GuildID = {GuildID}");
             return retval;
         }
-        public static async Task SlowdownTimeAdder(ulong guildId, ulong slowdownTime) => await NonQueryFunctionCreator($"update prefixes set Slowdown = {slowdownTime} where GuildID = {guildId};");
+
+        public static async Task AddChartStr(List<Tuple<string, ulong>> info, DateTime lastMessage, ulong ChanneLID)
+        {
+            var srs = JsonConvert.SerializeObject(info);
+            await NonQueryFunctionCreator($"REPLACE INTO messages VALUES({ChanneLID},{srs},{lastMessage:u});");
+        }
+        public static async Task SlowdownTimeAdder(ulong guildId, ulong slowdownTime) => await NonQueryFunctionCreator($"REPLACE INTO prefixes(guildid,Slowdown) Values({guildId},{slowdownTime});");
         public static async Task CooldownAdder(ulong guildId, ulong userId) => await NonQueryFunctionCreator($"insert into cooldown (GuildID, UserID) values ({guildId}, {userId});");
         public static async Task CooldownRemover(ulong guildId, ulong userId) => await NonQueryFunctionCreator($"delete from cooldown where GuildID = {guildId} and UserID = {userId};");
         public static async Task Track_AllCDRemover(ulong userId) => await NonQueryFunctionCreator($"delete from track_cd where UserID = {userId};");
         public static async Task Track_CDAdder(ulong userId, ulong otherUserId) => await NonQueryFunctionCreator($"insert into track_cd (UserID, TUserID) values ({userId}, {otherUserId});");
         public static async Task Track_CDRemover(ulong userId, ulong otherUserId) => await NonQueryFunctionCreator($"delete from track_cd where UserID = {userId} and TUserID = {otherUserId};");
-        public static async Task MutedRoleIdAdder(ulong guildId, ulong mutedRoleId) => await NonQueryFunctionCreator($"update prefixes set MutedRoleID = {mutedRoleId} where GuildID = {guildId};");
+        public static async Task MutedRoleIdAdder(ulong guildId, ulong mutedRoleId) => await NonQueryFunctionCreator($"REPLACE INTO prefixes(guildid, MutedRoleID) Values({guildId}, {mutedRoleId})");
         public static async Task PrefixAdder(ulong guLdid, string prefix)
         {
-            await NonQueryFunctionCreator($"update prefixes set Prefix = \"{prefix}\" where GuildID = {guLdid};");
+            await NonQueryFunctionCreator($"REPLACE INTO prefixes(guildId,Prefix)({guLdid},\"{prefix}\");");
         }
-        public static async Task AppealAdder(ulong guLdid, string appeallink) => await NonQueryFunctionCreator($"update prefixes set appeal = \"{appeallink}\" where GuildID = {guLdid};");
-        public static async Task AddToModlogs(ulong guildId, ulong userId, ulong moderatorId, Punishment punishment, DateTime time, string reason = "")
+        public static async Task AppealAdder(ulong guLdid, string appeallink) => await NonQueryFunctionCreator($"REPLACE INTO prefixes(guildid,appeal) Values({guLdid},\"{appeallink}\");");
+        public static async Task AddToModlogs(ulong guildId, ulong userId, ulong moderatorId, P punishment, DateTime time, string reason = "")
         {
-            await NonQueryFunctionCreator($"insert into modlogs (UserID,GuildID,Punishment,ModeratorID,Time{(reason == "" ? "" : ",Reason")}) values ({userId},{guildId},\"{Enum.GetName(typeof(Punishment), punishment)}\",{moderatorId},\"{time:o}\"{(reason == "" ? "" : $",\"{reason}\"")});");
+            await NonQueryFunctionCreator($"insert into modlogs (UserID,GuildID,Punishment,ModeratorID,Time{(reason == "" ? "" : ",Reason")}) values ({userId},{guildId},\"{Enum.GetName(typeof(P), punishment)}\",{moderatorId},\"{time:O}\"{(reason == "" ? "" : $",\"{reason}\"")});");
         }
+        /// <summary>
+        /// Removes giveaway (sets as Inactive)
+        /// </summary>
+        /// <param name="gaw">The giveaway whose time has runout/has been ended</param>
+        /// <returns></returns>
+        /*public static async Task GiveawayRemover(Giveaway gaw)
+        {
+            await NonQueryFunctionCreator(
+                $"UPDATE giveaways SET Running = 0 WHERE GuildID = {gaw.GuildID} AND ChannelID = {gaw.ChannelID} AND MessageID = {gaw.MessageID};");
+        }*/
+        /// <summary>
+        /// Adds a giveaway
+        /// </summary>
+        /// <param name="addGiveaway">The giveaway to add</param>
+        /// <returns></returns>
+        /*public static async Task GiveawayAdder(Giveaway addGiveaway)
+        {
+            await NonQueryFunctionCreator($"REPLACE INTO giveaways VALUES({addGiveaway.GuildID}, {addGiveaway.ChannelID}, {addGiveaway.MessageID}, {addGiveaway.StarterID}, {addGiveaway.Winners}, \"{addGiveaway.RoleRequirementString}\", \"{addGiveaway.Title}\", \"{addGiveaway.EndingTime:u}\", {addGiveaway.AmariLevelRequirement}, {addGiveaway.WeeklyAmariRequirement}, {Convert.ToInt32(addGiveaway.NoNitroReq)}, 1);");
+        }*/
+
         public static async Task<List<Infraction>> GetUserModlogs(ulong guildId, ulong userId) => await GetInfractions($"select * from modlogs where GuildID = {guildId} and UserID = {userId};");
-        public static async Task AlertChanAdder(ulong guildId, ulong chanId) => await NonQueryFunctionCreator($"update prefixes set AlertChanID = {chanId} where GuildID = {guildId};");
-        public static async Task TradingChanAdder(ulong guildId, ulong chanId) => await NonQueryFunctionCreator($"update prefixes set TradingChannel = {chanId} where GuildID = {guildId};");
-        public static async Task AltTimePeriodAdder(ulong guildId, long altTimeMonths) => await NonQueryFunctionCreator($"update prefixes set AltTimeMonths = {altTimeMonths} where GuildID = {guildId};");
+        public static async Task AlertChanAdder(ulong guildId, ulong chanId) => await NonQueryFunctionCreator($"REPLACE INTO prefixes(guildid,AlertChanID) Values({guildId},{chanId});");
+        public static async Task TradingChanAdder(ulong guildId, ulong chanId) => await NonQueryFunctionCreator($"REPLACE INTO prefixes(guildid,TradingChannel) Values({guildId}, {chanId});");
+        public static async Task AltTimePeriodAdder(ulong guildId, long altTimeMonths) => await NonQueryFunctionCreator($"REPLACE INTO prefixes(guildid,AltTimeMonths) Values({guildId},{altTimeMonths});");
         public static async Task TradeEditor(ulong userId, string text, TradeTexts tt)
         {
             await NonQueryFunctionCreator($"replace into tradelists (UserID, BuyingString, SellingString) values({userId},\"{(tt == TradeTexts.Selling ? await StringGetter(userId, TradeTexts.Buying) : text)}\",\"{(tt == TradeTexts.Buying ? await StringGetter(userId, TradeTexts.Selling) : text)}\");");
         }
+
     }
 }

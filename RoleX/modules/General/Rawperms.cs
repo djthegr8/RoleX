@@ -10,7 +10,7 @@ namespace RoleX.Modules.General
         [DiscordCommand("rawperms",description ="Takes a permission integer and gives the values", example ="rawperms 8")]
         public async Task PermRaw(ulong raw)
         {
-            var gp = new Discord.GuildPermissions(raw);
+            var gp = new GuildPermissions(raw);
             string x = "";
             x += $"Admin:        {(gp.Administrator ? "✅" : "❌")}\n";
             x += $"Kick:         {(gp.KickMembers ? "✅" : "❌")}\n";

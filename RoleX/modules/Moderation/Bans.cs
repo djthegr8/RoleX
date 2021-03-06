@@ -23,7 +23,7 @@ namespace RoleX.Modules.Moderation
             var efb = listwherenotnull.Select((r5, idx) => new EmbedFieldBuilder()
             {
                 Name = r5.User.ToString() == "" ? "Probably deleted" : r5.User.ToString(),
-                Value = string.Join("", r5.Reason.Take(2000)) == "" ? "None given" : string.Join("", r5.Reason.Take(2000))
+                Value = string.Join("", r5.Reason == null ? "None given" : r5.Reason.Take(2000))
             });
             var pm = new PaginatedMessage(PaginatedAppearanceOptions.Default, Context.Channel);
             pm.SetPages("Here are your bans", efb, 5);

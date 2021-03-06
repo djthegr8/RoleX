@@ -109,7 +109,7 @@ namespace RoleX.Utilities {
             }
 
             void UpdateInternal(MessagePage messagePage, bool withFooter) {
-                _embedBuilder.Fields.Clear();
+                //_embedBuilder.Fields.Clear();
                 _embedBuilder.Fields = messagePage.Fields;
                 _embedBuilder.Description = messagePage.Description;
                 _embedBuilder.Footer = Footer ?? new EmbedFooterBuilder();
@@ -129,7 +129,7 @@ namespace RoleX.Utilities {
                 // Ignored
             }
 
-            _collectorController = CollectorsUtils.CollectReaction(Message!, reaction => true, args => {
+            _collectorController = CollectorsUtils.CollectReaction(Message!, _  => true, args => {
                 if (args.Reaction.Emote.Equals(Options.Back)) {
                     PageNumber--;
                 }

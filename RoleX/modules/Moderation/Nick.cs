@@ -24,7 +24,7 @@ namespace RoleX.Modules.Moderation
                 }.WithCurrentTimestamp());
                 return;
             }
-            if (GetUser(args[0]) == null)
+            if (await GetUser(args[0]) == null)
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {

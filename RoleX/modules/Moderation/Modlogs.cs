@@ -1,9 +1,11 @@
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Discord;
 using Discord.Rest;
 using RoleX.Modules.Services;
+using System.Collections.Generic;
+using System.Linq;
+using RoleX.Utilities;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using static RoleX.Modules.Services.SqliteClass;
 
 namespace RoleX.Modules.Moderation
@@ -64,22 +66,27 @@ namespace RoleX.Modules.Moderation
             {
                 user = await GetUser(aa[0]);
             }
-            EmbedBuilder eb = new EmbedBuilder
+            EmbedBuilder emb = new EmbedBuilder
             {
                 Title = $"Modlogs for user {user.Username}#{user.Discriminator}",
                 Color = Blurple,
                 ThumbnailUrl = user.GetAvatarUrl(size: 64)
             };
-
+            var eb = new List<EmbedFieldBuilder>();
             foreach (Infraction i in await GetUserModlogs(Context.Guild.Id, user.Id))
             {
-                eb.AddField($"{Infraction.GetPunishment(i.Punishment)}", $"**Mod:** <@{i.ModeratorId}>\n**Date:** {i.Time.ToUniversalTime().ToShortDateString()}\n**Time: **{(i.Time.ToUniversalTime().TimeOfDay.Hours <= 12 ? i.Time.ToUniversalTime().TimeOfDay.Hours : i.Time.ToUniversalTime().TimeOfDay.Hours - 12)}:{i.Time.ToUniversalTime().TimeOfDay.Minutes} {(i.Time.ToUniversalTime().TimeOfDay.Hours < 12 ? "AM" : "PM")}\n**Reason:** {i.Reason}", true);
+                eb.Add(new EmbedFieldBuilder() {
+                    Name=Infraction.GetPunishment(i.Punishment),
+                    Value=$"**Mod:** <@{i.ModeratorId}>\n**Date:** {i.Time.ToUniversalTime().ToShortDateString()}\n**Time: **{(i.Time.ToUniversalTime().TimeOfDay.Hours <= 12 ? i.Time.ToUniversalTime().TimeOfDay.Hours : i.Time.ToUniversalTime().TimeOfDay.Hours - 12)}:{i.Time.ToUniversalTime().TimeOfDay.Minutes} {(i.Time.ToUniversalTime().TimeOfDay.Hours < 12 ? "AM" : "PM")}\n**Reason:** {i.Reason}",
+                    IsInline=true });
             }
-            if (eb.Fields.Count == 0)
+            if (eb.Count == 0)
             {
-                eb.Description = "They've been a good user! No modlogs :)";
+                emb.Description = "They've been a good user! No modlogs :)";
             }
-            await ReplyAsync(embed: eb.WithCurrentTimestamp());
+            var pm = new PaginatedMessage(PaginatedAppearanceOptions.Default, Context.Message.Channel, new PaginatedMessage.MessagePage { Description = "Error!" });
+            pm.SetPages($"Here's a list of the user's modlogs", eb, 7);
+            await pm.Resend();
         }
     }
 }

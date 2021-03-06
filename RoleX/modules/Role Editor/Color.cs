@@ -69,7 +69,7 @@ namespace RoleX.Modules.Role_Editor
             }
             else
             {
-                System.ComponentModel.TypeConverter.StandardValuesCollection svc = (System.Drawing.ColorConverter.StandardValuesCollection)c.GetStandardValues();
+                System.ComponentModel.TypeConverter.StandardValuesCollection svc = (System.ComponentModel.TypeConverter.StandardValuesCollection)c.GetStandardValues();
                 foreach (System.Drawing.Color o in svc)
                 {
                     if (o.Name.Equals(args[1], StringComparison.OrdinalIgnoreCase))

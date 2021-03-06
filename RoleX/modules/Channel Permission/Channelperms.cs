@@ -113,7 +113,7 @@ namespace RoleX.Modules.Channel_Permission
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "That permission is invalid",
-                    Description = $"The list of permissions is ~ ```{string.Join('\n', Enum.GetNames(typeof(Discord.ChannelPermission)))}```",
+                    Description = $"The list of permissions is ~ ```{string.Join('\n', Enum.GetNames(typeof(ChannelPermission)))}```",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;

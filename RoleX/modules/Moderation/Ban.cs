@@ -12,7 +12,7 @@ namespace RoleX.Modules.Moderation
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Ban : CommandModuleBase
     {
-        [RequiredUserPermissions(new[] {GuildPermission.ManageGuild, GuildPermission.BanMembers })]
+        [RequiredUserPermissions(new[] {GuildPermission.BanMembers })]
         [DiscordCommand("ban", commandHelp = "ban <@user> <reason>", example = "ban @Scammer Scamming me friend", description = "Bans the specified user")]
         public async Task Banner(params string[] args)
         {
@@ -28,11 +28,7 @@ namespace RoleX.Modules.Moderation
             }
             if (await GetUser(args[0]) != null || Context.Message.MentionedUsers.Any())
             {
-                var gUser = await GetUser(args[0]);
-                if (gUser == null)
-                {
-                    gUser = Context.Message.MentionedUsers.First() as SocketGuildUser;
-                }
+                var gUser = await GetUser(args[0]) ?? Context.Message.MentionedUsers.First() as SocketGuildUser;
                 if (gUser.Hierarchy < (Context.User as SocketGuildUser).Hierarchy)
                 {
                     if (gUser.Hierarchy >= Context.Guild.CurrentUser.Hierarchy)
