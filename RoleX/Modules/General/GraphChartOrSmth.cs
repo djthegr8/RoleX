@@ -165,7 +165,7 @@ namespace RoleX.Modules.General
             else
             {
                 var coll = new PrivateFontCollection();
-                coll.AddFontFile("/home/ubuntu/seguisb.tff");
+                coll.AddFontFile("/home/ubuntu/seguisb.ttf");
                 font = new Font(coll.Families[0], toStr.Count > 5 ? 110 / toStr.Count : 30);
             }
             DrawPieChart(gr, new Rectangle(100, 100, 800, 800), -90, sb, SlicePens, toStr, Brushes.White, font, count);
