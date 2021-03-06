@@ -10,8 +10,10 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Collections.Specialized;
+using System.Drawing.Text;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Color = Discord.Color;
 using ImageFormat = System.Drawing.Imaging.ImageFormat;
@@ -72,6 +74,7 @@ namespace RoleX.Modules.General
         }
         // Pens used to outline pie slices.
         private Pen[] SlicePens = { Pens.Black };
+
         [DiscordCommand("chatchart", commandHelp = "chatchart #channel",
             description =
                 "Shows the chat chart for a channel, and no I wont make a cmd that does this for whole server 😫",
@@ -112,10 +115,12 @@ namespace RoleX.Modules.General
             else
             {
                 var rat = JsonConvert.DeserializeObject<MessageCache>(await File.ReadAllTextAsync(s));
-                guildUsers = rat.listOfUsers.Select(k => new Tuple<IUser,ulong>(Program.Client.GetUser(k.Item1),k.Item2)).ToList(); 
+                guildUsers = rat.listOfUsers
+                    .Select(k => new Tuple<IUser, ulong>(Program.Client.GetUser(k.Item1), k.Item2)).ToList();
                 guildUsers.RemoveAll(f => f.Item1 == null);
                 aen = channel.GetMessagesAsync(rat.lastMessageID, Direction.After, int.MaxValue);
             }
+
             await foreach (var k in aen)
             {
                 for (int i = 0; i < k.Count; i++)
@@ -132,11 +137,14 @@ namespace RoleX.Modules.General
 
 
                 }
-            };
-            var messa = await channel.SendMessageAsync("RoleX completed querying. This is a landmark message.\n**DO NOT DELETE THIS MESSAGE**");
+            }
+
+            ;
+            var messa = await channel.SendMessageAsync(
+                "RoleX completed querying. This is a landmark message.\n**DO NOT DELETE THIS MESSAGE**");
             var mes = new MessageCache()
             {
-                listOfUsers = guildUsers.Select(k => new Tuple<ulong,ulong>(k.Item1.Id,k.Item2)).ToList(),
+                listOfUsers = guildUsers.Select(k => new Tuple<ulong, ulong>(k.Item1.Id, k.Item2)).ToList(),
                 lastMessageID = messa.Id,
             };
             var des = JsonConvert.SerializeObject(mes);
@@ -147,11 +155,21 @@ namespace RoleX.Modules.General
             var nextsum = selected.Sum(dj => float.Parse(dj.Item2.ToString()));
             var rest = count - nextsum;
             var toStr = selected.Select(m => new Tuple<string, ulong>(m.Item1.ToString(), m.Item2)).ToList();
-            if (rest > 0) toStr.Add(new Tuple<string, ulong>("Others", ulong.Parse(rest.ToString(CultureInfo.InvariantCulture))));
+            if (rest > 0)
+                toStr.Add(new Tuple<string, ulong>("Others", ulong.Parse(rest.ToString(CultureInfo.InvariantCulture))));
             var bitmap = new Bitmap(1000, 1000);
             var gr = Graphics.FromImage(bitmap);
             var sb = SliceBrushes;
-            DrawPieChart(gr, new Rectangle(100, 100, 800, 800), -90, sb, SlicePens, toStr, Brushes.White, new Font(FontFamily.Families.First(k => k.Name == "Segoe UI Semibold"), toStr.Count > 5 ? 110 / toStr.Count : 30), count);
+            Font font;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) font = new Font(FontFamily.Families.First(k => k.Name == "Segoe UI Semibold"), toStr.Count > 5 ? 110 / toStr.Count : 30);
+            else
+            {
+                var coll = new PrivateFontCollection();
+                coll.AddFontFile("/home/ubuntu/seguisb.tff");
+                font = new Font(coll.Families[0], toStr.Count > 5 ? 110 / toStr.Count : 30);
+            }
+            DrawPieChart(gr, new Rectangle(100, 100, 800, 800), -90, sb, SlicePens, toStr, Brushes.White, font, count);
+
             bitmap.Save("chart.jpeg", ImageFormat.Jpeg);
             await Context.Channel.SendFileAsync("chart.jpeg", "here is ur stupid chart");
         }
