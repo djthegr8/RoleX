@@ -15,7 +15,6 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using MoreLinq;
 using Color = Discord.Color;
-using ImageFormat = System.Drawing.Imaging.ImageFormat;
 
 namespace RoleX.Modules.General
 {
@@ -173,7 +172,7 @@ namespace RoleX.Modules.General
                 toStr.Add(new Tuple<string, ulong>("Others", ulong.Parse(rest.ToString(CultureInfo.InvariantCulture))));
             DrawPieChart(gr, new Rectangle(200, 200, 600, 600), -90, sb, SlicePens,toStr , Brushes.White, font, count, channel);
 
-            bitmap.Save("chart.jpeg", ImageFormat.Jpeg);
+            bitmap.Save("chart.jpeg", System.Drawing.Imaging.ImageFormat.Jpeg);
             var max = selected.Max(k => k.Item2);
             var max2 = selected.Max(m => m.Item2 == max ? 0 : m.Item2);
             var max3 = selected.Max(m => (m.Item2 == max || m.Item2 == max2) ? 0 : m.Item2);
