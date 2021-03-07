@@ -152,12 +152,11 @@ namespace RoleX.Modules.General
             await File.WriteAllTextAsync(s, des);
             var count = guildUsers.Sum(dj => float.Parse(dj.Item2.ToString()));
             var majorUsers = guildUsers.OrderBy(m => m.Item2) as IEnumerable<Tuple<IUser, ulong>>;
-            var selected = majorUsers.Where(k => (k.Item2 / count) > 0.01).ToList();
+            var selected = majorUsers.Where(k => (k.Item2 / count) > 0.02).ToList();
             var nextsum = selected.Sum(dj => float.Parse(dj.Item2.ToString()));
             var rest = count - nextsum;
             var toStr = selected.Select(m => new Tuple<string, ulong>(m.Item1.ToString(), m.Item2)).ToList();
-            if (rest > 0)
-                toStr.Add(new Tuple<string, ulong>("Others", ulong.Parse(rest.ToString(CultureInfo.InvariantCulture))));
+            
             var bitmap = new Bitmap(2000, 1000);
             var gr = Graphics.FromImage(bitmap);
             var sb = SliceBrushes;
@@ -168,8 +167,13 @@ namespace RoleX.Modules.General
                 var coll = new PrivateFontCollection();
                 coll.AddFontFile("/home/ubuntu/seguisb.ttf");
                 font = coll.Families.Length == 0 ? new Font(SystemFonts.DefaultFont, FontStyle.Regular) : new Font(coll.Families[0],30);
+
             }
-            DrawPieChart(gr, new Rectangle(200, 200, 600, 600), -90, sb, SlicePens, toStr, Brushes.White, font, count, channel);
+
+            toStr.Reverse();
+            if (rest > 0)
+                toStr.Add(new Tuple<string, ulong>("Others", ulong.Parse(rest.ToString(CultureInfo.InvariantCulture))));
+            DrawPieChart(gr, new Rectangle(200, 200, 600, 600), -90, sb, SlicePens,toStr , Brushes.White, font, count, channel);
 
             bitmap.Save("chart.jpeg", ImageFormat.Jpeg);
             var max = selected.Max(k => k.Item2);
