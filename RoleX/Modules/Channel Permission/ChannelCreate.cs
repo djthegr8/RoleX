@@ -64,7 +64,6 @@ namespace RoleX.Modules.Channel_Permission
                             return;
                         }
 
-                        await Context.Guild.CreateTextChannelAsync(bchname);
                         var _rchannel = await Context.Guild.CreateTextChannelAsync(bchname);
                         await ReplyAsync("", false, new EmbedBuilder
                         {
@@ -72,7 +71,7 @@ namespace RoleX.Modules.Channel_Permission
                             Description = $"Successfully created channel <#{_rchannel.Id}> (ID: {_rchannel.Id})",
                             Color = Blurple
                         }.WithCurrentTimestamp());
-                        break;
+                        return;
                     }
                     var _bchname = string.Join('-', args.Skip(1));
                     if (!Regex.IsMatch(_bchname, "[a-zA-Z0-9-_]{2,100}"))
