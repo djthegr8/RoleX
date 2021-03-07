@@ -158,18 +158,18 @@ namespace RoleX.Modules.General
             var toStr = selected.Select(m => new Tuple<string, ulong>(m.Item1.ToString(), m.Item2)).ToList();
             if (rest > 0)
                 toStr.Add(new Tuple<string, ulong>("Others", ulong.Parse(rest.ToString(CultureInfo.InvariantCulture))));
-            var bitmap = new Bitmap(1000, 1000);
+            var bitmap = new Bitmap(2000, 1000);
             var gr = Graphics.FromImage(bitmap);
             var sb = SliceBrushes;
             Font font;
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) font = new Font(FontFamily.Families.First(k => k.Name == "Segoe UI Semibold"), toStr.Count > 5 ? 180 / toStr.Count : 30);
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) font = new Font(FontFamily.Families.First(k => k.Name == "Segoe UI Semibold"), 30);
             else
             {
                 var coll = new PrivateFontCollection();
                 coll.AddFontFile("/home/ubuntu/seguisb.ttf");
-                font = new Font(coll.Families[0], toStr.Count > 5 ? 110 / toStr.Count : 30);
+                font = coll.Families.Length == 0 ? new Font(SystemFonts.DefaultFont, FontStyle.Regular) : new Font(coll.Families[0],30);
             }
-            DrawPieChart(gr, new Rectangle(100, 100, 800, 800), -90, sb, SlicePens, toStr, Brushes.White, font, count);
+            DrawPieChart(gr, new Rectangle(200, 200, 600, 600), -90, sb, SlicePens, toStr, Brushes.White, font, count, channel);
 
             bitmap.Save("chart.jpeg", ImageFormat.Jpeg);
             var max = selected.Max(k => k.Item2);
@@ -184,10 +184,11 @@ namespace RoleX.Modules.General
         }
         private static void DrawPieChart(Graphics gr,
             Rectangle rect, float initial_angle, Brush[] brushes, Pen[] pens,
-            List<Tuple<string, ulong>> lis, Brush label_brush, Font label_font, float total)
+            List<Tuple<string, ulong>> lis, Brush label_brush, Font label_font, float total, IChannel chnl)
         {
             float start_angle = initial_angle;
             var values = lis.Select(mk => mk.Item2).ToArray();
+            gr.DrawString($"Stats in {chnl.Name}", label_font, label_brush, new PointF(280,50));
             for (int i = 0; i < values.Length; i++)
             {
                 float sweep_angle = values[i] * 360f / total;
@@ -197,10 +198,11 @@ namespace RoleX.Modules.General
                     rect, start_angle, sweep_angle);
                 gr.DrawPie(pens[i % pens.Length],
                     rect, start_angle, sweep_angle);
-
+                gr.FillRectangle(brushes[i % brushes.Length], new Rectangle(1300,100 + 60*i,120, label_font.Height));
+                gr.DrawString(lis[i].Item1 + $" - {Convert.ToInt32(100 * (lis[i].Item2 / total))}%", label_font, label_brush, new PointF(1440, 100 + 60*i));
                 start_angle += sweep_angle;
             }
-
+            /*
             // Label the slices.
             // We label the slices after drawing them all so one
             // slice doesn't cover the label on another very thin slice.
@@ -231,8 +233,8 @@ namespace RoleX.Modules.General
                         label_font, label_brush, x, y, string_format);
 
                     start_angle += sweep_angle;
-                }
+                }*/
             }
         }
     }
-}
+
