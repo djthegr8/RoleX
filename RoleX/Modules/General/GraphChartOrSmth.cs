@@ -15,6 +15,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using MoreLinq;
 using Color = Discord.Color;
 using ImageFormat = System.Drawing.Imaging.ImageFormat;
 
@@ -161,7 +162,7 @@ namespace RoleX.Modules.General
             var gr = Graphics.FromImage(bitmap);
             var sb = SliceBrushes;
             Font font;
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) font = new Font(FontFamily.Families.First(k => k.Name == "Segoe UI Semibold"), toStr.Count > 5 ? 110 / toStr.Count : 30);
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) font = new Font(FontFamily.Families.First(k => k.Name == "Segoe UI Semibold"), toStr.Count > 5 ? 180 / toStr.Count : 30);
             else
             {
                 var coll = new PrivateFontCollection();
@@ -171,7 +172,15 @@ namespace RoleX.Modules.General
             DrawPieChart(gr, new Rectangle(100, 100, 800, 800), -90, sb, SlicePens, toStr, Brushes.White, font, count);
 
             bitmap.Save("chart.jpeg", ImageFormat.Jpeg);
-            await Context.Channel.SendFileAsync("chart.jpeg", "here is ur stupid chart");
+            var max = selected.Max(k => k.Item2);
+            var max2 = selected.Max(m => m.Item2 == max ? 0 : m.Item2);
+            var max3 = selected.Max(m => (m.Item2 == max || m.Item2 == max2) ? 0 : m.Item2);
+            var sf = selected.First(m => m.Item2 == max);
+            var ss = selected.First(l => l.Item2 == max2);
+            var st = selected.First(l => l.Item2 == max3);
+            await Context.Channel.SendFileAsync("chart.jpeg", $"The top 3 in this channel are ~ \n🥇 {sf.Item1} - {sf.Item2}\n" +
+                                                              $"🥈 {ss.Item1} - {ss.Item2}\n" +
+                                                              $"🥉 {st.Item1} - {st.Item2}");
         }
         private static void DrawPieChart(Graphics gr,
             Rectangle rect, float initial_angle, Brush[] brushes, Pen[] pens,
