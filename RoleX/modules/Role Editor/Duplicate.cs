@@ -48,8 +48,11 @@ namespace RoleX.Modules.Role_Editor
                 }.WithCurrentTimestamp());
                 return;
             }
-            
-            await Context.Guild.ReorderRolesAsync(new List<ReorderRoleProperties>() { new ReorderRoleProperties(rlD.Id, rlA.Position) });
+
+            await Context.Guild.ReorderRolesAsync(new List<ReorderRoleProperties>()
+            {
+                new(rlD.Id, rlA.Position)
+            });
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "Role Moved Successfully",
