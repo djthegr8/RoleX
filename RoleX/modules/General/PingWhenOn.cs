@@ -30,7 +30,7 @@ namespace RoleX.Modules.General
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = $"List of users tracked by `{Context.User}`",
-                    Description = $"You`re tracking ~\n<@{SqliteClass.TrackCdGetUser(Context.User.Id)}>",
+                    Description = $"You`re tracking ~\n<@{await SqliteClass.TrackCdGetUser(Context.User.Id)}>",
                     Color = Blurple
                 }.WithCurrentTimestamp());
                 return;

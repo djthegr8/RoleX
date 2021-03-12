@@ -177,11 +177,11 @@ namespace RoleX.Modules.General
             var max2 = selected.Max(m => m.Item2 == max ? 0 : m.Item2);
             var max3 = selected.Max(m => (m.Item2 == max || m.Item2 == max2) ? 0 : m.Item2);
             var sf = selected.First(m => m.Item2 == max);
-            var ss = selected.First(l => l.Item2 == max2);
-            var st = selected.First(l => l.Item2 == max3);
+            var ss = selected.FirstOrDefault(l => l.Item2 == max2);
+            var st = selected.FirstOrDefault(l => l.Item2 == max3);
             await Context.Channel.SendFileAsync("chart.jpeg", $"The top 3 in this channel are ~ \n🥇 {sf.Item1} - {sf.Item2}\n" +
-                                                              $"🥈 {ss.Item1} - {ss.Item2}\n" +
-                                                              $"🥉 {st.Item1} - {st.Item2}");
+                                                              (ss == null ? "" : $"🥈 {ss.Item1} - {ss.Item2}\n") +
+                                                              (st == null ? "" : $"🥉 {st.Item1} - {st.Item2}"));
         }
         private static void DrawPieChart(Graphics gr,
             Rectangle rect, float initial_angle, Brush[] brushes, Pen[] pens,
@@ -199,8 +199,8 @@ namespace RoleX.Modules.General
                     rect, start_angle, sweep_angle);
                 gr.DrawPie(pens[i % pens.Length],
                     rect, start_angle, sweep_angle);
-                gr.FillRectangle(brushes[i % brushes.Length], new Rectangle(1300,100 + 60*i,120, label_font.Height));
-                gr.DrawString(lis[i].Item1 + $" - {Convert.ToInt32(100 * (lis[i].Item2 / total))}%", label_font, label_brush, new PointF(1440, 100 + 60*i));
+                gr.FillRectangle(brushes[i % brushes.Length], new Rectangle(1000,100 + 60*i,120, label_font.Height));
+                gr.DrawString(lis[i].Item1 + $" - {Convert.ToInt32(100 * (lis[i].Item2 / total))}%", label_font, label_brush, new PointF(1140, 100 + 60*i));
                 start_angle += sweep_angle;
             }
             /*

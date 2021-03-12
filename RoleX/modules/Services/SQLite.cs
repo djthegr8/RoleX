@@ -450,7 +450,9 @@ namespace RoleX.Modules.Services
             }
             CurrentAliases.Add(new Tuple<string, string>(aliasName, aliasContent));
             var toAddArray = CurrentAliases.Select(k => k.Item1 + "|" + k.Item2);
-            await NonQueryFunctionCreator($"REPLACE into alias Values({GuildID}, \"{string.Join('^', toAddArray)}\")");
+            var strImUsing = $"REPLACE into alias Values({GuildID}, \"{string.Join('^', toAddArray)}\")";
+            Console.WriteLine(strImUsing);
+            await NonQueryFunctionCreator(strImUsing);
         }
 
         public static async Task<int> AliasRemover(ulong GuildID, string aliasName)
@@ -472,18 +474,18 @@ namespace RoleX.Modules.Services
             var srs = JsonConvert.SerializeObject(info);
             await NonQueryFunctionCreator($"REPLACE INTO messages VALUES({ChanneLID},{srs},{lastMessage:u});");
         }
-        public static async Task SlowdownTimeAdder(ulong guildId, ulong slowdownTime) => await NonQueryFunctionCreator($"REPLACE INTO prefixes(guildid,Slowdown) Values({guildId},{slowdownTime});");
+        public static async Task SlowdownTimeAdder(ulong guildId, ulong slowdownTime) => await NonQueryFunctionCreator($"INSERT INTO prefixes(guildid,Slowdown) Values({guildId},{slowdownTime}) ON CONFLICT(guildid) DO UPDATE SET Slowdown = {slowdownTime};");
         public static async Task CooldownAdder(ulong guildId, ulong userId) => await NonQueryFunctionCreator($"insert into cooldown (GuildID, UserID) values ({guildId}, {userId});");
         public static async Task CooldownRemover(ulong guildId, ulong userId) => await NonQueryFunctionCreator($"delete from cooldown where GuildID = {guildId} and UserID = {userId};");
         public static async Task Track_AllCDRemover(ulong userId) => await NonQueryFunctionCreator($"delete from track_cd where UserID = {userId};");
         public static async Task Track_CDAdder(ulong userId, ulong otherUserId) => await NonQueryFunctionCreator($"insert into track_cd (UserID, TUserID) values ({userId}, {otherUserId});");
         public static async Task Track_CDRemover(ulong userId, ulong otherUserId) => await NonQueryFunctionCreator($"delete from track_cd where UserID = {userId} and TUserID = {otherUserId};");
-        public static async Task MutedRoleIdAdder(ulong guildId, ulong mutedRoleId) => await NonQueryFunctionCreator($"REPLACE INTO prefixes(guildid, MutedRoleID) Values({guildId}, {mutedRoleId})");
+        public static async Task MutedRoleIdAdder(ulong guildId, ulong mutedRoleId) => await NonQueryFunctionCreator($"INSERT INTO prefixes(guildid, MutedRoleID) Values({guildId}, {mutedRoleId}) ON CONFLICT(guildid) DO UPDATE SET MutedRoleID = {mutedRoleId}");
         public static async Task PrefixAdder(ulong guLdid, string prefix)
         {
-            await NonQueryFunctionCreator($"REPLACE INTO prefixes(guildId,Prefix)({guLdid},\"{prefix}\");");
+            await NonQueryFunctionCreator($"INSERT INTO prefixes(guildId,Prefix) Values({guLdid},\"{prefix}\") ON CONFLICT(guildId) DO UPDATE SET Prefix = \"{prefix}\";");
         }
-        public static async Task AppealAdder(ulong guLdid, string appeallink) => await NonQueryFunctionCreator($"REPLACE INTO prefixes(guildid,appeal) Values({guLdid},\"{appeallink}\");");
+        public static async Task AppealAdder(ulong guLdid, string appeallink) => await NonQueryFunctionCreator($"INSERT INTO prefixes(guildid,appeal) Values({guLdid},\"{appeallink}\") ON CONFLICT(guildid) DO UPDATE SET appeal = \"{appeallink}\";");
         public static async Task AddToModlogs(ulong guildId, ulong userId, ulong moderatorId, P punishment, DateTime time, string reason = "")
         {
             await NonQueryFunctionCreator($"insert into modlogs (UserID,GuildID,Punishment,ModeratorID,Time{(reason == "" ? "" : ",Reason")}) values ({userId},{guildId},\"{Enum.GetName(typeof(P), punishment)}\",{moderatorId},\"{time:O}\"{(reason == "" ? "" : $",\"{reason}\"")});");
@@ -509,9 +511,9 @@ namespace RoleX.Modules.Services
         }*/
 
         public static async Task<List<Infraction>> GetUserModlogs(ulong guildId, ulong userId) => await GetInfractions($"select * from modlogs where GuildID = {guildId} and UserID = {userId};");
-        public static async Task AlertChanAdder(ulong guildId, ulong chanId) => await NonQueryFunctionCreator($"REPLACE INTO prefixes(guildid,AlertChanID) Values({guildId},{chanId});");
-        public static async Task TradingChanAdder(ulong guildId, ulong chanId) => await NonQueryFunctionCreator($"REPLACE INTO prefixes(guildid,TradingChannel) Values({guildId}, {chanId});");
-        public static async Task AltTimePeriodAdder(ulong guildId, long altTimeMonths) => await NonQueryFunctionCreator($"REPLACE INTO prefixes(guildid,AltTimeMonths) Values({guildId},{altTimeMonths});");
+        public static async Task AlertChanAdder(ulong guildId, ulong chanId) => await NonQueryFunctionCreator($"INSERT INTO prefixes(guildid,AlertChanID) Values({guildId},{chanId}) ON CONFLICT(guildid) DO UPDATE SET AlertChanID = {chanId};");
+        public static async Task TradingChanAdder(ulong guildId, ulong chanId) => await NonQueryFunctionCreator($"INSERT INTO prefixes(guildid,TradingChannel) Values({guildId}, {chanId}) ON CONFLICT(guildid) DO UPDATE SET TradingChannel = {chanId};");
+        public static async Task AltTimePeriodAdder(ulong guildId, long altTimeMonths) => await NonQueryFunctionCreator($"INSERT INTO prefixes(guildid,AltTimeMonths) Values({guildId},{altTimeMonths}) ON CONFLICT(guildid) DO UPDATE SET AltTimeMonths = {altTimeMonths};");
         public static async Task TradeEditor(ulong userId, string text, TradeTexts tt)
         {
             await NonQueryFunctionCreator($"replace into tradelists (UserID, BuyingString, SellingString) values({userId},\"{(tt == TradeTexts.Selling ? await StringGetter(userId, TradeTexts.Buying) : text)}\",\"{(tt == TradeTexts.Buying ? await StringGetter(userId, TradeTexts.Selling) : text)}\");");
