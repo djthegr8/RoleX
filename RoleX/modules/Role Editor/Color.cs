@@ -12,7 +12,7 @@ namespace RoleX.Modules.Role_Editor
     public class RColor : CommandModuleBase
     {
         [RequiredUserPermissions(GuildPermission.ManageRoles)]
-        [DiscordCommand("color", description = "Changes the color of specified role", commandHelp = "color <@role> <hex/None>", example = "color @LightPurple #bb86fc")]
+        [DiscordCommand("color", description = "Changes the color of specified role. We accept color strings as hexadecimals, or from the extensive list [here](https://docs.microsoft.com/en-us/dotnet/api/system.drawing.color?view=net-5.0#properties)", commandHelp = "color <@role> <hex/None>", example = "color @LightPurple #bb86fc")]
         public async Task ChangeRole(params string[] args)
         {
             if (args.Length < 2)

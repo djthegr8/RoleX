@@ -25,7 +25,7 @@ namespace RoleX.Modules.Emojis
                 }.WithCurrentTimestamp());
                 return;
             }
-            if (!ulong.TryParse(args[0], out var gid) || Program.Client.GetGuild(gid) == null)
+            if (!ulong.TryParse(args[0], out var gid) || Context.User.MutualGuilds.All(k => k.Id != gid))
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
