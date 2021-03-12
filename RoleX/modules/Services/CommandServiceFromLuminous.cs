@@ -425,8 +425,22 @@ namespace RoleX.Modules.Services
                 }
             }
 
-            var fs = msgcontent.IndexOf("\"", StringComparison.Ordinal);
-            string[] param;
+            List<string> listOfWords = msgcontent.Split('\"').ToList();
+            List<string> holdingList = new();
+            for (var i = 0; i < listOfWords.Count; i++)
+            {
+                if (i % 2 == 0)
+                {
+                    holdingList.AddRange(listOfWords[i].Split(' '));
+                }
+                else
+                {
+                    holdingList.Add(listOfWords[i]);
+                }
+
+            }
+
+            string[] param = holdingList.ToArray();
             /*if (fs == -1) param = msgcontent.Split(' ');
             else
             {
@@ -439,7 +453,7 @@ namespace RoleX.Modules.Services
                     paramL.Add(msg);
                 }
             }
-        */ param = msgcontent.Split(' ');
+         param = msgcontent.Split(' ');*/
         param = param.TakeLast(param.Length - 1).ToArray();
         string command = msgcontent.Remove(0, pref.Length).Split(' ')[0];
         var commandobj = CommandList.Where(x => x.CommandName.ToLower() == command);
