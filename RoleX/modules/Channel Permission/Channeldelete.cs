@@ -31,7 +31,7 @@ namespace RoleX.Modules.Channel_Permission
             var ram = await Context.Channel.SendMessageAsync("Are you sure you want to delete?\nThis is a potentially destructive action.");
             await ram.AddReactionsAsync(
                 new IEmote[] {
-                    Emote.Parse("<a:tick:792389924312973333>"),
+                    Emote.Parse("<a:tick:820157048410472469>"),
                     Emote.Parse("<a:cros:792389968890429461>")
                 });
             bool isTick = true;
@@ -43,11 +43,11 @@ namespace RoleX.Modules.Channel_Permission
                         UserMsg.Id == ram.Id &&
                         Reaction.UserId == Context.User.Id
                         && (
-                            Reaction.Emote.ToString() == "<a:tick:792389924312973333>" ||
+                            Reaction.Emote.ToString() == "<a:tick:820157048410472469>" ||
                             Reaction.Emote.ToString() == "<a:cros:792389968890429461>"
                         ))
                     {
-                        var tick = Emote.Parse("<a:tick:792389924312973333>");
+                        var tick = Emote.Parse("<a:tick:820157048410472469>");
                         isTick = Reaction.Emote.ToString() == tick.ToString();
                         if (!isTick)
                         {

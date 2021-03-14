@@ -417,7 +417,7 @@ namespace RoleX
                             if (rero.WhiteListedRoles.Length != 0 &&
                                 !usr.Roles.Any(k => rero.WhiteListedRoles.Any(l => l == k.Id))) return;
                             // Just add the role i guess.
-                            if (usr.Roles.All(x => x.Id == role.Id)) await usr.AddRoleAsync(role);
+                            if (usr.Roles.All(x => x.Id != role.Id)) await usr.AddRoleAsync(role);
                             else await usr.RemoveRoleAsync(role);
                             await msg.RemoveReactionAsync(arg3.Emote, usr);
                         }

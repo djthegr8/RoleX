@@ -355,7 +355,7 @@ namespace RoleX.Modules.Services
         /// <param name="guildId"></param>
         /// <param name="userId"></param>
         /// <returns>A boolean saying whether on Trade Cooldown <c>true</c> if yes, else <c>false</c></returns>
-        public static async Task<bool> CooldownGetter(ulong guildId, ulong userId) => await QueryFunctionCreator($"select GuildID from cooldown where guildid = {guildId} and UserID = {userId}", long.Parse("0")) == 1;
+        public static async Task<bool> CooldownGetter(ulong guildId, ulong userId) => await QueryFunctionCreator($"select count(*) from cooldown where guildid = {guildId} and UserID = {userId}", long.Parse("0")) == 1;
         public static async Task<bool> TrackCooldownGetter(ulong userId) => await QueryFunctionCreator($"select count(*) from track_cd where UserID = {userId}", long.Parse("0")) != 0;
         public static async Task<long> TrackCdGetUser(ulong userId) => await QueryFunctionCreator($"select TUserID from track_cd where UserID = {userId}", long.Parse("0"));
         public static async Task<List<ulong>> TrackCdAllUlongIDs(string cmdtext)
