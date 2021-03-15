@@ -25,15 +25,23 @@ namespace RoleX.Modules.Emojis
                 }.WithCurrentTimestamp());
                 return;
             }
-            if (!ulong.TryParse(args[0], out var gid) || Context.User.MutualGuilds.All(k => k.Id != gid))
+
+            var fax = ulong.TryParse(args[0], out var gid);
+            
+            if (!fax)
             {
-                await ReplyAsync("", false, new EmbedBuilder
+                var gg = Program.Client.GetGuild(gid);
+                if (gg != null) await gg.DownloadUsersAsync();
+                if (gg?.GetUser(Context.User.Id) == null)
                 {
-                    Title = "What server to steal from?",
-                    Description = $"Kindly give the server ID, and ensure RoleX is in the server",
-                    Color = Color.Red
-                }.WithCurrentTimestamp());
-                return;
+                    await ReplyAsync("", false, new EmbedBuilder
+                    {
+                        Title = "What server to steal from?",
+                        Description = $"Kindly give the server ID, and ensure RoleX is in the server",
+                        Color = Color.Red
+                    }.WithCurrentTimestamp());
+                    return;
+                }
             }
 
             var joined = string.Join(' ', args.Skip(1)).Replace(" ", "");

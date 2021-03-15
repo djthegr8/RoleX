@@ -99,6 +99,11 @@ namespace RoleX.Modules.Services
         /// If <see langword="true"/> then bots can execute the command, default is <see langword="false"/>
         /// </summary>
         public bool BotCanExecute { get; set; }
+
+        /// <summary>
+        /// If the command needs a premium server to run
+        /// </summary>
+        public bool IsPremium { get; set; } = false;
         /// <summary>
         /// Tells the service that this method is a command
         /// </summary>
@@ -202,11 +207,15 @@ namespace RoleX.Modules.Services
         InvalidPermissions,
         Disabled,
         /// <summary>
-        /// Somthing happend that shouldn't have, i dont know what to say here other than :/
+        /// Something happend that shouldn't have, i dont know what to say here other than :/
         /// </summary>
         MissingGuildPermission,
         Unknown,
-        BotMissingPermissions
+        BotMissingPermissions,
+        /// <summary>
+        /// Server isnt RoleX premium for some reason
+        /// </summary>
+        ServerNotPremium
     }
     /// <summary>
     /// The base class of <see cref="CustomCommandService"/>
@@ -540,6 +549,10 @@ return new CommandResult() { Results = results.ToArray(), MultipleResults = true
     }
     if (!cmd.attribute.BotCanExecute && context.Message.Author.IsBot)
         return new CommandResult() { Result = CommandStatus.InvalidPermissions };
+    if (cmd.attribute.IsPremium && !await SqliteClass.PremiumOrNot(context.Guild.Id))
+    {
+        return new CommandResult() {Result = CommandStatus.ServerNotPremium};
+    }
     if (cmd.Paramaters.Length == 0 && param.Length == 0)
     {
         try
@@ -785,7 +798,7 @@ public class Commands : ICommands
         Guild ??= Context.Guild;
         var replstr = str.Replace("a:", "").Replace("<", "").Replace(">", "").Replace(":", "");
         Console.WriteLine(replstr);
-        if (Guild.Emotes.Any(x => replstr.ToLower().StartsWith(x.Name.ToLower()))) return Guild.Emotes.First(x => replstr.ToLower().StartsWith(x.Name.ToLower()));
+        if (Guild.Emotes.Any(x => String.Equals(replstr, x.Name, StringComparison.CurrentCultureIgnoreCase))) return Guild.Emotes.First(x => String.Equals(replstr, x.Name, StringComparison.CurrentCultureIgnoreCase));
         Console.WriteLine(replstr);
         try
         {
