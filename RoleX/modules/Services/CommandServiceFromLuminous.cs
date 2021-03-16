@@ -1158,6 +1158,7 @@ namespace RoleX.Modules.Services
                 }
             }
             var here = await Context.Channel.SendMessageAsync(message, isTTS, embed?.Build(), options).ConfigureAwait(false);
+            if (await SqliteClass.PremiumOrNot(Context.Guild.Id)) return here;
             var ranjom = new Random();
             var irdk = ranjom.Next(8);
             if (irdk == 1 && !await TopGG.HasVoted(Context.User.Id))
