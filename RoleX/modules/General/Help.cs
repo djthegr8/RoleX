@@ -75,7 +75,7 @@ namespace RoleX.Modules.General
             embeds.AddField("Description", commandSelected.CommandDescription, true);
             if (!string.IsNullOrEmpty(commandSelected.CommandHelpMessage)) embeds.AddField("Usage", $"`{prefixure}{commandSelected.CommandHelpMessage}`");
             if (!string.IsNullOrEmpty(commandSelected.example)) embeds.AddField("Example", $"`{prefixure}{commandSelected.example}`");
-            embeds.AddField("Premium Command?", commandSelected.isPremium ? "No" : "[Yes](https://patreon.com/rolexbot");
+            embeds.AddField("Premium Command?", commandSelected.isPremium ? "[Yes](https://patreon.com/rolexbot" : "No");
             if (commandSelected.Alts.Count > 0) embeds.AddField("Aliases", aliasStr);
             embeds.AddField("Links", "[Support Server](https://discord.com/invite/3Uq4WF2RFZ) | [Invite link](https://tiny.cc/RoleXAdmin)");
             embeds.Footer = new EmbedFooterBuilder { Text = "Help Command by RoleX" };
