@@ -13,7 +13,7 @@ namespace RoleX.Modules.Channel_Permission
     {
         [RequiredUserPermissions(GuildPermission.ManageChannels)]
         [Alt("chmove")]
-        [DiscordCommand("channelmove", commandHelp = "chmove <channel> <channel>", description = "Moves channel BELOW the second given channel (is imperfect, but i guess you could navigate a bit)", example = "chmove #weirdchan #weird2chan")]
+        [DiscordCommand("channelmove", commandHelp = "chmove <channel> <channel>", description = "Moves channel BELOW the second given channel (is imperfect, but i guess you could navigate a bit)", example = "chmove #weirdchan #weird2chan", IsPremium = true)]
         public async Task RCreate(params string[] args)
         {
             switch (args.Length)

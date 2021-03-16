@@ -628,6 +628,16 @@ namespace RoleX
                         break;
                     case CommandStatus.NotFound:
                         break;
+                    case CommandStatus.ServerNotPremium:
+                        await msg.Channel.SendMessageAsync("", false,
+                            new EmbedBuilder()
+                            {
+                                Title = "<:rolex:782837804208095273> Your server isn't Premium <:rolex:782837804208095273>",
+                                Description = "Support us on [Patreon](https://patreon.com/rolexbot) to make this server a Premium server!",
+                                Url = $"https://patreon.com/rolexbot",
+                                Color = Color.Red
+                            }.WithCurrentTimestamp().Build());
+                        break;
                     default:
                         await Client.GetUser(701029647760097361).SendMessageAsync($"See kid Idk what happened but here it is {result.Result}\n{result.ResultMessage}\n{result.Exception}");
                         break;

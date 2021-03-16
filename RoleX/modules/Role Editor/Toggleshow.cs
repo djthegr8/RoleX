@@ -9,9 +9,10 @@ namespace RoleX.Modules.Role_Editor
     [DiscordCommandClass("Role Editor", "Class for editing of Roles!")]
     public class Toggleshow : CommandModuleBase
     {
+        
         [RequiredUserPermissions(GuildPermission.ManageRoles)]
         [Alt("ts")]
-        [DiscordCommand("toggleshow", commandHelp = "toggleshow @Role", example = "toggleshow @WeirdRoleThatWasHidden", description = "Toggles the given role's visibility in the list")]
+        [DiscordCommand("toggleshow", commandHelp = "toggleshow @Role", example = "toggleshow @WeirdRoleThatWasHidden", description = "Toggles the given role's visibility in the list", IsPremium = true)]
         public async Task ShowRole(params string[] args)
         {
             if (args.Length == 0)

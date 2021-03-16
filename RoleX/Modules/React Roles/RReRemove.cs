@@ -8,7 +8,7 @@ namespace RoleX.Modules.React_Roles
     internal class RReRemove : CommandModuleBase
     {
         [RequiredUserPermissions(GuildPermission.Administrator)]
-        [DiscordCommand("redel", commandHelp = "redel <message-link> <emoji>", description = "Deletes the reaction role associated with the emoji", example = "redel https://discord.com/channels/591660163229024287/790477735352336384/798021230774321162 :weirdemoji:")]
+        [DiscordCommand("redel", commandHelp = "redel <message-link> <emoji>", description = "Deletes the reaction role associated with the emoji", example = "redel https://discord.com/channels/591660163229024287/790477735352336384/798021230774321162 :weirdemoji:", IsPremium = true)]
         public async Task RoleDel(params string[] args)
         {
             if (args.Length < 2) { await ReplyAsync("You gotta tell me what to remove and where :/"); return; }

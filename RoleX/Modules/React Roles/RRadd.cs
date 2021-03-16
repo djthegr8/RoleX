@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
-using Discord;
+﻿using Discord;
 using RoleX.Modules.Services;
+using System;
+using System.Threading.Tasks;
 
 namespace RoleX.Modules.React_Roles
 {
@@ -9,7 +9,12 @@ namespace RoleX.Modules.React_Roles
     internal class RRAdd : CommandModuleBase
     {
         [RequiredUserPermissions(GuildPermission.Administrator)]
-        [DiscordCommand("readd", commandHelp = "readd <message-link> <emoji> <role>", description = "Adds a reaction role", example = "readd https://discord.com/channels/591660163229024287/790477735352336384/798021230774321162 :weirdemoji: Weirds")]
+        [DiscordCommand("readd",
+            commandHelp = "readd <message-link> <emoji> <role>", 
+            description = "Adds a reaction role", 
+            example = "readd https://discord.com/channels/591660163229024287/790477735352336384/798021230774321162 :weirdemoji: Weirds",
+            IsPremium = true
+            )]
         public async Task RRaddCommand(params string[] args)
         {
             switch (args.Length)
@@ -24,7 +29,8 @@ namespace RoleX.Modules.React_Roles
                     return;
             }
             var reg = new System.Text.RegularExpressions.Regex(@"^https:\/\/discord.com\/channels\/[0-9]{17,18}\/[0-9]{17,18}\/[0-9]{17,18}$");
-            if (!reg.IsMatch(args[0])){
+            if (!reg.IsMatch(args[0]))
+            {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Which message?",
@@ -104,7 +110,8 @@ namespace RoleX.Modules.React_Roles
                     Unique = false,
                     SelfDestructTime = DateTime.MinValue
                 };
-            } else
+            }
+            else
             {
                 rero = reros[0];
                 rero.Roles.Add(role.Id);

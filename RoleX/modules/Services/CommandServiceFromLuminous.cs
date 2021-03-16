@@ -246,6 +246,7 @@ namespace RoleX.Modules.Services
 
             public RequiredUserPermissions perms { get; set; }
             public RequiredBotPermission bperms { get; set; }
+            public bool IsPremium { get; set; } = false;
         }
         private class CommandClassobj
         {
@@ -363,6 +364,7 @@ namespace RoleX.Modules.Services
                     Prefixes = parat.prefix == '\0' ? cmdobj.Prefixes : Enumerable.Append(cmdobj.Prefixes, parat.prefix).ToArray(),
                     RequiresPermission = cmdat.RequiredPermission,
                     ModuleName = cmdobj.parent.attribute.ModuleName,
+                    isPremium = cmdat.IsPremium
                 };
                 c.Alts = altsL;
                 CommandModuleBase.Commands.Add(c);
@@ -731,6 +733,7 @@ namespace RoleX.Modules.Services
             public char[] Prefixes { get; set; }
             public string ModuleName { get; set; }
             public List<string> Alts { get; set; } = new List<string>();
+            public bool isPremium { get; set; } = false;
             public bool HasName(string name)
             {
                 if (CommandName == name)
