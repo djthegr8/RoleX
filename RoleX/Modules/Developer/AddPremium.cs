@@ -11,7 +11,7 @@ namespace RoleX.Modules.Developer
     {
         [Alt("addpremium")]
         [DiscordCommand("addprem", commandHelp = "", description = "")]
-        public async Task GPe(ulong a, ulong y)
+        public async Task GPe(ulong a, params string[] _)
         {
             if (devids.Any(x => x == Context.User.Id))
             {
@@ -21,7 +21,11 @@ namespace RoleX.Modules.Developer
                     await ReplyAsync("Why are you like this <:noob:756055614861344849>");
                     return;
                 }
-
+                if (await SqliteClass.PremiumOrNot(guild.Id))
+                {
+                    await ReplyAsync("Making a server premium 2 times gets u nothing so shut up and die");
+                    return;
+                }
                 await SqliteClass.NonQueryFunctionCreator(
                     $"UPDATE prefixes SET Premium = 1 WHERE guildid = {Context.Guild.Id};");
                 await ReplyAsync($"Made the server {guild.Name} premium, will DM owner with the good news!");
@@ -29,7 +33,7 @@ namespace RoleX.Modules.Developer
                 {
                     Title = "This server is now Premium!",
                     Description =
-                        "Thank you for supporting RoleX.\nIt is due to servers like yours that we are able to develop our bot!",
+                        "Thank you for supporting RoleX.\nWe are able to develop our bot due to supportive servers like yours!",
                     Color = Blurple
                 }.WithCurrentTimestamp().Build();
                 try
