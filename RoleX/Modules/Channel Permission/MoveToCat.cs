@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Discord;
 using RoleX.Modules.Services;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord.WebSocket;
+using MongoDB.Driver;
 
 namespace RoleX.Modules.Channel_Permission
 {
@@ -12,8 +14,8 @@ namespace RoleX.Modules.Channel_Permission
     internal class ChannelMove : CommandModuleBase
     {
         [RequiredUserPermissions(GuildPermission.ManageChannels)]
-        [Alt("chmove")]
-        [DiscordCommand("channelmove", commandHelp = "chmove <channel> <channel>", description = "Moves channel BELOW the second given channel (is imperfect, but i guess you could navigate a bit)", example = "chmove #weirdchan #weird2chan", IsPremium = true)]
+        [Alt("mtcat")]
+        [DiscordCommand("movetocat", commandHelp = "movetocat <channel> <channel>", description = "Moves channel to the category of second channel", example = "chmove #weirdchan #weird2chan", IsPremium = true)]
         public async Task RCreate(params string[] args)
         {
             switch (args.Length)
@@ -23,7 +25,7 @@ namespace RoleX.Modules.Channel_Permission
                     {
                         Title = "Insufficient Parameters",
                         Description =
-                            $"The way to use the command is `{await SqliteClass.PrefixGetter(Context.Guild.Id)}chmove <channel> <channel>`",
+                            $"The way to use the command is `{await SqliteClass.PrefixGetter(Context.Guild.Id)}movetocat <channel> <channel>`",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
                     return;
@@ -38,13 +40,11 @@ namespace RoleX.Modules.Channel_Permission
                         await InvalidChannel(args[1]);
                         return;
                     }
-                    Console.WriteLine(chan.Position == chan2.Position);
-
-                    await chan.ModifyAsync(um =>
+                    await chan.ModifyAsync(channel =>
                     {
-                        um.CategoryId = chan2.CategoryId;
-                        um.Position = chan2.Position;
+                        channel.CategoryId = chan2.CategoryId;
                     });
+                    // Console.WriteLine(string.Join('\n', Context.Guild.Channels.OrderBy(k => k.Position).Select(k => k.Name)));
                     await ReplyAsync("", false, new EmbedBuilder()
                     {
                         Title = "Successfully moved channel!",
