@@ -8,7 +8,7 @@ namespace RoleX.Modules.Moderation
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Unmute : CommandModuleBase
     {
-        [RequiredUserPermissions(new[] {GuildPermission.ManageRoles })]
+        [RequiredUserPermissions(GuildPermission.ManageRoles)]
         [DiscordCommand("unmute", commandHelp = "unmute <@user>", example = "unmute @RegretfulMan", description = "Unmutes given user")]
         public async Task RUnmute(params string[] args)
         {
