@@ -9,7 +9,7 @@ namespace RoleX.Modules.Trading
     [DiscordCommandClass("Trading", "Class with trading related commands")]
     public class Tradeslowmode : CommandModuleBase
     {
-        [RequiredUserPermissions(new GuildPermission[] { GuildPermission.Administrator })]
+        [RequiredUserPermissions(GuildPermission.Administrator)]
 
         [DiscordCommand("tradeslowmode", commandHelp = "tradeslowmode num_minutes", description = "Sets the number of minutes for trading slowmode", example = "alttime 35")]
         public async Task Alttime(params string[] args)
