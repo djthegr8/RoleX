@@ -13,7 +13,7 @@ namespace RoleX.Modules.Moderation
     public class Hardmute : CommandModuleBase
     {
         [Alt("hm")]
-        [RequiredUserPermissions(new GuildPermission[]{GuildPermission.ManageRoles})]
+        [RequiredUserPermissions(GuildPermission.ManageRoles)]
         [DiscordCommand("hardmute", description = "Mutes the given user after removing all roles", example = "hardmute @Dumbkid 5m For trying to ping everyone", commandHelp = "hardmute <@user> <time> <reason>")]
         public async Task HardMute(params string[] args)
         {
