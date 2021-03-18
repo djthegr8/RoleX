@@ -11,7 +11,7 @@ namespace RoleX.Modules.Moderation
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Kick : CommandModuleBase
     {
-        [RequiredUserPermissions(new GuildPermission[] {GuildPermission.KickMembers})]
+        [RequiredUserPermissions(GuildPermission.KickMembers)]
         [DiscordCommand("kick", commandHelp = "kick <@user> <reason>", example = "kick @NotAScammer Scamming my friend", description = "Kicks the specified user")]
         public async Task Kicker(params string[] args)
         {
