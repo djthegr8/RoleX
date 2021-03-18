@@ -9,7 +9,7 @@ namespace RoleX.Modules.Moderation
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Unban : CommandModuleBase
     {
-        [RequiredUserPermissions(new[] {GuildPermission.BanMembers})]
+        [RequiredUserPermissions(GuildPermission.BanMembers)]
         [DiscordCommand("unban", commandHelp = "unban <@user>", example = "unban ForgivenDude", description = "Unbans given user")]
         public async Task Unbn(params string[] args)
         {
