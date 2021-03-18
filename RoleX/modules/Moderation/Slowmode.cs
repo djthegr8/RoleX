@@ -11,7 +11,7 @@ namespace RoleX.Modules.Moderation
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Slowmode : CommandModuleBase
     {
-        [RequiredUserPermissions(new[] {GuildPermission.ManageChannels})]
+        [RequiredUserPermissions(GuildPermission.ManageChannels)]
         [DiscordCommand("slowmode", commandHelp = "slowmode <channel/category> <time>`\n`slowmode <time>", description = "Sets the channel or category slowmode", example = "slowmode 10s")]
         public async Task Sm(params string[] args)
         {
