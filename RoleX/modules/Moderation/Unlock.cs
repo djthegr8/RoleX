@@ -8,7 +8,7 @@ namespace RoleX.Modules.Moderation
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Unlock : CommandModuleBase
     {
-        [RequiredUserPermissions(new[] { GuildPermission.ManageChannels, GuildPermission.ManageGuild})]
+        [RequiredUserPermissions(new[] { GuildPermission.ManageChannels})]
         [DiscordCommand("unlock", commandHelp = "unlock <#channel>", description = "Unlocks the mentioned channel", example = "unlock #heistchan")]
         public async Task RUnlock(params string[] args)
         {

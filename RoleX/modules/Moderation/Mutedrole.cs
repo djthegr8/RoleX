@@ -47,7 +47,7 @@ namespace RoleX.Modules.Moderation
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "What role?",
-                    Description = $"Couldn't parse `{args[0]}` as role :(",
+                    Description = $"Couldn't parse `{args[0]}` as role ",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;

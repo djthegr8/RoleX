@@ -17,8 +17,8 @@ namespace RoleX.Modules.Trading
             {
                 await ReplyAsync(embed: new EmbedBuilder
                 {
-                    Title = "I don't know what to do <:facepalm:713027249426792498>",
-                    Description = $"The way to run this command is `{await PrefixGetter(Context.Guild.Id)}buying add/remove Item1 and stuff about it, Item2 and...`",
+                    Title = "Invalid Parameters",
+                    Description = $"Command Syntax: `{await PrefixGetter(Context.Guild.Id)}buying add/remove Item1 and stuff about it, Item2 and...`",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
@@ -35,7 +35,7 @@ namespace RoleX.Modules.Trading
                         await ReplyAsync(embed: new EmbedBuilder
                         {
                             Title = "That's above the maximum trades!",
-                            Description = $"Only 7 items are allowed! If you want more, then wait for RoleX Premium to release!",
+                            Description = $"Only 7 items are allowed! If you want more, buy [RoleX Premium](https://www.patreon.com/rolexbot)!",
                             Color = Color.Red
                         }.WithCurrentTimestamp());
                         return;
@@ -59,7 +59,7 @@ namespace RoleX.Modules.Trading
                         await ReplyAsync(embed: new EmbedBuilder
                         {
                             Title = "Only indices needed",
-                            Description = $"For the removal, kindly use the index of the item, which can be found using the `{await PrefixGetter(Context.Guild.Id)}tradinglist` command\nFor example, `{await PrefixGetter(Context.Guild.Id)}buying remove 3`",
+                            Description = $"For the removal, use the index of the item, which can be found using the `{await PrefixGetter(Context.Guild.Id)}tradinglist` command\nFor example, `{await PrefixGetter(Context.Guild.Id)}buying remove 3`",
                             Color = Color.Red
                         }.WithCurrentTimestamp());
                         return;

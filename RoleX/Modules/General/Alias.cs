@@ -10,8 +10,8 @@ namespace RoleX.Modules.General
     [DiscordCommandClass("General", "General commands for all")]
     internal class Alias : CommandModuleBase
     {
-        [RequiredUserPermissions(GuildPermission.Administrator)]
-        [DiscordCommand("alias", commandHelp = "alias <add/remove> <alias-name> <cmd-and-parameters>", description = "Adds an alias to a command or usage of a command. Note that the prefix must NOT be given.", example = "alias doggy nick dj dog")]
+        [RequiredUserPermissions(GuildPermission.ManageGuild)]
+        [DiscordCommand("alias", commandHelp = "alias <add/remove> <alias-name> <command-and-parameters>", description = "Adds an alias to a command or usage of a command. Note that the prefix must NOT be given.", example = "alias doggy nick dj dog")]
         public async Task AliasCommand(params string[] args)
         {
             if (args.Length == 0 || args.Length == 1)
@@ -56,7 +56,7 @@ namespace RoleX.Modules.General
                         await ReplyAsync("", false, new EmbedBuilder
                         {
                             Title = "Insufficient Parameters",
-                            Description = $"The way to add aliases is `{await SqliteClass.PrefixGetter(Context.Guild.Id)}alias + <alias-name> <cmd-and-parameters>`",
+                            Description = $"Command Syntax: `{await SqliteClass.PrefixGetter(Context.Guild.Id)}alias + <alias-name> <cmd-and-parameters>`",
                             Color = Color.Red
                         }.WithCurrentTimestamp());
                         return;

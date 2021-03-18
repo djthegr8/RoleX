@@ -10,7 +10,7 @@ namespace RoleX.Modules.Emojis
     public class Emrename : CommandModuleBase
     {
         [RequiredUserPermissions(GuildPermission.ManageEmojis)]
-        [DiscordCommand("emrename", commandHelp = "emrename :old_emote: new_emote_name", description = "Renames given emoji :)", example ="emrename kek kekw")]
+        [DiscordCommand("emrename", commandHelp = "emrename :old_emote: new_emote_name", description = "Renames provided emoji :)", example ="emrename kek kekw")]
         public async Task EmRename(params string[] args)
         {
             if (args.Length < 2 || await GetEmote(args[0]) == null)
@@ -18,7 +18,7 @@ namespace RoleX.Modules.Emojis
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "What emoji and what name?",
-                    Description = $"The way to run this cmd is `{await SqliteClass.PrefixGetter(Context.Guild.Id)}emrename old_emote new_emote_name`",
+                    Description = $"Command Syntax: `{await SqliteClass.PrefixGetter(Context.Guild.Id)}emrename old_emote new_emote_name`",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
@@ -31,7 +31,7 @@ namespace RoleX.Modules.Emojis
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Invalid emote name!",
-                    Description = $"The emote name must contain only underscores and numbers, and has to be atleast 2 and at max 32 characters in length.",
+                    Description = $"The emote name must contain only letters, numbers, and underscores and has to be at least 2 and at max 32 characters in length.",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;

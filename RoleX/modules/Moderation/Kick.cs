@@ -11,7 +11,7 @@ namespace RoleX.Modules.Moderation
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Kick : CommandModuleBase
     {
-        [RequiredUserPermissions(new GuildPermission[] { GuildPermission.KickMembers, GuildPermission.ManageGuild })]
+        [RequiredUserPermissions(new GuildPermission[] {GuildPermission.KickMembers})]
         [DiscordCommand("kick", commandHelp = "kick <@user> <reason>", example = "kick @NotAScammer Scamming my friend", description = "Kicks the specified user")]
         public async Task Kicker(params string[] args)
         {
@@ -38,8 +38,8 @@ namespace RoleX.Modules.Moderation
                     {
                         await ReplyAsync("", false, new EmbedBuilder
                         {
-                            Title = "Oops, that person is above me :(",
-                            Description = $"I don't have perms to kick them :/",
+                            Title = "Oops, that person is above me",
+                            Description = $"I don't have perms to kick them ",
                             Color = Color.Red
                         }.WithCurrentTimestamp());
                         return;
@@ -71,7 +71,7 @@ namespace RoleX.Modules.Moderation
                     {
                         Title = $"Seriously??",
                         Color = Color.Red,
-                        ImageUrl = "https://media.discordapp.net/attachments/758922634749542420/760180449749368832/unknown.png"
+                        ImageUrl = "https://imgur.com/2tNqJwZ"
                     }.WithCurrentTimestamp());
                     return;
                 }
@@ -87,7 +87,7 @@ namespace RoleX.Modules.Moderation
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "What user?",
-                Description = "That user isn't valid :(",
+                Description = "That user isn't valid ",
                 Color = Color.Red
             }.WithCurrentTimestamp());
             return;

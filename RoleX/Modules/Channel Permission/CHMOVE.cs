@@ -23,7 +23,7 @@ namespace RoleX.Modules.Channel_Permission
                     {
                         Title = "Insufficient Parameters",
                         Description =
-                            $"The way to use the command is `{await SqliteClass.PrefixGetter(Context.Guild.Id)}chmove <channel> <channel>`",
+                            $"Command Syntax: `{await SqliteClass.PrefixGetter(Context.Guild.Id)}chmove <channel> <channel>`",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
                     return;
@@ -61,7 +61,7 @@ namespace RoleX.Modules.Channel_Permission
             {
                 Title = "Invalid channel",
                 Description =
-                    $"Couldn't parse {channel} as channel",
+                    $"Couldn't parse {channel} as a channel",
                 Color = Color.Red
             }.WithCurrentTimestamp());
         }

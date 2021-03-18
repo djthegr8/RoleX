@@ -9,7 +9,7 @@ namespace RoleX.Modules.Moderation
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Unban : CommandModuleBase
     {
-        [RequiredUserPermissions(new[] { GuildPermission.ManageGuild, GuildPermission.BanMembers})]
+        [RequiredUserPermissions(new[] {GuildPermission.BanMembers})]
         [DiscordCommand("unban", commandHelp = "unban <@user>", example = "unban ForgivenDude", description = "Unbans given user")]
         public async Task Unbn(params string[] args)
         {
@@ -39,7 +39,7 @@ namespace RoleX.Modules.Moderation
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = $"{bu.Username}#{bu.Discriminator} unbanned succesfully!",
-                Description = $"Unban successful! Welcome them back :tada:",
+                Description = $"Unban successful! Welcome them back!",
                 Color = Blurple
             }.WithCurrentTimestamp());
         }

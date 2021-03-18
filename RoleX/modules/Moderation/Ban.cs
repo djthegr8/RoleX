@@ -68,7 +68,7 @@ namespace RoleX.Modules.Moderation
                     {
                         Title = $"Seriously??",
                         Color = Color.Red,
-                        ImageUrl = "https://cdn.discordapp.com/attachments/758922634749542420/760180089870090320/unknown.png"
+                        ImageUrl = "https://imgur.com/HaDzAbG"
                     }.WithCurrentTimestamp());
                     return;
                 }
@@ -119,7 +119,7 @@ namespace RoleX.Modules.Moderation
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "What user?",
-                Description = "That user isn't valid :(",
+                Description = "That user isn't valid ",
                 Color = Color.Red
             }.WithCurrentTimestamp());
             return;

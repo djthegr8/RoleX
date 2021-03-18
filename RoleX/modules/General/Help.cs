@@ -43,7 +43,7 @@ namespace RoleX.Modules.General
                 {
                     await ReplyAsync("", false, new EmbedBuilder
                     {
-                        Title = "Theres no such command or module",
+                        Title = "There's no such command or module",
                         Description = $"`{args[0]}` isnt a command or a module!",
                         Color = Color.Red
                     }.WithCurrentTimestamp());

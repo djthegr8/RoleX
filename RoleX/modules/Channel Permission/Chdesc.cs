@@ -21,7 +21,7 @@ namespace RoleX.Modules.Channel_Permission
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Insufficient Parameters!",
-                    Description = $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}channeldesc <#channel> <new-channel-name>`",
+                    Description = $"Command Syntax: \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}channeldesc <#channel> <new-channel-name>`",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
@@ -35,14 +35,14 @@ namespace RoleX.Modules.Channel_Permission
                 args = argsL.ToArray();
             }
             var bchname = string.Join(' ', args.Skip(1));
-            if (cha as SocketTextChannel == null){ await ReplyAsync("You can't do this to VCs. Just no.");
+            if (cha as SocketTextChannel == null){ await ReplyAsync("This command cannot be used on Voice Channels!");
                 return;
             }
             await (cha as SocketTextChannel).ModifyAsync(d => d.Topic = bchname);
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "Channel Description Updated!!",
-                Description = $"<#{cha.Id}> is now set with its new topic!!!",
+                Description = $"<#{cha.Id}> is now set with its new description!!!",
                 Color = Blurple
             }.WithCurrentTimestamp());
             return;

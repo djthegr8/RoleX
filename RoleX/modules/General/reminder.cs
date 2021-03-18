@@ -31,7 +31,7 @@ namespace RoleX.Modules.General
                     await ReplyAsync(embed: new EmbedBuilder
                     {
                         Title = "That's not how you run this command",
-                        Description = $"The way is `{await SqliteClass.PrefixGetter(Context.Guild.Id)}reminder remove <id>`\nYou can find the ID using list.",
+                        Description = $"Command Syntax: `{await SqliteClass.PrefixGetter(Context.Guild.Id)}reminder remove <id>`\nYou can find the ID using list.",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
                 }
@@ -97,7 +97,7 @@ namespace RoleX.Modules.General
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "Reminder added!",
-                Description = $"We shall remind u after `{ts.Days}`d `{ts.Hours}`h, `{ts.Minutes}`m and `{ts.Seconds}`s",
+                Description = $"We shall remind you after `{ts.Days}`d `{ts.Hours}`h, `{ts.Minutes}`m and `{ts.Seconds}`s",
                 Color = Blurple
             });
         }

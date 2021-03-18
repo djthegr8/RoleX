@@ -50,8 +50,8 @@ namespace RoleX.Modules.Moderation
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
-                    Title = "They are above you",
-                    Description = $"Respect 'em, dont change their nick smh",
+                    Title = "Specified user is above you",
+                    Description = $"You do not have sufficient permissions to nickname this user",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
@@ -60,7 +60,7 @@ namespace RoleX.Modules.Moderation
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
-                    Title = "Oops, that person is above me :(",
+                    Title = "Oops, that person is above me ",
                     Description = $"I don't have sufficient permissions to ban them",
                     Color = Color.Red
                 }.WithCurrentTimestamp());

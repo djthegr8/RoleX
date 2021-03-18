@@ -12,7 +12,7 @@ namespace RoleX.Modules.Channel_Permission
     public class Pincount : CommandModuleBase
     {
         [Alt("pinc")]
-        [DiscordCommand("pincount", description = "Gets the number of pins in the channel", commandHelp = "pincount #channel", example = "pincount #media")]
+        [DiscordCommand("pincount", description = "Fetches the number of pins in the channel", commandHelp = "pincount #channel", example = "pincount #media")]
         public async Task PC(params string[] args)
         {
             if (args.Length == 0)
@@ -24,7 +24,7 @@ namespace RoleX.Modules.Channel_Permission
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Invalid channel",
-                    Description = $"`{args[0]}` could not be parsed as channel!",
+                    Description = $"`{args[0]}` could not be parsed as a channel!",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
@@ -34,8 +34,8 @@ namespace RoleX.Modules.Channel_Permission
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
-                    Title = "Big Brain alert",
-                    Description = $"Can u pin messages in a Voice Channel. *Can* you?",
+                    Title = "Big Brain Alert",
+                    Description = $"Can you pin messages in a Voice Channel? *Can* you?",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;

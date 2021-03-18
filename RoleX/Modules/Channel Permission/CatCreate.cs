@@ -12,7 +12,7 @@ namespace RoleX.Modules.Channel_Permission
         [RequiredUserPermissions(GuildPermission.ManageChannels)]
         [Alt("categorycreate")]
         [Alt("catadd")]
-        [DiscordCommand("catcreate", commandHelp = "chcreate <name>", description = "Creates category", example = "catcreate weirdo category")]
+        [DiscordCommand("catcreate", commandHelp = "chcreate <name>", description = "Creates category", example = "catcreate general category")]
         public async Task RCreate(params string[] args)
         {
             switch (args.Length)
@@ -22,7 +22,7 @@ namespace RoleX.Modules.Channel_Permission
                     {
                         Title = "Insufficient Parameters",
                         Description =
-                            $"The way to use the command is `{await SqliteClass.PrefixGetter(Context.Guild.Id)}catcreate <name>`",
+                            $"Command Syntax: `{await SqliteClass.PrefixGetter(Context.Guild.Id)}catcreate <name>`",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
                     return;

@@ -8,6 +8,8 @@ namespace RoleX.Modules.Trading
     [DiscordCommandClass("Trading", "Class with trading related commands")]
     public class Tradingchan : CommandModuleBase
     {
+        [RequiredUserPermissions(new GuildPermission[] { GuildPermission.Administrator })]
+
         [DiscordCommand("tradingchan", description ="Set's the guild's trading channel for users to post trades in.", example ="tradingchan #trading-ads", commandHelp ="tradingchan #channel")]
         public async Task TradingChan(params string[] args)
         {

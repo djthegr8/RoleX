@@ -29,7 +29,7 @@ namespace RoleX.Modules.Channel_Permission
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Invalid channel",
-                    Description = $"`{args[0]}` could not be parsed as channel!",
+                    Description = $"`{args[0]}` could not be parsed as a channel!",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
@@ -39,8 +39,8 @@ namespace RoleX.Modules.Channel_Permission
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
-                    Title = "Invalid channel re-name",
-                    Description = $"`{bchname}` is an invalid channel name, as it either ~ \n1) Contains non-allowed characters\n 2) Is too long",
+                    Title = "Invalid arguement",
+                    Description = $"`{bchname}` is an invalid channel name, as it either ~ \n1) Contains invalid characters\n 2) Is too long",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
@@ -50,7 +50,7 @@ namespace RoleX.Modules.Channel_Permission
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "Channel Name Updated!!",
-                Description = $"<#{cha.Id}> is now set!!!",
+                Description = $"<#{cha.Id}> is now updated!!!",
                 Color = Blurple
             }.WithCurrentTimestamp());
             return;

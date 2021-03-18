@@ -6,7 +6,7 @@ namespace RoleX.Modules.General
     [DiscordCommandClass("General", "General commands for all!")]
     public class Ping : CommandModuleBase
     {
-        [DiscordCommand("ping",commandHelp ="ping", description ="Finds the latency!")]
+        [DiscordCommand("ping",commandHelp ="ping", description ="Fetches RoleX's latency!")]
         public async Task RPing(params string[] _)
         {
             await Context.Channel.TriggerTypingAsync();

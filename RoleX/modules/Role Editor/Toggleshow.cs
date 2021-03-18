@@ -12,7 +12,9 @@ namespace RoleX.Modules.Role_Editor
         
         [RequiredUserPermissions(GuildPermission.ManageRoles)]
         [Alt("ts")]
-        [DiscordCommand("toggleshow", commandHelp = "toggleshow @Role", example = "toggleshow @WeirdRoleThatWasHidden", description = "Toggles the given role's visibility in the list", IsPremium = true)]
+        [Alt("hoist")]
+
+        [DiscordCommand("toggleshow", commandHelp = "toggleshow @Role", example = "toggleshow @role", description = "Hoists specified role", IsPremium = true)]
         public async Task ShowRole(params string[] args)
         {
             if (args.Length == 0)
@@ -56,7 +58,7 @@ namespace RoleX.Modules.Role_Editor
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Oops!",
-                    Description = "Can't do that to the everyone role...",
+                    Description = "Can't do that to `@everyone`",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
@@ -65,7 +67,7 @@ namespace RoleX.Modules.Role_Editor
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "Set.",
-                Description = $"The role {x.Name} will now {(x.IsHoisted == true ? "" : "not ")} be shown in the list",
+                Description = $"The role {x.Name} will now {(x.IsHoisted == true ? "" : "not ")} be hoisted",
                 Color = Blurple
             }.WithCurrentTimestamp());
         }
