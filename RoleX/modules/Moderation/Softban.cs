@@ -12,7 +12,7 @@ namespace RoleX.Modules.Moderation
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Softban : CommandModuleBase
     {
-        [RequiredUserPermissions(new[] { GuildPermission.BanMembers})]
+        [RequiredUserPermissions(GuildPermission.BanMembers)]
         [DiscordCommand("softban", commandHelp = "softban <@user> <days>", example = "softban @Dumbass 7", description = "Bans the specified user and unbans immediately, for deletion of messages")]
         public async Task SBanner(params string[] args)
         {
