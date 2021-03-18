@@ -9,6 +9,8 @@ namespace RoleX.Modules.Trading
     [DiscordCommandClass("Trading", "Class with trading related commands")]
     public class Tradeslowmode : CommandModuleBase
     {
+        [RequiredUserPermissions(GuildPermission.Administrator)]
+
         [DiscordCommand("tradeslowmode", commandHelp = "tradeslowmode num_minutes", description = "Sets the number of minutes for trading slowmode", example = "alttime 35")]
         public async Task Alttime(params string[] args)
         {
@@ -49,7 +51,7 @@ namespace RoleX.Modules.Trading
                 Color = Blurple,
                 Footer = new EmbedFooterBuilder
                 {
-                    Text = $"To change it yet again, do `{await PrefixGetter(Context.Guild.Id)}tsm 3`"
+                    Text = $"To edit it again, do `{await PrefixGetter(Context.Guild.Id)}tsm 3`"
                 }
             }.WithCurrentTimestamp());
         }

@@ -7,7 +7,7 @@ namespace RoleX.Modules.Emojis
     [DiscordCommandClass("Emote Editor", "For complete management of server emotes!")]
     public class Emdelete : CommandModuleBase
     {
-        [RequiredUserPermissions(new[] { GuildPermission.ManageGuild, GuildPermission.ManageEmojis})]
+        [RequiredUserPermissions(GuildPermission.ManageEmojis)]
         [DiscordCommand("emdelete", description ="Deletes given emoji.", example ="emdelete kekw", commandHelp ="emrename emoji_name")]
         public async Task EMDEL(params string[] args)
         {
@@ -15,8 +15,8 @@ namespace RoleX.Modules.Emojis
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
-                    Title = "What emoji to delete?",
-                    Description = $"The way to run this cmd is `{await SqliteClass.PrefixGetter(Context.Guild.Id)}emdelete emote_name`",
+                    Title = "Emoji not provided",
+                    Description = $"Command Syntax: `{await SqliteClass.PrefixGetter(Context.Guild.Id)}emdelete emote_name`",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
@@ -25,7 +25,7 @@ namespace RoleX.Modules.Emojis
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
-                    Title = "What emoji to delete?",
+                    Title = "Emoji not provided?",
                     Description = $"Couldn't parse `{args[0]}` as an emote",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
@@ -36,7 +36,7 @@ namespace RoleX.Modules.Emojis
             await ReplyAsync(embed: new EmbedBuilder
             {
                 Title = "Emoji Deleted Successfully!",
-                Description = $"The emoji was deleted :/",
+                Description = $"The emoji was deleted",
                 Color = Blurple
             }.WithCurrentTimestamp());
         }

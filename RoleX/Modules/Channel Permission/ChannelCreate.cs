@@ -12,7 +12,7 @@ namespace RoleX.Modules.Channel_Permission
         [RequiredUserPermissions(GuildPermission.ManageChannels)]
         [Alt("channelcreate")]
         [Alt("chadd")]
-        [DiscordCommand("chcreate", commandHelp = "chcreate <category?> <name>", description = "Creates channel with synced perms in given category, or no category", example = "chcreate WeirdCategory Weird channel brr")]
+        [DiscordCommand("chcreate", commandHelp = "chcreate <category?> <name>", description = "Creates channel with synced perms in category if given", example = "chcreate general general chat")]
         public async Task RCreate(params string[] args)
         {
             switch (args.Length)
@@ -22,7 +22,7 @@ namespace RoleX.Modules.Channel_Permission
                     {
                         Title = "Insufficient Parameters",
                         Description =
-                            $"The way to use the command is `{await SqliteClass.PrefixGetter(Context.Guild.Id)}chcreate <category?> <name>`",
+                            $"Command Syntax: `{await SqliteClass.PrefixGetter(Context.Guild.Id)}chcreate <category?> <name>`",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
                     return;
@@ -33,7 +33,7 @@ namespace RoleX.Modules.Channel_Permission
                         {
                             Title = "Invalid channel re-name",
                             Description =
-                                $"`{args[0]}` is an invalid channel name, as it either ~ \n1) Contains non-allowed characters\n 2) Is too long",
+                                $"`{args[0]}` is an invalid channel name, as it either ~ \n1) Contains invalid characters\n 2) Is too long",
                             Color = Color.Red
                         }.WithCurrentTimestamp());
                         return;
@@ -58,7 +58,7 @@ namespace RoleX.Modules.Channel_Permission
                             {
                                 Title = "Invalid channel re-name",
                                 Description =
-                                    $"`{bchname}` is an invalid channel name, as it either ~ \n1) Contains non-allowed characters\n 2) Is too long",
+                                    $"`{bchname}` is an invalid channel name, as it either ~ \n1) Contains invalid characters\n 2) Is too long",
                                 Color = Color.Red
                             }.WithCurrentTimestamp());
                             return;
@@ -80,7 +80,7 @@ namespace RoleX.Modules.Channel_Permission
                         {
                             Title = "Invalid channel re-name",
                             Description =
-                                $"`{_bchname}` is an invalid channel name, as it either ~ \n1) Contains non-allowed characters\n 2) Is too long",
+                                $"`{_bchname}` is an invalid channel name, as it either ~ \n1) Contains invalid characters\n 2) Is too long",
                             Color = Color.Red
                         }.WithCurrentTimestamp());
                         return;

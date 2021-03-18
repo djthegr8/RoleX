@@ -11,7 +11,7 @@ namespace RoleX.Modules.Moderation
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Slowmode : CommandModuleBase
     {
-        [RequiredUserPermissions(new[] { GuildPermission.ManageGuild, GuildPermission.ManageChannels})]
+        [RequiredUserPermissions(GuildPermission.ManageChannels)]
         [DiscordCommand("slowmode", commandHelp = "slowmode <channel/category> <time>`\n`slowmode <time>", description = "Sets the channel or category slowmode", example = "slowmode 10s")]
         public async Task Sm(params string[] args)
         {
@@ -49,7 +49,7 @@ namespace RoleX.Modules.Moderation
                     await ReplyAsync(embed: new EmbedBuilder
                     {
                         Title = "You can't slow down the beat <a:vibing:782998739865305089>",
-                        Description = "Voice Channels cannot be put to a slowdown",
+                        Description = "Voice Channels have a slowmode",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
                     return;
@@ -110,7 +110,7 @@ namespace RoleX.Modules.Moderation
                     await ReplyAsync(embed: new EmbedBuilder
                     {
                         Title = "Invalid Time",
-                        Description = "Only 5 seconds to 6 hours of slowmode is permitted :(",
+                        Description = "You can only set a slowmode from 1 second to 6 hours",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
                     return;

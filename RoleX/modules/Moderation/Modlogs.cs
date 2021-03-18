@@ -13,6 +13,8 @@ namespace RoleX.Modules.Moderation
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Modlogs : CommandModuleBase
     {
+        [RequiredUserPermissions(GuildPermission.KickMembers)]
+
         [DiscordCommand("modlogs", commandHelp = "modlogs <@user>", description = "Shows all modlogs of a user", example = "modlogs @WeirdMan")]
         public async Task MLogs(params string[] aa)
         {

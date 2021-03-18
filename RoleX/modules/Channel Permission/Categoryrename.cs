@@ -19,7 +19,7 @@ namespace RoleX.Modules.Channel_Permission
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Insufficient Parameters!",
-                    Description = $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}categoryrename <old-category-name> <new-category-name>`",
+                    Description = $"Command Syntax: \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}categoryrename <old-category-name> <new-category-name>`",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
@@ -30,7 +30,7 @@ namespace RoleX.Modules.Channel_Permission
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Invalid category",
-                    Description = $"`{args[0]}` could not be parsed as category!",
+                    Description = $"`{args[0]}` could not be parsed as a category!",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;

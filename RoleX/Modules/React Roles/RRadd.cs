@@ -8,7 +8,7 @@ namespace RoleX.Modules.React_Roles
     [DiscordCommandClass("Reactions", "A class with Intuitive Reaction Roles")]
     internal class RRAdd : CommandModuleBase
     {
-        [RequiredUserPermissions(GuildPermission.Administrator)]
+        [RequiredUserPermissions(GuildPermission.ManageRoles)]
         [DiscordCommand("readd",
             commandHelp = "readd <message-link> <emoji> <role>", 
             description = "Adds a reaction role", 

@@ -13,7 +13,7 @@ namespace RoleX.Modules.Channel_Permission
         [Alt("chdel")]
         [Alt("chdelete")]
         
-        [DiscordCommand("channeldelete", description = "Deletes given channel", example = "channeldelete #WeirdChan", commandHelp = "channeldelete <#channel>")]
+        [DiscordCommand("channeldelete", description = "Deletes specified channel", example = "channeldelete #general", commandHelp = "channeldelete <#channel>")]
         public async Task Cdel(string ags)
         {
             var aaa = GetChannel(ags);
@@ -22,13 +22,13 @@ namespace RoleX.Modules.Channel_Permission
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Invalid channel",
-                    Description = $"`{ags}` could not be parsed as channel!",
+                    Description = $"`{ags}` could not be parsed as a channel!",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
             }
 
-            var ram = await Context.Channel.SendMessageAsync("Are you sure you want to delete?\nThis is a potentially destructive action.");
+            var ram = await Context.Channel.SendMessageAsync($"Are you sure you want to delete <#{aaa.Id}>?\nThis is a potentially destructive action.");
             await ram.AddReactionsAsync(
                 new IEmote[] {
                     Emote.Parse("<a:tick:820157048410472469>"),
@@ -55,7 +55,7 @@ namespace RoleX.Modules.Channel_Permission
                             {
                                 Title = "Alright then...",
                                 Color = Blurple,
-                                ImageUrl = "https://media.discordapp.net/attachments/758922634749542420/792611702885449748/unknown.png"
+                                ImageUrl = "https://imgur.com/RBC7KUt"
                             }.WithCurrentTimestamp().Build());
                             Program.Client.ReactionAdded -= weird;
                             return;
@@ -75,7 +75,7 @@ namespace RoleX.Modules.Channel_Permission
                 };
             Program.Client.ReactionAdded += weird;
             await Task.Delay(15000);
-            if (isTick) await Context.Channel.SendMessageAsync("Well, you didn't reply :(");
+            if (isTick) await Context.Channel.SendMessageAsync("No response received!");
             Program.Client.ReactionAdded -= weird;
             return;
         }

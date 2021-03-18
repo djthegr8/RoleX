@@ -12,8 +12,8 @@ namespace RoleX.Modules.Moderation
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Mute : CommandModuleBase
     {
-        [RequiredUserPermissions(new[] { GuildPermission.ManageGuild, GuildPermission.ManageRoles})]
-        [DiscordCommand("mute", description = "Mutes the given user", example = "mute @Dumbkid 5m For trying to ping everyone", commandHelp = "mute <@user> <time> <reason>")]
+        [RequiredUserPermissions(GuildPermission.ManageRoles)]
+        [DiscordCommand("mute", description = "Mutes the given user", example = "mute @scam 5m trying to ping everyone", commandHelp = "mute <@user> <time> <reason>")]
         public async Task RMute(params string[] args)
         {
             if (await MutedRoleIdGetter(Context.Guild.Id) == 0)
@@ -90,7 +90,7 @@ namespace RoleX.Modules.Moderation
                     {
                         await ReplyAsync("", false, new EmbedBuilder
                         {
-                            Title = "Oops, that person is above me :(",
+                            Title = "This user is above me ",
                             Description = $"I don't have sufficient permissions to ban them",
                             Color = Color.Red
                         }.WithCurrentTimestamp());
@@ -143,7 +143,7 @@ namespace RoleX.Modules.Moderation
                     {
                         Title = $"Seriously?? <a:clapjohn:785371886695612427>",
                         Color = Color.Red,
-                        ImageUrl = "https://media.discordapp.net/attachments/758922634749542420/798424027370094652/unknown.png"
+                        ImageUrl = "https://imgur.com/RBC7KUt"
                     }.WithCurrentTimestamp());
                     return;
                 }
@@ -159,7 +159,7 @@ namespace RoleX.Modules.Moderation
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "What user?",
-                Description = "That user isn't valid :(",
+                Description = "That user isn't valid",
                 Color = Color.Red
             }.WithCurrentTimestamp());
             return;

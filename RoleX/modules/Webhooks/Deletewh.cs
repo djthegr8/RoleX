@@ -16,8 +16,8 @@ namespace RoleX.Modules.Webhooks
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
-                    Title = "No webhook name/id given :(",
-                    Description = $"There were no arguments given :sob:",
+                    Title = "No webhook name/id given",
+                    Description = $"There were no arguments given",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;

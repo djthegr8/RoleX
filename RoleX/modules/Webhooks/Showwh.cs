@@ -20,8 +20,8 @@ namespace RoleX.Modules.Webhooks
                 {
                     await ReplyAsync("", false, new EmbedBuilder
                     {
-                        Title = "No webhook found in yer server!",
-                        Description = $"Really, how do you guys manage?\nIf you wanna make a Webhook, run `{await SqliteClass.PrefixGetter(Context.Guild.Id)}addwh`",
+                        Title = "No webhook found in your server!",
+                        Description = $"If you want to make a Webhook, run `{await SqliteClass.PrefixGetter(Context.Guild.Id)}addwh`",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
                     return;
@@ -93,7 +93,7 @@ namespace RoleX.Modules.Webhooks
                     Fields = embedFieldBuilders.Take(15).ToList(),
                     Footer = new EmbedFooterBuilder
                     {
-                        Text = "Yeah only 15 supported, will make sense later ig"
+                        Text = "Only 15 are supported as of now"
                     },
                     Color = Blurple
                 }.WithCurrentTimestamp()

@@ -48,7 +48,7 @@ namespace RoleX.Modules.General
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "What channel?",
-                    Description = $"Couldn't parse `{args[0]}` as channel :(",
+                    Description = $"Couldn't parse `{args[0]}` as a channel ",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
@@ -61,7 +61,7 @@ namespace RoleX.Modules.General
                 Color = Blurple,
                 Footer = new EmbedFooterBuilder
                 {
-                    Text = $"To change it yet again, do `{await PrefixGetter(Context.Guild.Id)}alertchan #channel`"
+                    Text = $"To change it again, run `{await PrefixGetter(Context.Guild.Id)}alertchan #channel`"
                 }
             }.WithCurrentTimestamp());
         }

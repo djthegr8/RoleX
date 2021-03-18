@@ -34,7 +34,7 @@ namespace RoleX.Modules.Moderation
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Invalid appeal link!",
-                    Description = $"Couldn't parse `{args[0]}` as an URL :sob:",
+                    Description = $"Couldn't parse `{args[0]}` as an URL",
                     Color = Color.Red,
                     Footer = new EmbedFooterBuilder
                     {
