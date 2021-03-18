@@ -7,7 +7,7 @@ namespace RoleX.Modules.Emojis
     [DiscordCommandClass("Emote Editor", "For complete management of server emotes!")]
     public class Emdelete : CommandModuleBase
     {
-        [RequiredUserPermissions(new[] { GuildPermission.ManageEmojis})]
+        [RequiredUserPermissions(GuildPermission.ManageEmojis)]
         [DiscordCommand("emdelete", description ="Deletes given emoji.", example ="emdelete kekw", commandHelp ="emrename emoji_name")]
         public async Task EMDEL(params string[] args)
         {
