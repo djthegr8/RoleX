@@ -12,7 +12,7 @@ namespace RoleX.Modules.Moderation
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Mute : CommandModuleBase
     {
-        [RequiredUserPermissions(new[] { GuildPermission.ManageRoles})]
+        [RequiredUserPermissions(GuildPermission.ManageRoles)]
         [DiscordCommand("mute", description = "Mutes the given user", example = "mute @scam 5m trying to ping everyone", commandHelp = "mute <@user> <time> <reason>")]
         public async Task RMute(params string[] args)
         {
