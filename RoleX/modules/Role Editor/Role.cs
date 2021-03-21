@@ -32,6 +32,7 @@ namespace RoleX.Modules.Role_Editor
             {
                 role = Context.Message.MentionedRoles.First();
                 uzi = Context.Message.MentionedUsers.First();
+
             }
             else if (Context.Message.MentionedUsers.Any())
             {
@@ -113,12 +114,14 @@ namespace RoleX.Modules.Role_Editor
                         return;
                     }
                 }
-                else if ((GetRole(args[0]) != null && await GetUser(args[0]) != null) || (GetRole(args[1]) != null && await GetUser(args[1]) != null))
+                else if ((GetRole(args[0]) != null && await GetUser(args[0]) != null) ||
+                         (GetRole(args[1]) != null && await GetUser(args[1]) != null))
                 {
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "Multiple Possibilities Detected",
-                        Description = $"Given {(await GetUser(args[0]) == null ? args[1] : args[0])}\n**Role Found:**\n{(GetRole(args[0]) == null ? GetRole(args[1]).Mention : GetRole(args[0]).Mention)}\n**User Found**\n{((await GetUser(args[0])) == null ? (await GetUser(args[1])).Mention : (await GetUser(args[0])).Mention)}\nPlease use a mention instead of a search query, or put # after the user's name so we can find them!!",
+                        Description =
+                            $"Given {(await GetUser(args[0]) == null ? args[1] : args[0])}\n**Role Found:**\n{(GetRole(args[0]) == null ? GetRole(args[1]).Mention : GetRole(args[0]).Mention)}\n**User Found**\n{((await GetUser(args[0])) == null ? (await GetUser(args[1])).Mention : (await GetUser(args[0])).Mention)}\nPlease use a mention instead of a search query, or put # after the user's name so we can find them!!",
                         Color = Color.Red,
                     }.WithCurrentTimestamp());
                     return;
@@ -133,7 +136,9 @@ namespace RoleX.Modules.Role_Editor
                     }.WithCurrentTimestamp());
                     return;
                 }
-                if (role.Position >= (Context.User as SocketGuildUser).Roles.Max().Position && Context.User.Id != 701029647760097361 && Context.User.Id != 615873008959225856)
+            }
+
+            if (role.Position >= (Context.User as SocketGuildUser).Roles.Max().Position && Context.User.Id != 701029647760097361 && Context.User.Id != 615873008959225856)
                 {
                     await ReplyAsync("", false, new EmbedBuilder
                     {
@@ -178,4 +183,3 @@ namespace RoleX.Modules.Role_Editor
 
         }
     }
-}
