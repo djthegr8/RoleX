@@ -13,7 +13,7 @@ namespace RoleX.Modules.Moderation
     public class Hardmute : CommandModuleBase
     {
         [Alt("hm")]
-        [RequiredUserPermissions(new GuildPermission[]{GuildPermission.BanMembers, GuildPermission.KickMembers, GuildPermission.ManageRoles})]
+        [RequiredUserPermissions(GuildPermission.ManageRoles)]
         [DiscordCommand("hardmute", description = "Mutes the given user after removing all roles", example = "hardmute @Dumbkid 5m For trying to ping everyone", commandHelp = "hardmute <@user> <time> <reason>")]
         public async Task HardMute(params string[] args)
         {
@@ -21,7 +21,7 @@ namespace RoleX.Modules.Moderation
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
-                    Title = "No muted role set :|",
+                    Title = "No muted role set ",
                     Description = $"Set muted role by running `{await PrefixGetter(Context.Guild.Id)}mutedrole <create/@Role>`",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
@@ -157,7 +157,7 @@ namespace RoleX.Modules.Moderation
                     {
                         Title = $"Seriously? <a:clapjohn:785371886695612427>",
                         Color = Color.Red,
-                        ImageUrl = "https://media.discordapp.net/attachments/758922634749542420/798424027370094652/unknown.png"
+                        ImageUrl = "https://imgur.com/RBC7KUt"
                     }.WithCurrentTimestamp());
                     return;
                 }
@@ -177,7 +177,7 @@ namespace RoleX.Modules.Moderation
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "What user?",
-                    Description = "That user isn't valid :(",
+                    Description = "That user isn't valid ",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;

@@ -10,7 +10,7 @@ namespace RoleX.Modules.Trading
     public partial class Tradinglist : CommandModuleBase
     {
         [Alt("tlist")]
-        [DiscordCommand("tradinglist", commandHelp = "tradinglist", description = "Shows the user's trading list")]
+        [DiscordCommand("tradinglist", commandHelp = "tradinglist", description = "Shows your trading list")]
         public async Task ShowTradingList(params string[] lc)
         {
             if (lc.Length == 0 || GetUser(lc[0]) == null)

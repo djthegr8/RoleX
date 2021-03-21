@@ -11,7 +11,7 @@ namespace RoleX.Modules.Emojis
     [DiscordCommandClass("Emote Editor", "For complete management of server emotes!")]
     public class EmSteal : CommandModuleBase
     {
-        [RequiredUserPermissions(new[] { GuildPermission.ManageGuild, GuildPermission.ManageEmojis})]
+        [RequiredUserPermissions(new[] { GuildPermission.ManageEmojis})]
         [DiscordCommand("emsteal", description ="Steals given emoji from given server", example ="emsteal 8325280985332 285098320958583", commandHelp ="emrename <server_id> <emoji/emoji_id>, <emoji2/emoji2_id>, <emoji3/emoji3_id>...")]
         public async Task EMDEL(params string[] args)
         {
@@ -20,7 +20,7 @@ namespace RoleX.Modules.Emojis
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "What emoji to steal?",
-                    Description = $"The way to run this cmd is `{await SqliteClass.PrefixGetter(Context.Guild.Id)}emsteal server_id <emoji_id>, <emoji2_id>, <emoji3_id>...`",
+                    Description = $"Command Syntax: `{await SqliteClass.PrefixGetter(Context.Guild.Id)}emsteal server_id <emoji_id>, <emoji2_id>, <emoji3_id>...`",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
@@ -36,8 +36,8 @@ namespace RoleX.Modules.Emojis
                 {
                     await ReplyAsync("", false, new EmbedBuilder
                     {
-                        Title = "What server to steal from?",
-                        Description = $"Kindly give the server ID, and ensure RoleX is in the server",
+                        Title = "What server do I steal from?",
+                        Description = $"Enter the server ID, and ensure RoleX is in the server",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
                     return;

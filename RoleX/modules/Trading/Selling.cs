@@ -17,7 +17,7 @@ namespace RoleX.Modules.Trading
             {
                 await ReplyAsync(embed: new EmbedBuilder
                 {
-                    Title = "I don't know what to do <:facepalm:713027249426792498>",
+                    Title = "Invalid Parameters",
                     Description = $"The way to run this command is `{await PrefixGetter(Context.Guild.Id)}selling add/remove Item1 and stuff about it, Item2 and...`",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
@@ -59,7 +59,7 @@ namespace RoleX.Modules.Trading
                         await ReplyAsync(embed: new EmbedBuilder
                         {
                             Title = "Only indices needed",
-                            Description = $"For the removal, kindly use the index of the item, which can be found using the `{await PrefixGetter(Context.Guild.Id)}tradinglist` command\nFor example, `{await PrefixGetter(Context.Guild.Id)}selling remove 3`",
+                            Description = $"For the removal, use the index of the item, which can be found using the `{await PrefixGetter(Context.Guild.Id)}tradinglist` command\nFor example, `{await PrefixGetter(Context.Guild.Id)}selling remove 3`",
                             Color = Color.Red
                         }.WithCurrentTimestamp());
                         return;

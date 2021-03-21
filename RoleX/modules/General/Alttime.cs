@@ -41,11 +41,11 @@ namespace RoleX.Modules.General
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "The updated Alert Flagging Timespan!",
-                Description = $"We will now flag an account as an Alt if it's {await AltTimePeriodGetter(Context.Guild.Id)} months or younger on Discord",
+                Description = $"We will now flag an account as an alt if it's {await AltTimePeriodGetter(Context.Guild.Id)} months or younger on Discord",
                 Color = Blurple,
                 Footer = new EmbedFooterBuilder
                 {
-                    Text = $"To change it yet again, do `{await PrefixGetter(Context.Guild.Id)}alttime <months>`"
+                    Text = $"To change it again, run `{await PrefixGetter(Context.Guild.Id)}alttime <months>`"
                 }
             }.WithCurrentTimestamp());
         }

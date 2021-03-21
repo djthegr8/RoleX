@@ -9,7 +9,7 @@ namespace RoleX.Modules.Channel_Permission
     [DiscordCommandClass("Channel Editor", "Edit Channel-wise perms of a Role using these commands!")]
     public class Categorydelete : CommandModuleBase
     {
-        [RequiredUserPermissions(GuildPermission.Administrator)]
+        [RequiredUserPermissions(GuildPermission.ManageChannels)]
         [Alt("catdel")]
         [DiscordCommand("categorydelete", commandHelp = "categorydelete <category-name>", description = "Deletes given category and all its channels", example = "categorydelete Useless")]
         public async Task CatDel(string aa)
@@ -25,7 +25,7 @@ namespace RoleX.Modules.Channel_Permission
                 }.WithCurrentTimestamp());
                 return;
             }
-            var ram = await Context.Channel.SendMessageAsync("Are you sure you want to delete?\nThis is a potentially destructive action.");
+            var ram = await Context.Channel.SendMessageAsync($"Are you sure you want to delete <#{alf.Id}>?\nThis is a potentially destructive action.");
             await ram.AddReactionsAsync(
                 new IEmote[] {
                         Emote.Parse("<a:tick:820157048410472469>"),
@@ -52,7 +52,7 @@ namespace RoleX.Modules.Channel_Permission
                             {
                                 Title = "Alright then...",
                                 Color = Blurple,
-                                ImageUrl = "https://media.discordapp.net/attachments/758922634749542420/792611702885449748/unknown.png"
+                                ImageUrl = "https://imgur.com/RBC7KUt"
                             }.WithCurrentTimestamp().Build());
                             Program.Client.ReactionAdded -= weird;
                             return;
@@ -66,8 +66,8 @@ namespace RoleX.Modules.Channel_Permission
                         await alf.DeleteAsync();
                         await ReplyAsync("", false, new EmbedBuilder
                         {
-                            Title = "Delete successful!",
-                            Description = $"Your category was deleted along with all its channels",
+                            Title = "Action successful!",
+                            Description = $"<#{alf.Id}> was deleted along with all its channels",
                             Color = Blurple
                         }.WithCurrentTimestamp());
                         Program.Client.ReactionAdded -= weird;
@@ -76,7 +76,7 @@ namespace RoleX.Modules.Channel_Permission
                 };
             Program.Client.ReactionAdded += weird;
             await Task.Delay(15000);
-            if (isTick) await Context.Channel.SendMessageAsync("Well, you didn't reply :(");
+            if (isTick) await Context.Channel.SendMessageAsync("No response received!");
             Program.Client.ReactionAdded -= weird;
             return;
         }

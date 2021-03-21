@@ -53,7 +53,7 @@ namespace RoleX.Modules.Webhooks
             await ReplyAsync(Context.User.Mention, false, new EmbedBuilder
             {
                 Title = "Created Webhook Successfully!",
-                Description = $"I have DMed you with the Url!",
+                Description = $"I have DMed you with the URL!",
                 Color = Blurple
             }.WithCurrentTimestamp());
             return;

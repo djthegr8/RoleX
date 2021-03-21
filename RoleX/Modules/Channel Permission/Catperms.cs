@@ -23,7 +23,7 @@ namespace RoleX.Modules.Channel_Permission
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Insufficient Parameters!",
-                    Description = $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}channelperms <#channel> <@role/@member> <Permission> <yes,no,inherit>`",
+                    Description = $"Command Syntax: \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}channelperms <#channel> <@role/@member> <Permission> <yes,no,inherit>`",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
@@ -45,7 +45,7 @@ namespace RoleX.Modules.Channel_Permission
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "Insufficient Parameters!",
-                        Description = $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}categoryperms <#channel> <@role/@member> <Permission> <yes,no,inherit>`",
+                        Description = $"Command Syntax: \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}categoryperms <#channel> <@role/@member> <Permission> <yes,no,inherit>`",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
                     return;
@@ -58,7 +58,7 @@ namespace RoleX.Modules.Channel_Permission
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "Invalid Role/User",
-                        Description = $"We couldn't find any role or user from `{args[1]}`",
+                        Description = $"We couldn't find any role or user called `{args[1]}`",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
                     return;
@@ -112,7 +112,7 @@ namespace RoleX.Modules.Channel_Permission
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "That permission is invalid",
-                    Description = $"The list of permissions is ~ ```{string.Join('\n', Enum.GetNames(typeof(ChannelPermission)))}```",
+                    Description = $"Valid permissions include ~ ```{string.Join('\n', Enum.GetNames(typeof(ChannelPermission)))}```",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;

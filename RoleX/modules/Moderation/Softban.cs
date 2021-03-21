@@ -12,7 +12,7 @@ namespace RoleX.Modules.Moderation
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Softban : CommandModuleBase
     {
-        [RequiredUserPermissions(new[] { GuildPermission.BanMembers, GuildPermission.ManageGuild})]
+        [RequiredUserPermissions(GuildPermission.BanMembers)]
         [DiscordCommand("softban", commandHelp = "softban <@user> <days>", example = "softban @Dumbass 7", description = "Bans the specified user and unbans immediately, for deletion of messages")]
         public async Task SBanner(params string[] args)
         {
@@ -35,7 +35,7 @@ namespace RoleX.Modules.Moderation
                         await ReplyAsync("", false, new EmbedBuilder
                         {
                             Title = "Invalid delete (prune) days parameter!",
-                            Description = "It needs to be between 0 and 7 bruh :|",
+                            Description = "Parameters are from 0-7 days",
                             Color = Color.Red
                         }.WithCurrentTimestamp());
                         return;
@@ -90,7 +90,7 @@ namespace RoleX.Modules.Moderation
                     {
                         Title = $"Seriously??",
                         Color = Color.Red,
-                        ImageUrl = "https://cdn.discordapp.com/attachments/758922634749542420/760180089870090320/unknown.png"
+                        ImageUrl = "https://imgur.com/HaDzAbG"
                     }.WithCurrentTimestamp());
                     return;
                 }
@@ -113,7 +113,7 @@ namespace RoleX.Modules.Moderation
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "What user?",
-                        Description = "That user isn't on Discord which world r u in? :(",
+                        Description = "That user isn't on Discord",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
                     return;
@@ -142,7 +142,7 @@ namespace RoleX.Modules.Moderation
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "What user?",
-                Description = "That user isn't valid :(",
+                Description = "That user isn't valid ",
                 Color = Color.Red
             }.WithCurrentTimestamp());
             return;

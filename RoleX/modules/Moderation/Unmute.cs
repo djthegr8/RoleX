@@ -8,7 +8,7 @@ namespace RoleX.Modules.Moderation
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Unmute : CommandModuleBase
     {
-        [RequiredUserPermissions(new[] { GuildPermission.ManageGuild, GuildPermission.ManageRoles })]
+        [RequiredUserPermissions(GuildPermission.ManageRoles)]
         [DiscordCommand("unmute", commandHelp = "unmute <@user>", example = "unmute @RegretfulMan", description = "Unmutes given user")]
         public async Task RUnmute(params string[] args)
         {
@@ -41,7 +41,7 @@ namespace RoleX.Modules.Moderation
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "User unmuted successfully!",
-                Description = $"{await GetUser(args[0])} was successfully unmuted :)",
+                Description = $"{await GetUser(args[0])} was successfully unmuted",
                 Color = Blurple
             }.WithCurrentTimestamp());
             return;
