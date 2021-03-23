@@ -469,8 +469,12 @@ namespace RoleX
         {
             try
             {
-                await Client.GetUser(701029647760097361).SendMessageAsync($"I left {arg.Name}, a Guild of {arg.MemberCount} members.");
-                await Client.GetUser(615873008959225856).SendMessageAsync($"I left {arg.Name}, a Guild of {arg.MemberCount} members.");
+                foreach (var devid in CommandModuleBase.devids)
+                {
+                    await Client.GetUser(devid)
+                        .SendMessageAsync(
+                            $"I left {arg.Name}, a Guild of {arg.MemberCount} members, current count is at {Client.Guilds.Count}\nInfo about the server: ```\n{string.Join("", JsonConvert.SerializeObject(arg).Take(1800))}...```");
+                }
                 await TopGG.topGGUPD(Client.Guilds.Count);
             }
             catch { }
@@ -523,15 +527,30 @@ namespace RoleX
             {
                 await TopGG.topGGUPD(Client.Guilds.Count);
                 // <@701029647760097361> or <@615873008959225856>
-                await Client.GetUser(701029647760097361).SendMessageAsync($"I joined {arg.Name}, a Guild of {arg.MemberCount} members.");
-                await Client.GetUser(615873008959225856).SendMessageAsync($"I joined {arg.Name}, a Guild of {arg.MemberCount} members.");
-                //try block so no errors :)
-                try
+                foreach (var devid in CommandModuleBase.devids)
                 {
-                    await Client.GetUser(701029647760097361).SendMessageAsync($"Here's an invite!\n{(await arg.GetInvitesAsync()).First()}");
-                    await Client.GetUser(615873008959225856).SendMessageAsync($"Here's an invite!\n{(await arg.GetInvitesAsync()).First()}");
+                    var user =  Client.GetUser(devid);
+                        await user.SendMessageAsync(
+                        $"I joined {arg.Name}, a Guild of {arg.MemberCount} members, making the count at {Client.Guilds.Count}.\nSome info abt server: ```\n{string.Join("", JsonConvert.SerializeObject(arg).Take(1800))}...```");
+                        try
+                        {
+                            try
+                            {
+
+                                var rim = (await arg.GetInvitesAsync()).FirstOrDefault() ??
+                                          await arg.DefaultChannel.CreateInviteAsync();
+
+                                await user.SendMessageAsync(
+                                    $"Here's an invite!\n{rim}");
+                            } catch { }
+                        }
+                        catch
+                        {
+                            // let it be, let it beeeeee
+                        }
                 }
-                catch { }
+                //try block so no errors :)
+
                 try
                 {
                     await arg.CurrentUser.ModifyAsync(async idk => idk.Nickname = $"[{await SqliteClass.PrefixGetter(arg.Id)}] RoleX");
@@ -603,7 +622,7 @@ namespace RoleX
                         EmbedBuilder emb = new EmbedBuilder
                         {
                             Color = Color.Red,
-                            Title = $"**An error occured in <#{msg.Channel.Id}> of ${(msg.Channel as SocketGuildChannel).Guild.Id}**",
+                            Title = $"**An error occured in <#{msg.Channel.Id}> of Guild (ID: {(msg.Channel as SocketGuildChannel).Guild.Id})**",
                             Description = "We are on towards fixing it! In case of any problem, DM <@701029647760097361> or <@615873008959225856>" + $"\nRefer to the below error message: ```{ string.Join("", result.Exception.Message.Take(1000))}```",
                         }.WithCurrentTimestamp();
                         await msg.Channel.SendMessageAsync(embed: emb.Build());
@@ -703,9 +722,14 @@ namespace RoleX
                             {
                                 try
                                 {
-                                    await Client.GetUser(701029647760097361).SendMessageAsync($"There was an error in {(msg.Channel as SocketGuildChannel).Guild.Name}\n{ex}");
+                                    await Client.GetUser(701029647760097361)
+                                        .SendMessageAsync(
+                                            $"There was an error in {(msg.Channel as SocketGuildChannel).Guild.Name}\n{ex}");
                                 }
-                                catch { }
+                                catch
+                                {
+                                    // i hope this doesnt get hit :
+                                }
                             }
                         }).Start();
                     }

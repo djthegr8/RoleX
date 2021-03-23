@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
@@ -7,12 +7,15 @@ using RoleX.Modules.Services;
 namespace RoleX.Modules.Role_Editor
 {
     [DiscordCommandClass("Role Editor", "Class for editing of Roles!")]
-    public class RRename : CommandModuleBase
+    public class Toggleshow : CommandModuleBase
     {
+        
         [RequiredUserPermissions(GuildPermission.ManageRoles)]
-        [Alt("rrn")]
-        [DiscordCommand("rrename", commandHelp = "rrename @Role <name>", example = "rrename @WeirdRole Weirder Role", description = "Renames the given role, that should've been obvious ngl")]
-        public async Task RRe(params string[] args)
+        [Alt("ts")]
+        [Alt("hoist")]
+
+        [DiscordCommand("toggleshow", commandHelp = "toggleshow @Role", example = "toggleshow @role", description = "Hoists specified role", IsPremium = true)]
+        public async Task ShowRole(params string[] args)
         {
             if (args.Length == 0)
             {
@@ -55,18 +58,16 @@ namespace RoleX.Modules.Role_Editor
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Oops!",
-                    Description = "Can't do that to the everyone role...",
+                    Description = "Can't do that to `@everyone`",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
             }
-
-            var name = string.Join(' ', args.Skip(1));
-            await x.ModifyAsync(xdot => xdot.Name = name);
+            await x.ModifyAsync(xdot => xdot.Hoist = !x.IsHoisted);
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "Set.",
-                Description = $"The role has now been renamed to {x.Mention}",
+                Description = $"The role {x.Name} will now {(x.IsHoisted == true ? "" : "not ")} be hoisted",
                 Color = Blurple
             }.WithCurrentTimestamp());
         }

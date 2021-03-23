@@ -521,7 +521,7 @@ namespace RoleX.Modules.Services
         }
         private async Task<CommandResult> ExecuteCommand(Command cmd, SocketCommandContext context, string[] param)
         {
-            if (!(context.User as SocketGuildUser).GuildPermissions.Administrator && context.User.Id != 701029647760097361 && context.User.Id != 615873008959225856)
+            if (!(context.User as SocketGuildUser).GuildPermissions.Administrator && CommandModuleBase.devids.All(k => k != context.User.Id))
             {
                 if (cmd.perms != null)
                 {
@@ -750,7 +750,7 @@ namespace RoleX.Modules.Services
     /// </summary>
     public class CommandModuleBase
     {
-        public readonly ulong[] devids = {
+        public static readonly ulong[] devids = {
             701029647760097361,
             615873008959225856
         };
