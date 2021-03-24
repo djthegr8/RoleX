@@ -322,81 +322,6 @@ namespace RoleX
                     {
                         var msgid = arg1.Id;
                         var chnlId = arg2.Id;
-                        /*
-                        if (arg3.Emote.Name == "🎉" && arg2 is SocketTextChannel channel && arg3.User.IsSpecified &&
-                            !arg3.User.Value.IsBot)
-                        {
-                            var gld = channel.Guild;
-                            var mes = await (arg2 as SocketTextChannel).GetMessageAsync(msgid);
-                            if (mes == null) return;
-                            var log = (await SqliteClass.GetGiveaways(
-                                    $"SELECT * from giveaways WHERE ChannelID = {chnlId} AND MessageID = {msgid} AND GuildID = {gld.Id} AND Running = 1;")
-                                ).FirstOrDefault();
-                            if (log != null)
-                            {
-                                var roleReqs = log.RoleRequirementString == ""
-                                    ? new List<SocketRole>()
-                                    : log.RoleRequirementString.Split('|')
-                                        .Select(whatever => gld.GetRole(ulong.Parse(whatever)));
-                                SocketGuildUser ReactingUser = gld.GetUser(arg3.UserId);
-                                if (ReactingUser != null)
-                                {
-                                    var all = roleReqs.Any()
-                                        ? roleReqs.All(f => ReactingUser.Roles.Any(k => k.Id == f.Id))
-                                        : true;
-                                    if (!all)
-                                    {
-                                        var rrw = roleReqs.Where(f => ReactingUser.Roles.All(k => k.Id != f.Id));
-                                        await DontMeetRequirements(arg3, mes, ReactingUser, log,
-                                            $"Role `{rrw.First().Name}` {(rrw.Count() > 1 ? $" and {rrw.Count() - 1} others " : "")}are missing");
-                                        return;
-                                    }
-
-                                    if (log.AmariLevelRequirement != 0 || log.WeeklyAmariRequirement != 0)
-                                    {
-                                        do
-                                        {
-                                            await Task.Delay(5000);
-                                        } while (!(lastAmariRequest.AddSeconds(5).CompareTo(DateTime.UtcNow) < 0));
-
-                                        lastAmariRequest = DateTime.UtcNow;
-                                        var amariString =
-                                            await GetAsync($"http://litochee.com:3000/api/guild/{gld.Id}");
-
-                                        var obj = JsonConvert.DeserializeObject<AmariWeeklyParser>(amariString);
-                                        var user = obj.data.FirstOrDefault(
-                                            i => i.userID.ToString() == ReactingUser.Id.ToString());
-                                        if (log.AmariLevelRequirement != 0)
-                                        {
-
-                                            if (user == null || user.uLevel < log.AmariLevelRequirement)
-                                            {
-                                                await DontMeetRequirements(arg3, mes, ReactingUser, log,
-                                                    $"Amari Level Requirement {log.AmariLevelRequirement} is more than your current {user.uLevel} by {log.AmariLevelRequirement - user.uLevel}");
-                                                return;
-
-                                            }
-
-                                        }
-
-                                        if (log.WeeklyAmariRequirement != 0)
-                                        {
-                                            if (user == null ||
-                                                int.Parse(user
-                                                    .weeklyPoints) < log.AmariLevelRequirement)
-                                            {
-                                                await DontMeetRequirements(arg3, mes, ReactingUser, log,
-                                                    $"Weekly Amari Requirement {log.WeeklyAmariRequirement} is more than your current {user.weeklyPoints} by {log.WeeklyAmariRequirement - int.Parse(user.weeklyPoints)}");
-                                                return;
-
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        */
                         var stc = arg2 as SocketTextChannel;
                         var usr = stc?.GetUser(arg3.UserId);
                         if (usr == null) return;
@@ -454,17 +379,6 @@ namespace RoleX
             WeeklyReq,
             AmariLevelReq
         }
-        /*
-        private static async Task DontMeetRequirements(SocketReaction arg3, IMessage smg, SocketGuildUser ReactingUser, gstart.Giveaway log, string Info = "")
-        {
-            await smg.RemoveReactionAsync(arg3.Emote, ReactingUser);
-            await ReactingUser.SendMessageAsync("", false, new EmbedBuilder
-            {
-                Title = "You do not meet the requirements for the giveaway!",
-                Description = $"The {Info}, which makes an unmet requirement for the `{log.Title}` giveaway!",
-                Color = Color.Red
-            }.WithCurrentTimestamp().Build());
-        }*/
 
         private async Task LeftGuildAsync(SocketGuild arg)
         {
