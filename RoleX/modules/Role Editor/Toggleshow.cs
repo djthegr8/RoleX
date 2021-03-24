@@ -43,7 +43,7 @@ namespace RoleX.Modules.Role_Editor
                 );
                 return;
             }
-            if ((Context.User as SocketGuildUser).Roles.Max().Position <= x.Position && Context.Guild.OwnerId != Context.User.Id && Context.User.Id != 701029647760097361 && Context.User.Id != 615873008959225856)
+            if ((Context.User as SocketGuildUser).Roles.Max().Position <= x.Position && Context.Guild.OwnerId != Context.User.Id && devids.All(k => k != Context.User.Id))
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {

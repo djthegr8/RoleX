@@ -11,6 +11,7 @@ using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
 using Newtonsoft.Json;
+using RoleX.Modules.Developer;
 using RoleX.Modules.Services;
 
 namespace RoleX
@@ -473,7 +474,12 @@ namespace RoleX
                 {
                     await Client.GetUser(devid)
                         .SendMessageAsync(
-                            $"I left {arg.Name}, a Guild of {arg.MemberCount} members, current count is at {Client.Guilds.Count}\nInfo about the server: ```\n{string.Join("", JsonConvert.SerializeObject(arg).Take(1800))}...```");
+                            $"I left {arg.Name}, a Guild of {arg.MemberCount} members, current count is at {Client.Guilds.Count}", false, new EmbedBuilder()
+                            {
+                                Title = "We left this dump",
+                                Description =await arg.GetInfoString(),
+                                Color = Color.Red
+                            }.WithCurrentTimestamp().Build());
                 }
                 await TopGG.topGGUPD(Client.Guilds.Count);
             }
@@ -526,12 +532,14 @@ namespace RoleX
             try
             {
                 await TopGG.topGGUPD(Client.Guilds.Count);
+                var text = await arg.GetInfoString();
                 // <@701029647760097361> or <@615873008959225856>
                 foreach (var devid in CommandModuleBase.devids)
                 {
                     var user =  Client.GetUser(devid);
                         await user.SendMessageAsync(
-                        $"I joined {arg.Name}, a Guild of {arg.MemberCount} members, making the count at {Client.Guilds.Count}.\nSome info abt server: ```\n{string.Join("", JsonConvert.SerializeObject(arg).Take(1800))}...```");
+                        $"I joined {arg.Name}, a Guild of {arg.MemberCount} members, making the count at {Client.Guilds.Count}.", false, new EmbedBuilder(){Title="Server Info", Url = arg.IconUrl, Description = text}.WithCurrentTimestamp().Build());
+
                         try
                         {
                             try
@@ -542,7 +550,11 @@ namespace RoleX
 
                                 await user.SendMessageAsync(
                                     $"Here's an invite!\n{rim}");
-                            } catch { }
+                            }
+                            catch
+                            {
+                                // idc
+                            }
                         }
                         catch
                         {
