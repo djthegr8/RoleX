@@ -79,6 +79,7 @@ namespace RoleX.Modules.General
             example = "chatchart #weirdshitchannel")]
         public async Task GraphChartOrSmthCommand(params string[] args)
         {
+            var messageChannelWhichMightActuallyChangeLMAO = Context.Channel;
             SocketTextChannel channel;
             if (args.Length == 0)
             {
@@ -179,7 +180,7 @@ namespace RoleX.Modules.General
             var sf = selected.First(m => m.Item2 == max);
             var ss = selected.FirstOrDefault(l => l.Item2 == max2);
             var st = selected.FirstOrDefault(l => l.Item2 == max3);
-            await Context.Channel.SendFileAsync("chart.jpeg", $"The top 3 in this channel are ~ \n🥇 {sf.Item1} - {sf.Item2}\n" +
+            await messageChannelWhichMightActuallyChangeLMAO.SendFileAsync("chart.jpeg", $"The top 3 in this channel are ~ \n🥇 {sf.Item1} - {sf.Item2}\n" +
                                                               (ss == null ? "" : $"🥈 {ss.Item1} - {ss.Item2}\n") +
                                                               (st == null ? "" : $"🥉 {st.Item1} - {st.Item2}"));
         }

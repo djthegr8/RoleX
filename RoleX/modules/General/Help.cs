@@ -39,7 +39,7 @@ namespace RoleX.Modules.General
             if (commandSelected == null)
             {
                 var modSelected = CustomCommandService.Modules.Keys.FirstOrDefault(x => x.ToLower().Contains(cmd.ToLower()));
-                if (modSelected == null)
+                if (modSelected == null || modSelected == "Developer")
                 {
                     await ReplyAsync("", false, new EmbedBuilder
                     {

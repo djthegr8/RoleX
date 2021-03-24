@@ -23,11 +23,12 @@ namespace RoleX.Modules.Developer
                 var joined = string.Join(" ",Context.Message.Content.Replace("```cs", "").Replace("```","").Split(' ').Skip(1));
                 var create = CSharpScript.Create(joined, ScriptOptions.Default.WithImports("System").WithReferences(Assembly.GetAssembly(typeof(EmbedBuilder))).WithImports("Discord"),
                     typeof(CustomCommandGlobals));
-                try { 
+                try
+                {
                     var state = await create.RunAsync(new CustomCommandGlobals(Context));
                     if (state.ReturnValue == null)
                         await Context.Message.AddReactionAsync(Emote.Parse("<a:tick:820157048410472469>"));
-                
+
                 }
                 catch (CompilationErrorException cee)
                 {
@@ -37,6 +38,10 @@ namespace RoleX.Modules.Developer
                         Description = cee.Message,
                         Color = Color.Red
                     }.WithCurrentTimestamp());
+                }
+                catch
+                {
+                    // um irdc
                 }
                 
                 

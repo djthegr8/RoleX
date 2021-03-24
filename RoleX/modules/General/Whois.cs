@@ -14,6 +14,7 @@ namespace RoleX.Modules.General
         [DiscordCommand("whois", description = "Shows information about the mentioned user", commandHelp = "whois <@user>", example = "whois DJ001")]
         public async Task WhoIs(params string[] user)
         {
+            var chnl = Context.Channel;
             RestUser userAccount;
             SocketGuildUser userGuildAccount = null;
             if (user.Length == 0)
@@ -81,14 +82,16 @@ namespace RoleX.Modules.General
                     }
                 }
             }
-            string stats = $"{(userGuildAccount == null ? "" : ($"Nickname: {(userGuildAccount.Nickname == null ? "None" : userGuildAccount.Nickname)}\n"))}" +
+            string stats = $"{(userGuildAccount == null ? "" : ($"Nickname: {userGuildAccount.Nickname ?? "None"}\n"))}" +
                               $"Id: {userAccount.Id}\n" +
-                              $"Creation Date: {userAccount.CreatedAt.UtcDateTime:r}\n";
+                              $"Creation Date: {userAccount.CreatedAt.UtcDateTime:D}\n";
+            stats += userGuildAccount != null ? $"Joined At: {userGuildAccount.JoinedAt:D}" : "";
+            stats += $"\nBanned: **{await Context.Guild.GetBanAsync(userAccount) != null}**";
             EmbedBuilder whois = new EmbedBuilder()
             {
                 Author = new EmbedAuthorBuilder()
                 {
-                    Name = userAccount.ToString() + (Program.Client.GetUser(userAccount.Id) != null ? (" (" + Program.Client.GetUser(userAccount.Id).Status.ToString() + ")") : ""),
+                    Name = userAccount.ToString() + (Program.Client.GetUser(userAccount.Id) != null ? (" (" + Program.Client.GetUser(userAccount.Id).Status + ")") : ""),
                     IconUrl = userAccount.GetAvatarUrl()
                 },
                 Color = Blurple,
@@ -103,7 +106,7 @@ namespace RoleX.Modules.General
                 }
             }.WithCurrentTimestamp();
             if (mutualServers != "") whois.AddField("Shared Servers", mutualServers, true);
-            await Context.Channel.SendMessageAsync("", false, whois.Build());
+            await chnl.SendMessageAsync("", false, whois.Build());
         }
     }
 }
