@@ -9,15 +9,36 @@ namespace RoleX.Modules.Services
     /// </summary>
     public class RedisClass
     {
-        private readonly ConnectionMultiplexer muxer = ConnectionMultiplexer.Connect("127.0.0.1:6379,password=rolexDatabase286");
+        private static ConnectionMultiplexer muxer;
         private static IDatabase conn;
         private const int ServerCooldown = 2;
         public RedisClass()
-        { 
+        {
+            try
+            {
+                muxer = ConnectionMultiplexer.Connect("127.0.0.1:6379,password=rolexDatabase286");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Started Redis Successfully");
+                Console.ForegroundColor = ConsoleColor.Gray;
+            }
+            catch
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Starting Redis Failed. Try to start...");
+                Console.ForegroundColor = ConsoleColor.Gray;
+                System.Diagnostics.Process process = new System.Diagnostics.Process();
+                System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+                startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                startInfo.FileName = "cmd.exe";
+                startInfo.Arguments = "/C wsl.exe sudo service redis-server restart";
+                process.StartInfo = startInfo;
+                process.Start();
+                muxer = ConnectionMultiplexer.Connect("127.0.0.1:6379,password=rolexDatabase286");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Started Redis Successfully");
+                Console.ForegroundColor = ConsoleColor.Gray;
+            }
             conn = muxer.GetDatabase();
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Started Redis Successful");
-            Console.ForegroundColor = ConsoleColor.White;
         }
 
         private static async Task<bool> SetAsync(string key, string value, TimeSpan expiryTime)
