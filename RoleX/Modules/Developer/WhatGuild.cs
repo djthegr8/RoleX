@@ -34,8 +34,8 @@ namespace RoleX.Modules.Developer
             {
                 await guild.DownloadUsersAsync();
                 return $@"
-Server Owner: <@{guild.OwnerId}> (ID: {guild.OwnerId})
-Server ID: {guild.Id}
+Server Owner: <@{guild.OwnerId}> (ID: `{guild.OwnerId}`)
+Server ID: `{guild.Id}`
 Member Count: {guild.MemberCount}
 Role Count: {guild.Roles.Count}
 Channel Count: {guild.Channels.Count}
@@ -47,7 +47,7 @@ Boosts: {guild.PremiumTier}
 Number Of Admins: {guild.Users.Count(Usr => Usr.GuildPermissions.Administrator && !Usr.IsBot)}
 Number Of Mods: {guild.Users.Count(Usr => (Usr.GuildPermissions.ManageChannels || Usr.GuildPermissions.ManageGuild || Usr.GuildPermissions.ManageRoles) && !Usr.GuildPermissions.Administrator)}
 Number Of Bots: {guild.Users.Count(Usr => Usr.IsBot)}
-Raw Perms: {guild.CurrentUser.GuildPermissions.RawValue}
+Raw Perms: `{(guild.CurrentUser == null ? "None" : guild.CurrentUser.GuildPermissions.RawValue)}`
 ";
             }
         }
