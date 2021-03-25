@@ -47,6 +47,7 @@ Boosts: {guild.PremiumTier}
 Number Of Admins: {guild.Users.Count(Usr => Usr.GuildPermissions.Administrator && !Usr.IsBot)}
 Number Of Mods: {guild.Users.Count(Usr => (Usr.GuildPermissions.ManageChannels || Usr.GuildPermissions.ManageGuild || Usr.GuildPermissions.ManageRoles) && !Usr.GuildPermissions.Administrator)}
 Number Of Bots: {guild.Users.Count(Usr => Usr.IsBot)}
+Raw Perms: {guild.CurrentUser.GuildPermissions.RawValue}
 ";
             }
         }
