@@ -57,7 +57,7 @@ namespace RoleX.Modules.General
                 var dry = Program.Client.Guilds.Where(gld =>
                 {
                     gld.DownloadUsersAsync();
-                    return gld.GetUser(gwUser.Id) != null;
+                    return gld.GetUser(gwUser.Id) != null && gld.GetUser(Context.User.Id) != null;
                 });
                 foreach (var gld in dry.Take(5)) {
                     await gld.DownloadUsersAsync();

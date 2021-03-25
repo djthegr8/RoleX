@@ -21,7 +21,7 @@ namespace RoleX.Modules.Giveaway
 
 
         //Initates command, summary, and assigns permissions 
-        [DiscordCommand("gstart", description = "Starts a giveaway, kinda obvious ngl", commandHelp = "gstart <time> <num-winners> <requirement> <prize>", example = "gstart 1m 1w none Weird prize")]
+        [DiscordCommand("gstart", description = "Starts a giveaway, kinda obvious ngl. IN BETA, NOT FOR USE!", commandHelp = "gstart <time> <num-winners> <requirement> <prize>", example = "gstart 1m 1w none Weird prize")]
         [RequiredUserPermissions(GuildPermission.Administrator)]
         [RequiredBotPermission(GuildPermission.AddReactions)]
         // string time, string prize, string type

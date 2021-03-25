@@ -216,7 +216,11 @@ namespace RoleX.Modules.Services
         /// <summary>
         /// Server isnt RoleX premium for some reason
         /// </summary>
-        ServerNotPremium
+        ServerNotPremium,
+        /// <summary>
+        /// Server is on Cooldown
+        /// </summary>
+        OnCooldown
     }
     /// <summary>
     /// The base class of <see cref="CustomCommandService"/>
@@ -260,6 +264,7 @@ namespace RoleX.Modules.Services
 
         private static Settings currentSettings;
         private List<Type> CommandClasses { get; set; }
+        private RedisClass redis;
 
         /// <summary>
         /// Creates a new command service instance
@@ -267,6 +272,7 @@ namespace RoleX.Modules.Services
         /// <param name="s">the <see cref="Settings"/> for the command service</param>
         public CustomCommandService(Settings s)
         {
+            redis = new RedisClass();
             currentSettings = s;
             UsedPrefixes = new List<char>
             {
@@ -649,7 +655,9 @@ namespace RoleX.Modules.Services
                             return new CommandResult() { IsSuccess = false, Result = CommandStatus.InvalidPermissions };
 
                         cmd.parent.ClassInstance.GetType().GetProperty("Context").SetValue(cmd.parent.ClassInstance, context);
-
+                        if (await RedisClass.ServerOnCd(context.Guild.Id))
+                            return new CommandResult() {Result = CommandStatus.OnCooldown, IsSuccess = false};
+                        await RedisClass.SetServerCD(context.Guild.Id);
                         Task s = (Task)cmd.Method.Invoke(cmd.parent.ClassInstance, parsedparams.ToArray());
                         Task.Run(async () => await s).Wait();
                         if (s.Exception == null)
@@ -700,7 +708,9 @@ namespace RoleX.Modules.Services
                             return new CommandResult() { IsSuccess = false, Result = CommandStatus.InvalidPermissions };
 
                         cmd.parent.ClassInstance.GetType().GetProperty("Context").SetValue(cmd.parent.ClassInstance, context);
-
+                        if (await RedisClass.ServerOnCd(context.Guild.Id))
+                            return new CommandResult() { Result = CommandStatus.OnCooldown, IsSuccess = false };
+                        await RedisClass.SetServerCD(context.Guild.Id);
                         Task s = (Task)cmd.Method.Invoke(cmd.parent.ClassInstance, parsedparams.ToArray());
                         Task.Run(async () => await s).Wait();
                         if (s.Exception == null)

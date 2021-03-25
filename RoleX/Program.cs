@@ -18,8 +18,9 @@ namespace RoleX
 {
     internal class Program
     {
-        private readonly static string fpath = string.Join(Path.DirectorySeparatorChar, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location).Split(Path.DirectorySeparatorChar).SkipLast(1)) + Path.DirectorySeparatorChar + "Data" + Path.DirectorySeparatorChar + "token.txt";
-        public static string token = File.ReadAllLines(fpath)[0];
+        private static readonly IEmote Cooldown = new Emoji("⏳");
+        private static readonly string fpath = string.Join(Path.DirectorySeparatorChar, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location).Split(Path.DirectorySeparatorChar).SkipLast(1)) + Path.DirectorySeparatorChar + "Data" + Path.DirectorySeparatorChar + "token.txt";
+        public static readonly string token = File.ReadAllLines(fpath)[0];
         public static void Main(string[] _)
         {
             new Program().MainlikeAsync().GetAwaiter().GetResult();
@@ -582,6 +583,9 @@ namespace RoleX
                                 Url = $"https://patreon.com/rolexbot",
                                 Color = Color.Red
                             }.WithCurrentTimestamp().Build());
+                        break;
+                    case CommandStatus.OnCooldown:
+                        await msg.AddReactionAsync(Cooldown);
                         break;
                     default:
                         await Client.GetUser(701029647760097361).SendMessageAsync($"See kid Idk what happened but here it is {result.Result}\n{result.ResultMessage}\n{result.Exception}");
