@@ -81,7 +81,7 @@ namespace RoleX.Modules.Moderation
                 return;
             }
 
-            if (ulong.TryParse(args[0], out ulong ide))
+            if (ulong.TryParse(args[0].Replace("<@","").Replace(">",""), out ulong ide))
             {
                 var aadrc = new DiscordRestClient();
                 await aadrc.LoginAsync(TokenType.Bot, Program.token);
