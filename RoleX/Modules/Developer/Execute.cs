@@ -21,7 +21,7 @@ namespace RoleX.Modules.Developer
             if (devids.Any(x => x == Context.User.Id))
             {
                 var joined = string.Join(" ",Context.Message.Content.Replace("```cs", "").Replace("```","").Split(' ').Skip(1));
-                var create = CSharpScript.Create(joined, ScriptOptions.Default.WithImports("System").WithReferences(Assembly.GetAssembly(typeof(EmbedBuilder))).WithImports("Discord"),
+                var create = CSharpScript.Create(joined, ScriptOptions.Default.WithImports("System", "System.Threading.Tasks", "System.Linq").WithReferences(Assembly.GetAssembly(typeof(EmbedBuilder))).WithImports("Discord"),
                     typeof(CustomCommandGlobals));
                 try
                 {

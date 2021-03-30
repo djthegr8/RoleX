@@ -14,7 +14,7 @@ namespace RoleX.Modules.Services
         public RunnableContext Context { get; set; }
         public async Task ReplyAsync(string message = "", bool isTTS = false, EmbedBuilder eb = null)
         {
-            await Context.Channel.SendMessageAsync(message, isTTS, eb.Build(), null, AllowedMentions.None);
+            await Context.Channel.SendMessageAsync(message, isTTS, eb?.Build(), null, AllowedMentions.None);
         }
         public static EmbedBuilder CreateEmbed(string Title = "", string Description = "", Color? Color = null, string Url = null, string ImageUrl = null, string FooterText = null, string FooterIconUrl = null)
         {
