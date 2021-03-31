@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Discord.Webhook;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using MoreLinq;
@@ -21,7 +22,7 @@ namespace RoleX.Modules.Developer
             if (devids.Any(x => x == Context.User.Id))
             {
                 var joined = string.Join(" ",Context.Message.Content.Replace("```cs", "").Replace("```","").Split(' ').Skip(1));
-                var create = CSharpScript.Create(joined, ScriptOptions.Default.WithImports("System", "System.Threading.Tasks", "System.Linq").WithReferences(Assembly.GetAssembly(typeof(EmbedBuilder))).WithImports("Discord"),
+                var create = CSharpScript.Create(joined, ScriptOptions.Default.WithImports("System", "System.Threading.Tasks", "System.Linq").WithReferences(Assembly.GetAssembly(typeof(EmbedBuilder)), Assembly.GetAssembly(typeof(DiscordWebhookClient))).WithImports("Discord"),
                     typeof(CustomCommandGlobals));
                 try
                 {
