@@ -762,9 +762,7 @@ namespace RoleX.Modules.Services
     {
         public static readonly ulong[] devids = {
             701029647760097361,
-            615873008959225856,
-            502654213537529886,
-            673612822495756354
+            615873008959225856
         };
         /// <summary>
         /// Number of aliases allowed for non-premium users
