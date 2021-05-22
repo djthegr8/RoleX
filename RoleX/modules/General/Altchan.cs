@@ -33,7 +33,7 @@ namespace RoleX.Modules.General
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Alerts Disabled!",
-                    Description = $"The alert channel has now been terminated.",
+                    Description = "The alert channel has now been terminated.",
                     Color = Blurple,
                     Footer = new EmbedFooterBuilder
                     {

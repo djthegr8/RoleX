@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using RoleX.Modules.Services;
@@ -14,7 +13,7 @@ namespace RoleX.Modules.General
         {
             if (args.Length == 0)
             {
-                await ReplyAsync("", false, new EmbedBuilder()
+                await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Insufficient Arguments",
                     Description = $"The way to use the command is `{await SqliteClass.PrefixGetter(Context.Guild.Id)}botsuggest <suggestions-for-RoleX-to-improve>",
@@ -24,7 +23,7 @@ namespace RoleX.Modules.General
 
             var join = string.Join(' ', args);
             await (Program.Client.GetChannel(755640198662062220) as SocketTextChannel).SendMessageAsync("", false,
-                new EmbedBuilder()
+                new EmbedBuilder
                 {
                     Title = $"New suggestion from {Context.User} in {Context.Guild.Name}!",
                     Description = $"Here it goes:\n```\n{join}```",

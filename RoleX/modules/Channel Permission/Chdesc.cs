@@ -45,7 +45,6 @@ namespace RoleX.Modules.Channel_Permission
                 Description = $"<#{cha.Id}> is now set with its new description!!!",
                 Color = Blurple
             }.WithCurrentTimestamp());
-            return;
         }
     }
 }

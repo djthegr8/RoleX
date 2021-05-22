@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Discord;
-using Microsoft.VisualBasic;
 using RoleX.Modules.Services;
 using RoleX.Utilities.Collector;
 

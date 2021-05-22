@@ -44,7 +44,6 @@ namespace RoleX.Modules.Moderation
                 Description = $"{await GetUser(args[0])} was successfully unmuted",
                 Color = Blurple
             }.WithCurrentTimestamp());
-            return;
         }
     }
 }

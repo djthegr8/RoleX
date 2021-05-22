@@ -35,7 +35,7 @@ namespace RoleX.Modules.Trading
                         await ReplyAsync(embed: new EmbedBuilder
                         {
                             Title = "That's above the maximum trades!",
-                            Description = $"Only 7 items are allowed! If you want more, then wait for RoleX Premium to release!",
+                            Description = "Only 7 items are allowed! If you want more, then wait for RoleX Premium to release!",
                             Color = Color.Red
                         }.WithCurrentTimestamp());
                         return;
@@ -45,7 +45,7 @@ namespace RoleX.Modules.Trading
                         await ReplyAsync(embed: new EmbedBuilder
                         {
                             Title = "That's above the maximum characters!",
-                            Description = $"Only 69 characters are allowed per item!",
+                            Description = "Only 69 characters are allowed per item!",
                             Color = Color.Red
                         }.WithCurrentTimestamp());
                         return;

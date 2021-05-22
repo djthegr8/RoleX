@@ -51,7 +51,7 @@ namespace RoleX.Modules.Moderation
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Specified user is above you",
-                    Description = $"You do not have sufficient permissions to nickname this user",
+                    Description = "You do not have sufficient permissions to nickname this user",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
@@ -61,7 +61,7 @@ namespace RoleX.Modules.Moderation
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Oops, that person is above me ",
-                    Description = $"I don't have sufficient permissions to ban them",
+                    Description = "I don't have sufficient permissions to ban them",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
@@ -73,7 +73,6 @@ namespace RoleX.Modules.Moderation
                 Description = $"<@{cha.Id}> is now set!!!",
                 Color = Blurple
             }.WithCurrentTimestamp());
-            return;
         }
     }
 }

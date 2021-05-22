@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
@@ -55,16 +54,16 @@ namespace RoleX.Utilities {
             foreach (T obj in source)
             {
                 T element = obj;
-                if (source1.Any() && !groupPredicate((IReadOnlyList<T>) source1, element))
+                if (source1.Any() && !groupPredicate(source1, element))
                 {
-                    yield return (IReadOnlyList<T>) source1;
+                    yield return source1;
                     source1 = new List<T>();
                 }
                 source1.Add(element);
                 element = default;
             }
             if (source1.Any())
-                yield return (IReadOnlyList<T>) source1;
+                yield return source1;
         }
     }
 }

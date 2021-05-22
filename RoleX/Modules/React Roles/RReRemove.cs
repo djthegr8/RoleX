@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Discord;
 using RoleX.Modules.Services;
 
@@ -12,7 +13,7 @@ namespace RoleX.Modules.React_Roles
         public async Task RoleDel(params string[] args)
         {
             if (args.Length < 2) { await ReplyAsync("You gotta tell me what to remove and where "); return; }
-            var reg = new System.Text.RegularExpressions.Regex(@"^https:\/\/discord.com\/channels\/[0-9]{17,18}\/[0-9]{17,18}\/[0-9]{17,18}$");
+            var reg = new Regex(@"^https:\/\/discord.com\/channels\/[0-9]{17,18}\/[0-9]{17,18}\/[0-9]{17,18}$");
             if (!reg.IsMatch(args[0]))
             {
                 await ReplyAsync("", false, new EmbedBuilder

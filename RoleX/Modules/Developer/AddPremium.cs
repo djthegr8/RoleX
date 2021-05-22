@@ -29,7 +29,7 @@ namespace RoleX.Modules.Developer
                 await SqliteClass.NonQueryFunctionCreator(
                     $"UPDATE prefixes SET Premium = 1 WHERE guildid = {Context.Guild.Id};");
                 await ReplyAsync($"Made the server {guild.Name} premium, will DM owner with the good news!");
-                var embed = new EmbedBuilder()
+                var embed = new EmbedBuilder
                 {
                     Title = "This server is now Premium!",
                     Description =

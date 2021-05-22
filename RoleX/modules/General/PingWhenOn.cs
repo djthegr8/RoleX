@@ -35,7 +35,7 @@ namespace RoleX.Modules.General
                 }.WithCurrentTimestamp());
                 return;
             }
-            if (await SqliteClass.TrackCooldownGetter(Context.User.Id) && !devids.Any(k => k == Context.User.Id))
+            if (await SqliteClass.TrackCooldownGetter(Context.User.Id) && devids.All(k => k != Context.User.Id))
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
@@ -46,7 +46,7 @@ namespace RoleX.Modules.General
                 return;
             }
             if (
-                ulong.TryParse(args[0], out ulong userID) &&
+                ulong.TryParse(args[0], out var userID) &&
                 Program.Client.GetUser(userID) != null
                 )
             {
@@ -64,7 +64,7 @@ namespace RoleX.Modules.General
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = $"Tracking {user} now...",
-                    Description = $"I'll DM you when they're online or DND",
+                    Description = "I'll DM you when they're online or DND",
                     Color = Blurple
                 }.WithCurrentTimestamp());
                 await SqliteClass.Track_CDAdder(Context.User.Id, user.Id);
@@ -76,7 +76,6 @@ namespace RoleX.Modules.General
                     Description = "Either that user doesn't exist, or isn't known to RoleX",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
-                return;
             } 
         }
     }

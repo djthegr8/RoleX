@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
 using RoleX.Modules.Services;
@@ -11,7 +12,7 @@ namespace RoleX.Modules.Channel_Permission
         [DiscordCommand("chrename", commandHelp = "chrename <#channel> <multi-word-string>")]
         [Alt("channelrename")]
         [Alt("chre")]
-        [RequiredUserPermissions(new[] { GuildPermission.ManageChannels})]
+        [RequiredUserPermissions(GuildPermission.ManageChannels)]
         public async Task RenameChannel(params string[] args)
         {
             if (args.Length == 0 || args.Length == 1)
@@ -35,7 +36,7 @@ namespace RoleX.Modules.Channel_Permission
                 return;
             }
             var bchname = string.Join('-', args.Skip(1));
-            if (!System.Text.RegularExpressions.Regex.IsMatch(bchname, "[a-zA-Z0-9-_]{2,100}"))
+            if (!Regex.IsMatch(bchname, "[a-zA-Z0-9-_]{2,100}"))
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
@@ -53,7 +54,6 @@ namespace RoleX.Modules.Channel_Permission
                 Description = $"<#{cha.Id}> is now updated!!!",
                 Color = Blurple
             }.WithCurrentTimestamp());
-            return;
         }
     }
 }

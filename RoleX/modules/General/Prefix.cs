@@ -18,7 +18,7 @@ namespace RoleX.Modules.General
                     Title = "Existing Prefix",
                     Description = $"The current prefix is {await SqliteClass.PrefixGetter(Context.Guild.Id)}",
                     Color = Blurple,
-                    Footer = new EmbedFooterBuilder()
+                    Footer = new EmbedFooterBuilder
                     {
                         Text= $"Do {await SqliteClass.PrefixGetter(Context.Guild.Id)}prefix <prefix> to change it!"
                     }
@@ -37,7 +37,6 @@ namespace RoleX.Modules.General
                 }
             }.WithCurrentTimestamp());
             await Context.Guild.CurrentUser.ModifyAsync(async dood => dood.Nickname = $"[{await SqliteClass.PrefixGetter(Context.Guild.Id)}] RoleX");
-            return;
         }
     }
 }

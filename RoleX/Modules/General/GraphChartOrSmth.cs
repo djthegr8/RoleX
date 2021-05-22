@@ -1,20 +1,20 @@
 ﻿
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Text;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Newtonsoft.Json;
 using RoleX.Modules.Services;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Drawing.Text;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using MoreLinq;
-using Color = Discord.Color;
+using Color = System.Drawing.Color;
+using ImageFormat = System.Drawing.Imaging.ImageFormat;
 
 namespace RoleX.Modules.General
 {
@@ -26,15 +26,11 @@ namespace RoleX.Modules.General
         {
             public List<Tuple<ulong, ulong>> listOfUsers { get; set; }
             public ulong lastMessageID { get; set; }
-            public MessageCache()
-            {
-
-            }
         }
-        public static List<System.Drawing.Color> ColorStructToList()
+        public static List<Color> ColorStructToList()
         {
-            return typeof(System.Drawing.Color).GetProperties(BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)
-                .Select(c => (System.Drawing.Color)c.GetValue(null, null))
+            return typeof(Color).GetProperties(BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)
+                .Select(c => (Color)c.GetValue(null, null))
                 .ToList();
         }
         private Brush[] SliceBrushes
@@ -44,26 +40,26 @@ namespace RoleX.Modules.General
                 var list = ColorStructToList();
                 list.RemoveAll(k =>
                 {
-                    List<System.Drawing.Color> badcolors = new()
+                    List<Color> badcolors = new()
                     {
-                        System.Drawing.Color.White,
-                        System.Drawing.Color.AliceBlue,
-                        System.Drawing.Color.Azure,
-                        System.Drawing.Color.FloralWhite,
-                        System.Drawing.Color.SeaShell,
-                        System.Drawing.Color.AntiqueWhite,
-                        System.Drawing.Color.Bisque,
-                        System.Drawing.Color.BlanchedAlmond,
-                        System.Drawing.Color.Cornsilk,
-                        System.Drawing.Color.GhostWhite,
-                        System.Drawing.Color.Ivory,
-                        System.Drawing.Color.Lavender,
-                        System.Drawing.Color.LavenderBlush,
-                        System.Drawing.Color.WhiteSmoke,
-                        System.Drawing.Color.NavajoWhite,
-                        System.Drawing.Color.Beige,
-                        System.Drawing.Color.LightGoldenrodYellow,
-                        System.Drawing.Color.LightYellow
+                        Color.White,
+                        Color.AliceBlue,
+                        Color.Azure,
+                        Color.FloralWhite,
+                        Color.SeaShell,
+                        Color.AntiqueWhite,
+                        Color.Bisque,
+                        Color.BlanchedAlmond,
+                        Color.Cornsilk,
+                        Color.GhostWhite,
+                        Color.Ivory,
+                        Color.Lavender,
+                        Color.LavenderBlush,
+                        Color.WhiteSmoke,
+                        Color.NavajoWhite,
+                        Color.Beige,
+                        Color.LightGoldenrodYellow,
+                        Color.LightYellow
                     };
                     return badcolors.Any(m => m == k);
                 });
@@ -92,11 +88,11 @@ namespace RoleX.Modules.General
 
             if (channel == null)
             {
-                await ReplyAsync("", false, new EmbedBuilder()
+                await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Invalid channel!",
                     Description = "Well, the channel was invalid. 🤷‍",
-                    Color = Color.Red
+                    Color = Discord.Color.Red
                 }.WithCurrentTimestamp());
                 return;
             }
@@ -122,7 +118,7 @@ namespace RoleX.Modules.General
 
             await foreach (var k in aen)
             {
-                for (int i = 0; i < k.Count; i++)
+                for (var i = 0; i < k.Count; i++)
                 {
                     var message = k.ElementAt(i);
                     if (i == 0) Console.WriteLine($"queried {i}");
@@ -139,9 +135,10 @@ namespace RoleX.Modules.General
             }
 
             ;
-            var messa = await channel.SendMessageAsync(
-                "RoleX completed querying. This is a landmark message.\n**DO NOT DELETE THIS MESSAGE**");
-            var mes = new MessageCache()
+            // var messa = await channel.SendMessageAsync("RoleX completed querying. This is a landmark message.\n**DO NOT DELETE THIS MESSAGE**");
+            var messa = (await channel.GetMessagesAsync(1).FlattenAsync()).First();
+            await messa.AddReactionAsync(new Emoji("🏁"));
+            var mes = new MessageCache
             {
                 listOfUsers = guildUsers.Select(k => new Tuple<ulong, ulong>(k.Item1.Id, k.Item2)).ToList(),
                 lastMessageID = messa.Id,
@@ -173,7 +170,7 @@ namespace RoleX.Modules.General
                 toStr.Add(new Tuple<string, ulong>("Others", ulong.Parse(rest.ToString(CultureInfo.InvariantCulture))));
             DrawPieChart(gr, new Rectangle(200, 200, 600, 600), -90, sb, SlicePens,toStr , Brushes.White, font, count, channel);
 
-            bitmap.Save("chart.jpeg", System.Drawing.Imaging.ImageFormat.Jpeg);
+            bitmap.Save("chart.jpeg", ImageFormat.Jpeg);
             var max = selected.Max(k => k.Item2);
             var max2 = selected.Max(m => m.Item2 == max ? 0 : m.Item2);
             var max3 = selected.Max(m => (m.Item2 == max || m.Item2 == max2) ? 0 : m.Item2);
@@ -185,22 +182,22 @@ namespace RoleX.Modules.General
                                                               (st == null ? "" : $"🥉 {st.Item1} - {st.Item2}"));
         }
         private static void DrawPieChart(Graphics gr,
-            Rectangle rect, float initial_angle, Brush[] brushes, Pen[] pens,
-            List<Tuple<string, ulong>> lis, Brush label_brush, Font label_font, float total, IChannel chnl)
+            Rectangle rect, float initial_angle, IReadOnlyList<Brush> brushes, IReadOnlyList<Pen> pens,
+            IReadOnlyList<Tuple<string, ulong>> lis, Brush label_brush, Font label_font, float total, IChannel chnl)
         {
-            float start_angle = initial_angle;
+            var start_angle = initial_angle;
             var values = lis.Select(mk => mk.Item2).ToArray();
             gr.DrawString($"Stats in {chnl.Name}", label_font, label_brush, new PointF(280,50));
-            for (int i = 0; i < values.Length; i++)
+            for (var i = 0; i < values.Length; i++)
             {
-                float sweep_angle = values[i] * 360f / total;
+                var sweep_angle = values[i] * 360f / total;
 
                 // Fill and outline the pie slice.
-                gr.FillPie(brushes[i % brushes.Length],
+                gr.FillPie(brushes[i % brushes.Count],
                     rect, start_angle, sweep_angle);
-                gr.DrawPie(pens[i % pens.Length],
+                gr.DrawPie(pens[i % pens.Count],
                     rect, start_angle, sweep_angle);
-                gr.FillRectangle(brushes[i % brushes.Length], new Rectangle(1000,100 + 60*i,120, label_font.Height));
+                gr.FillRectangle(brushes[i % brushes.Count], new Rectangle(1000,100 + 60*i,120, label_font.Height));
                 gr.DrawString(lis[i].Item1 + $" - {Convert.ToInt32(100 * (lis[i].Item2 / total))}%", label_font, label_brush, new PointF(1140, 100 + 60*i));
                 start_angle += sweep_angle;
             }

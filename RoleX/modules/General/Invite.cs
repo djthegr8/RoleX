@@ -14,7 +14,7 @@ namespace RoleX.Modules.General
             {
                 Title = "Invite RoleX to your server!",
                 Description = "[**Invite using recommended permission link**](https://discord.com/oauth2/authorize?client_id=744766526225252435&scope=bot&permissions=805334064)\n[**Invite using Admin link for easy setup**](https://discord.com/oauth2/authorize?client_id=744766526225252435&scope=bot&permissions=8)",
-                Footer = new EmbedFooterBuilder()
+                Footer = new EmbedFooterBuilder
                 {
                     Text="Thank you for choosing RoleX"
                 },

@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
 using RoleX.Modules.Services;
@@ -28,14 +27,14 @@ namespace RoleX.Modules.General
                         FooterFormat = $"Do {await SqliteClass.PrefixGetter(Context.Guild.Id)}help alias to know more about adding aliases"
                     }, Context.Channel,
                     new PaginatedMessage.MessagePage("Error :/"));
-                var loembb = (await SqliteClass.GuildAliasGetter(Context.Guild.Id)).Select(k => new EmbedFieldBuilder()
+                var loembb = (await SqliteClass.GuildAliasGetter(Context.Guild.Id)).Select(k => new EmbedFieldBuilder
                 {
                     Name = k.Item1,
                     Value = $"`{k.Item2}`",
                 }).ToList();
                 if (!loembb.Any())
                 {
-                    await ReplyAsync("", false, new EmbedBuilder()
+                    await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "No aliases yet",
                         Description = "Add aliases using `alias add <alias-name> <cmd-and-parameters>`",
@@ -65,7 +64,7 @@ namespace RoleX.Modules.General
                     var cmd = string.Join(' ', args.Skip(2));
                     cmd = cmd.Replace("^", "\\^").Replace("|", "\\|");
                     await SqliteClass.AliasAdder(Context.Guild.Id, cmdAlias, cmd);
-                    await ReplyAsync("", false, new EmbedBuilder()
+                    await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = $"Successfully added alias {cmdAlias}",
                         Description = "Run `alias` to find the list of aliases in your guild!",
@@ -76,15 +75,15 @@ namespace RoleX.Modules.General
                 case "remove" or "-":
                 {
                     var didItExist = await SqliteClass.AliasRemover(Context.Guild.Id, args[1]) != 0;
-                    if (!didItExist) await ReplyAsync("", false, new EmbedBuilder()
+                    if (!didItExist) await ReplyAsync("", false, new EmbedBuilder
                     {
-                        Title = $"No such alias",
+                        Title = "No such alias",
                         Description = "Run `alias` to find the list of aliases in your guild!",
                         Color = Blurple
                     });
-                    else await ReplyAsync("", false, new EmbedBuilder()
+                    else await ReplyAsync("", false, new EmbedBuilder
                     {
-                        Title = $"Deleted alias",
+                        Title = "Deleted alias",
                         Description = "Run `alias` to find the list of aliases in your guild!",
                         Color = Blurple
                     });

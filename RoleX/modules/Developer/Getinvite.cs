@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
+using Discord.Rest;
 using RoleX.Modules.Services;
 
 namespace RoleX.Modules.Developer
@@ -21,7 +22,7 @@ namespace RoleX.Modules.Developer
                     var gild = Program.Client.GetGuild(x);
                     if (gild == null) throw new ArgumentException();
                     var aaa = (await gild.GetInvitesAsync()).FirstOrDefault();
-                    if (aaa == default(Discord.Rest.RestInviteMetadata))
+                    if (aaa == default(RestInviteMetadata))
                     {
                         throw new Exception();
                     }

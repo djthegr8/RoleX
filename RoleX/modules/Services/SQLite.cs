@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Discord.WebSocket;
 using Microsoft.Data.Sqlite;
@@ -32,7 +31,7 @@ namespace RoleX.Modules.Services
             /// <summary>
             /// Whether a person can pick up just one role.
             /// </summary>
-            public bool Unique { get; set; } = false;
+            public bool Unique { get; set; }
             /// <summary>
             /// <see cref="Array"/> of Roles that can be picked up in the Reaction Role.
             /// </summary>
@@ -44,19 +43,15 @@ namespace RoleX.Modules.Services
             /// <summary>
             /// <see cref="Array"/> of Whitelisted roles, i.e., roles that allow people to pick up the Reaction Roles
             /// </summary>
-            public ulong[] WhiteListedRoles { get; set; } = new ulong[] { };
+            public ulong[] WhiteListedRoles { get; set; } = { };
             /// <summary>
             /// <see cref="Array"/> of Blacklisted roles, i.e., roles disallowing people to pick up the Reaction Roles.
             /// </summary>
-            public ulong[] BlackListedRoles { get; set; } = new ulong[] { };
+            public ulong[] BlackListedRoles { get; set; } = { };
             /// <summary>
             /// The Reaction role self destructs at the given time, if not set then equals <see cref="DateTime.MinValue"/>.<br /> <a href="https://docs.carl.gg/roles/reaction-roles/#rr-management">See here for info</a>
             /// </summary>
-            public DateTime SelfDestructTime { get; set; } = new DateTime();
-            public ReactRole()
-            {
-
-            }
+            public DateTime SelfDestructTime { get; set; }
         }
 
         public enum TradeTexts
@@ -82,11 +77,7 @@ namespace RoleX.Modules.Services
             /// Reason why reminder was set, or "Not given"
             /// </summary>
             public string Reason { get; set; } = "Not given";
-            public bool Finished { get; set; } = false;
-            /// <summary>
-            /// Empty Constructor for usage
-            /// </summary>
-            public Reminder() { }
+            public bool Finished { get; set; }
         }
         public class Infraction
         {
@@ -128,7 +119,6 @@ namespace RoleX.Modules.Services
                 return DateTime.Parse(dTaime);
             }
             public string Reason { get; set; }
-            public Infraction() { }
         }
         public class Invite
         {
@@ -137,7 +127,6 @@ namespace RoleX.Modules.Services
             public DateTime Created { get; set; }
             public short JoinedNum { get; set; }
             public string Code { get; set; }
-            public Invite() { }
         }
         /*public static SqliteCommand Connect()
         {

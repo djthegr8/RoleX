@@ -1,17 +1,16 @@
 using System.IO;
 using System.Linq;
 using System.Net;
-using Discord;
-using MoreLinq;
-using RoleX.Modules.Services;
 using System.Threading.Tasks;
+using Discord;
+using RoleX.Modules.Services;
 
 namespace RoleX.Modules.Emojis
 {
     [DiscordCommandClass("Emote Editor", "For complete management of server emotes!")]
     public class EmSteal : CommandModuleBase
     {
-        [RequiredUserPermissions(new[] { GuildPermission.ManageEmojis})]
+        [RequiredUserPermissions(GuildPermission.ManageEmojis)]
         [DiscordCommand("emsteal", description ="Steals given emoji from given server", example ="emsteal 8325280985332 285098320958583", commandHelp ="emrename <server_id> <emoji/emoji_id>, <emoji2/emoji2_id>, <emoji3/emoji3_id>...")]
         public async Task EMDEL(params string[] args)
         {
@@ -37,7 +36,7 @@ namespace RoleX.Modules.Emojis
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "What server do I steal from?",
-                        Description = $"Enter the server ID, and ensure RoleX is in the server",
+                        Description = "Enter the server ID, and ensure RoleX is in the server",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
                     return;
@@ -49,7 +48,7 @@ namespace RoleX.Modules.Emojis
             var ems = await ReplyAsync("Starting the process of stealing emojis...");
             if (emojis.Length > 14 && !await SqliteClass.PremiumOrNot(Context.Guild.Id))
             {
-                await ReplyAsync("", false, new EmbedBuilder()
+                await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Too many emotes!",
                     Description =
@@ -61,7 +60,7 @@ namespace RoleX.Modules.Emojis
 
             if (emojis.Length > 29)
             {
-                await ReplyAsync("", false, new EmbedBuilder()
+                await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Too many emotes!",
                     Description =

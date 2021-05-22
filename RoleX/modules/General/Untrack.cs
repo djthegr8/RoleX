@@ -57,7 +57,6 @@ namespace RoleX.Modules.General
                     Description = "Mention the user you wish to untrack",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
-                return;
             }
         }
     }

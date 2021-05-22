@@ -26,7 +26,7 @@ namespace RoleX.Modules.Role_Editor
             for (int y = 0; y < Context.Guild.Roles.Count; y++)
             {
                 var x = Context.Guild.Roles.OrderByDescending(x => x.Position).ElementAt(y);
-                embb.Add(new EmbedFieldBuilder()
+                embb.Add(new EmbedFieldBuilder
                 {
                     Name = x.Name,
                     Value = $"ID: {x.Id}\nPermValue: [{x.Permissions.RawValue}](http://discordapi.com/permissions.html#{x.Permissions.RawValue})\n",

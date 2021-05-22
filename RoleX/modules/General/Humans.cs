@@ -13,14 +13,13 @@ namespace RoleX.Modules.General
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = $"There are {Context.Guild.MemberCount} users in {Context.Guild.Name}!",
-                Description = $"Wow nice server guys!",
+                Description = "Wow nice server guys!",
                 Color = Blurple,
-                Footer = new EmbedFooterBuilder()
+                Footer = new EmbedFooterBuilder
                 {
-                    Text = $"Hehe!"
+                    Text = "Hehe!"
                 }
             }.WithCurrentTimestamp());
-            return;
         }
     }
 }

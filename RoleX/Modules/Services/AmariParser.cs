@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace RoleX.Modules.Services
 {
@@ -10,7 +6,6 @@ namespace RoleX.Modules.Services
     {
         public string status { get; set; }
         public List<AmariWeeklyUser> data { get; set; }
-        public AmariWeeklyParser() { }
         public string message { get; set; }
     }
 
@@ -28,6 +23,5 @@ namespace RoleX.Modules.Services
         public string username { get; set; }
         public int uLevel { get; set; }
         public string weeklyPoints { get; set; }
-        public AmariWeeklyUser() { }
     }
 }

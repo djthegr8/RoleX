@@ -49,14 +49,13 @@ namespace RoleX.Modules.Role_Editor
                 return;
             }
             var newlyMadeRole = await Context.Guild.CreateRoleAsync(rlD.Name + "~1", rlD.Permissions, rlD.Color, rlD.IsHoisted, rlD.IsMentionable);
-            await Context.Guild.ReorderRolesAsync(new List<ReorderRoleProperties>() { new ReorderRoleProperties(newlyMadeRole.Id, rlA.Position) });
+            await Context.Guild.ReorderRolesAsync(new List<ReorderRoleProperties> { new ReorderRoleProperties(newlyMadeRole.Id, rlA.Position) });
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "Role Duplicated Successfully",
                 Description = $"{newlyMadeRole.Mention} was created from {rlD.Mention} and placed below {rlA.Mention}!",
                 Color = Blurple
             }.WithCurrentTimestamp());
-            return;
         }
     }
 }

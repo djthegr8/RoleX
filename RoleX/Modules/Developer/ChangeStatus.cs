@@ -1,8 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Discord;
-using DnsClient.Internal;
-using MoreLinq;
 using RoleX.Modules.Services;
 
 namespace RoleX.Modules.Developer

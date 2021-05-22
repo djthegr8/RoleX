@@ -91,7 +91,7 @@ namespace RoleX.Modules.Moderation
                         await ReplyAsync("", false, new EmbedBuilder
                         {
                             Title = "This user is above me ",
-                            Description = $"I don't have sufficient permissions to ban them",
+                            Description = "I don't have sufficient permissions to ban them",
                             Color = Color.Red
                         }.WithCurrentTimestamp());
                         return;
@@ -119,13 +119,13 @@ namespace RoleX.Modules.Moderation
                     {
                         return;
                     }
-                    Timer tmr = new Timer()
+                    Timer tmr = new Timer
                     {
                         AutoReset = false,
                         Interval = ts.TotalMilliseconds,
                         Enabled = true
                     };
-                    tmr.Elapsed += async (object send, ElapsedEventArgs arg) =>
+                    tmr.Elapsed += async (send, arg) =>
                     {
                         try
                         {
@@ -141,7 +141,7 @@ namespace RoleX.Modules.Moderation
                 {
                     await ReplyAsync("", false, new EmbedBuilder
                     {
-                        Title = $"Seriously?? <a:clapjohn:785371886695612427>",
+                        Title = "Seriously?? <a:clapjohn:785371886695612427>",
                         Color = Color.Red,
                         ImageUrl = "https://imgur.com/RBC7KUt"
                     }.WithCurrentTimestamp());
@@ -162,7 +162,6 @@ namespace RoleX.Modules.Moderation
                 Description = "That user isn't valid",
                 Color = Color.Red
             }.WithCurrentTimestamp());
-            return;
         }
     }
 }

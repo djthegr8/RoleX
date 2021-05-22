@@ -13,14 +13,14 @@ namespace RoleX.Modules.Moderation
         [DiscordCommand("bans", commandHelp = "bans", description = "Shows the bans in the server")]
         public async Task RBans(params string[] _)
         {
-            var mbed = new EmbedBuilder()
+            var mbed = new EmbedBuilder
             {
                 Title = "List of bans in the server",
                 Color = Blurple
             }.WithCurrentTimestamp();
             var listwherenotnull = (await Context.Guild.GetBansAsync()).ToList();
             listwherenotnull.RemoveAll(k => k == null);
-            var efb = listwherenotnull.Select((r5, idx) => new EmbedFieldBuilder()
+            var efb = listwherenotnull.Select((r5, idx) => new EmbedFieldBuilder
             {
                 Name = r5.User.ToString() == "" ? "Probably deleted" : r5.User.ToString(),
                 Value = string.Join("", r5.Reason == null ? "None given" : r5.Reason.Take(2000))

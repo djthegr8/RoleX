@@ -71,11 +71,10 @@ namespace RoleX.Modules.Role_Editor
             await roleA.ModifyAsync(rl => rl.Permissions = EditPerm(roleA, gp.Item1, false));
             await ReplyAsync("", false, new EmbedBuilder
             {
-                Title = $"Permission removed From Role!",
+                Title = "Permission removed From Role!",
                 Description = $"Permission `{args[1]}` revoked from `{roleA.Name.ToUpper()}`",
                 Color = Blurple
             }.WithCurrentTimestamp());
-            return;
         }
     }
 }

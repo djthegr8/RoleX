@@ -1,6 +1,6 @@
-﻿using DiscordBotsList.Api;
+﻿using System.Threading.Tasks;
+using DiscordBotsList.Api;
 using DiscordBotsList.Api.Objects;
-using System.Threading.Tasks;
 
 namespace RoleX.Modules.Services
 {

@@ -36,7 +36,7 @@ namespace RoleX.Modules.General
                 }
                 if (userAccount == null)
                 {
-                    EmbedBuilder error = new EmbedBuilder()
+                    EmbedBuilder error = new EmbedBuilder
                     {
                         Title = "That user is invalid ¯\\_(ツ)_/¯",
                         Description = "Please provide a valid user",
@@ -87,18 +87,18 @@ namespace RoleX.Modules.General
                               $"Creation Date: {userAccount.CreatedAt.UtcDateTime:D}\n";
             stats += userGuildAccount != null ? $"Joined At: {userGuildAccount.JoinedAt:D}" : "";
             stats += $"\nBanned: **{await Context.Guild.GetBanAsync(userAccount) != null}**";
-            EmbedBuilder whois = new EmbedBuilder()
+            EmbedBuilder whois = new EmbedBuilder
             {
-                Author = new EmbedAuthorBuilder()
+                Author = new EmbedAuthorBuilder
                 {
-                    Name = userAccount.ToString() + (Program.Client.GetUser(userAccount.Id) != null ? (" (" + Program.Client.GetUser(userAccount.Id).Status + ")") : ""),
+                    Name = userAccount + (Program.Client.GetUser(userAccount.Id) != null ? (" (" + Program.Client.GetUser(userAccount.Id).Status + ")") : ""),
                     IconUrl = userAccount.GetAvatarUrl()
                 },
                 Color = Blurple,
                 Description = "**Stats**\n" + stats,
-                Fields = userGuildAccount == null ? new List<EmbedFieldBuilder>() : new List<EmbedFieldBuilder>()
+                Fields = userGuildAccount == null ? new List<EmbedFieldBuilder>() : new List<EmbedFieldBuilder>
                 {
-                    new EmbedFieldBuilder()
+                    new EmbedFieldBuilder
                     {
                         Name="Roles",
                         Value = roles

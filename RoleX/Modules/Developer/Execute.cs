@@ -1,13 +1,10 @@
 ﻿using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Discord;
-using Discord.Commands;
 using Discord.Webhook;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
-using MoreLinq;
 using RoleX.Modules.Services;
 
 namespace RoleX.Modules.Developer
@@ -33,7 +30,7 @@ namespace RoleX.Modules.Developer
                 }
                 catch (CompilationErrorException cee)
                 {
-                    await ReplyAsync("", false, new EmbedBuilder()
+                    await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "'Twas an error",
                         Description = cee.Message,

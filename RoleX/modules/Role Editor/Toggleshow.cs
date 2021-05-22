@@ -67,7 +67,7 @@ namespace RoleX.Modules.Role_Editor
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "Set.",
-                Description = $"The role {x.Name} will now {(x.IsHoisted == true ? "" : "not ")} be hoisted",
+                Description = $"The role {x.Name} will now {(x.IsHoisted ? "" : "not ")} be hoisted",
                 Color = Blurple
             }.WithCurrentTimestamp());
         }

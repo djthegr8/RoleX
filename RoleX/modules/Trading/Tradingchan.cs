@@ -34,7 +34,7 @@ namespace RoleX.Modules.Trading
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Trading Disabled!",
-                    Description = $"The trading channel has now been terminated.",
+                    Description = "The trading channel has now been terminated.",
                     Color = Blurple,
                     Footer = new EmbedFooterBuilder
                     {

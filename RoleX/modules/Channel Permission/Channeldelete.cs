@@ -70,14 +70,12 @@ namespace RoleX.Modules.Channel_Permission
                             Color = Blurple
                         }.WithCurrentTimestamp().Build());
                         Program.Client.ReactionAdded -= weird;
-                        return;
                     }
                 };
             Program.Client.ReactionAdded += weird;
             await Task.Delay(15000);
             if (isTick) await Context.Channel.SendMessageAsync("No response received!");
             Program.Client.ReactionAdded -= weird;
-            return;
         }
     }
 }

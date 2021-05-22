@@ -131,7 +131,7 @@ namespace RoleX.Modules.Role_Editor
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "What user and role!?",
-                        Description = $"We couldn't parse either!?",
+                        Description = "We couldn't parse either!?",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
                     return;
@@ -164,7 +164,7 @@ namespace RoleX.Modules.Role_Editor
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = $"Removed {role} from {uzi}!",
-                        Description = $"Role removal successful!",
+                        Description = "Role removal successful!",
                         Color = Blurple
                     }.WithCurrentTimestamp());
                 }
@@ -174,12 +174,11 @@ namespace RoleX.Modules.Role_Editor
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = $"Added {role} to {uzi}!",
-                        Description = $"Role addition successful!",
+                        Description = "Role addition successful!",
                         Color = Blurple
                     }.WithCurrentTimestamp());
                 }
-                return;
-            }
+        }
 
         }
     }

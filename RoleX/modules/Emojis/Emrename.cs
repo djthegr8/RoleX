@@ -31,7 +31,7 @@ namespace RoleX.Modules.Emojis
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Invalid emote name!",
-                    Description = $"The emote name must contain only letters, numbers, and underscores and has to be at least 2 and at max 32 characters in length.",
+                    Description = "The emote name must contain only letters, numbers, and underscores and has to be at least 2 and at max 32 characters in length.",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;

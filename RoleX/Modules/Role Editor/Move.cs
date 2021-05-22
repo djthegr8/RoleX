@@ -11,7 +11,7 @@ namespace RoleX.Modules.Role_Editor
     public class Move : CommandModuleBase
     {
         [Alt("moverole")]
-        [RequiredUserPermissions(new[] { GuildPermission.ManageRoles, GuildPermission.ManageGuild})]
+        [RequiredUserPermissions(GuildPermission.ManageRoles, GuildPermission.ManageGuild)]
         [DiscordCommand("move", commandHelp = "move <@role-to-be-moved> <@role-to-be-placed-below>", description = "Moves a role below the given second role", example = "move @Moderator @Admin")]
         public async Task CreateRole(params string[] args)
         {
@@ -54,7 +54,7 @@ namespace RoleX.Modules.Role_Editor
                 Description = $"{rlD.Mention} was placed below {rlA.Mention}!",
                 Color = Blurple
             }.WithCurrentTimestamp());
-            await Context.Guild.ReorderRolesAsync(new List<ReorderRoleProperties>()
+            await Context.Guild.ReorderRolesAsync(new List<ReorderRoleProperties>
             {
                 new(rlD.Id, rlA.Position)
             });

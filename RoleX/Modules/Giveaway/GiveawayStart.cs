@@ -1,12 +1,11 @@
 ﻿
-using Discord;
-using RoleX.Modules.Services;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Discord;
 using MoreLinq;
+using RoleX.Modules.Services;
 
 namespace RoleX.Modules.Giveaway
 {
@@ -30,7 +29,7 @@ namespace RoleX.Modules.Giveaway
             switch (args.Length)
             {
                 case 0 or 1 or 2 or 3:
-                    await ReplyAsync("", false, new EmbedBuilder()
+                    await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "Invalid Arguments!",
                         Description =
@@ -45,7 +44,7 @@ namespace RoleX.Modules.Giveaway
             var numWinners = args[1].Replace("w", "");
             if (!uint.TryParse(numWinners, out uint _))
             {
-                await ReplyAsync("", false, new EmbedBuilder()
+                await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Invalid Arguments!",
                     Description =
@@ -59,7 +58,7 @@ namespace RoleX.Modules.Giveaway
             Console.WriteLine("Starting giveaway");
             var t = int.Parse(time.Remove(time.Length - 1));
             var subsetSize = int.Parse(numWinners);
-            var commonFooter = new EmbedFooterBuilder()
+            var commonFooter = new EmbedFooterBuilder
             {
                 Text = $"Winners: {subsetSize}"
             };

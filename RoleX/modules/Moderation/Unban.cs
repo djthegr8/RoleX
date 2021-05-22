@@ -39,7 +39,7 @@ namespace RoleX.Modules.Moderation
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = $"{bu.Username}#{bu.Discriminator} unbanned succesfully!",
-                Description = $"Unban successful! Welcome them back!",
+                Description = "Unban successful! Welcome them back!",
                 Color = Blurple
             }.WithCurrentTimestamp());
         }

@@ -34,7 +34,6 @@ namespace RoleX.Modules.Developer
                     {
                         await ReplyAsync($"Couldn't write in {server.Name}");
                     }
-                    finally { }
                 }
             }
         }

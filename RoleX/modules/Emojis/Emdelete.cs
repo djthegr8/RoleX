@@ -36,7 +36,7 @@ namespace RoleX.Modules.Emojis
             await ReplyAsync(embed: new EmbedBuilder
             {
                 Title = "Emoji Deleted Successfully!",
-                Description = $"The emoji was deleted",
+                Description = "The emoji was deleted",
                 Color = Blurple
             }.WithCurrentTimestamp());
         }

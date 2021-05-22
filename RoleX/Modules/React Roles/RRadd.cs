@@ -1,7 +1,8 @@
-﻿using Discord;
-using RoleX.Modules.Services;
-using System;
+﻿using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Discord;
+using RoleX.Modules.Services;
 
 namespace RoleX.Modules.React_Roles
 {
@@ -28,7 +29,7 @@ namespace RoleX.Modules.React_Roles
                     }.WithCurrentTimestamp());
                     return;
             }
-            var reg = new System.Text.RegularExpressions.Regex(@"^https:\/\/discord.com\/channels\/[0-9]{17,18}\/[0-9]{17,18}\/[0-9]{17,18}$");
+            var reg = new Regex(@"^https:\/\/discord.com\/channels\/[0-9]{17,18}\/[0-9]{17,18}\/[0-9]{17,18}$");
             if (!reg.IsMatch(args[0]))
             {
                 await ReplyAsync("", false, new EmbedBuilder

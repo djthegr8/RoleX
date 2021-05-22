@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Threading.Tasks;
 using Discord;
 using RoleX.Modules.Services;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Discord.WebSocket;
-using MongoDB.Driver;
 
 namespace RoleX.Modules.Channel_Permission
 {
@@ -45,7 +39,7 @@ namespace RoleX.Modules.Channel_Permission
                         channel.CategoryId = chan2.CategoryId;
                     });
                     // Console.WriteLine(string.Join('\n', Context.Guild.Channels.OrderBy(k => k.Position).Select(k => k.Name)));
-                    await ReplyAsync("", false, new EmbedBuilder()
+                    await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "Successfully moved channel!",
                         Description = $"Channel <#{chan.Id}> was successfully moved below <#{chan2.Id}>",

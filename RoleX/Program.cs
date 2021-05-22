@@ -10,7 +10,6 @@ using Discord;
 using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
-using Newtonsoft.Json;
 using RoleX.Modules.Developer;
 using RoleX.Modules.Services;
 
@@ -389,7 +388,7 @@ namespace RoleX
                 {
                     await Client.GetUser(devid)
                         .SendMessageAsync(
-                            $"I left {arg.Name}, a Guild of {arg.MemberCount} members, current count is at {Client.Guilds.Count}", false, new EmbedBuilder()
+                            $"I left {arg.Name}, a Guild of {arg.MemberCount} members, current count is at {Client.Guilds.Count}", false, new EmbedBuilder
                             {
                                 Title = "We left this dump",
                                 Description =await arg.GetInfoString(),
@@ -453,7 +452,7 @@ namespace RoleX
                 {
                     var user =  Client.GetUser(devid);
                         await user.SendMessageAsync(
-                        $"I joined {arg.Name}, a Guild of {arg.MemberCount} members, making the count at {Client.Guilds.Count}.", false, new EmbedBuilder(){Title="Server Info", Url = arg.IconUrl, Description = text}.WithCurrentTimestamp().Build());
+                        $"I joined {arg.Name}, a Guild of {arg.MemberCount} members, making the count at {Client.Guilds.Count}.", false, new EmbedBuilder {Title="Server Info", Url = arg.IconUrl, Description = text}.WithCurrentTimestamp().Build());
 
                         try
                         {
@@ -576,11 +575,11 @@ namespace RoleX
                         break;
                     case CommandStatus.ServerNotPremium:
                         await msg.Channel.SendMessageAsync("", false,
-                            new EmbedBuilder()
+                            new EmbedBuilder
                             {
                                 Title = "<:rolex:782837804208095273> Your server isn't Premium <:rolex:782837804208095273>",
                                 Description = "Support us on [Patreon](https://patreon.com/rolexbot) to make this server a Premium server!",
-                                Url = $"https://patreon.com/rolexbot",
+                                Url = "https://patreon.com/rolexbot",
                                 Color = Color.Red
                             }.WithCurrentTimestamp().Build());
                         break;

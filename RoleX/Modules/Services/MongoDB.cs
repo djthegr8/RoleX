@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using MongoDB.Driver;
 using MongoDB.Bson;
+using MongoDB.Driver;
 using static RoleX.Modules.Services.SqliteClass;
 namespace RoleX.Modules.Services
 {
@@ -39,7 +37,7 @@ namespace RoleX.Modules.Services
         public static MongoClient Client = new("mongodb+srv://DMCG:dmcg1234@rolexdb.v0kzl.mongodb.net/Guilds?retryWrites=true&w=majority");
         public static async Task RemindersToMongo()
         {
-            var rems = await GetReminders($"SELECT * from reminders");
+            var rems = await GetReminders("SELECT * from reminders");
             var userCollection = Client.GetDatabase("Guilds").GetCollection<BsonDocument>("User");
             foreach(var UserID in rems.ToHashSet().Select(k => k.UserId))
             {

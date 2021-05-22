@@ -92,7 +92,7 @@ namespace RoleX.Modules.Moderation
                         await ReplyAsync("", false, new EmbedBuilder
                         {
                             Title = "Oops, that person is above me :(",
-                            Description = $"I don't have sufficient permissions to hardmute them",
+                            Description = "I don't have sufficient permissions to hardmute them",
                             Color = Color.Red
                         }.WithCurrentTimestamp());
                         return;
@@ -123,20 +123,19 @@ namespace RoleX.Modules.Moderation
                     {
                         return;
                     }
-                    Timer tmr = new Timer()
+                    Timer tmr = new Timer
                     {
                         AutoReset = false,
                         Interval = ts.TotalMilliseconds
                     };
                     Console.WriteLine(ts);
-                    tmr.Elapsed += async (object send, ElapsedEventArgs arg) =>
+                    tmr.Elapsed += async (send, arg) =>
                     {
                         try
                         {
                             await gUser.RemoveRoleAsync(Context.Guild.GetRole(await MutedRoleIdGetter(Context.Guild.Id)));
                             await gUser.AddRolesAsync(formerroles);
                             await gUser.SendMessageAsync($"**You have been unmuted on {guildName}**");
-                            return;
                         }
                         catch
                         {
@@ -155,11 +154,10 @@ namespace RoleX.Modules.Moderation
                 {
                     await ReplyAsync("", false, new EmbedBuilder
                     {
-                        Title = $"Seriously? <a:clapjohn:785371886695612427>",
+                        Title = "Seriously? <a:clapjohn:785371886695612427>",
                         Color = Color.Red,
                         ImageUrl = "https://imgur.com/RBC7KUt"
                     }.WithCurrentTimestamp());
-                    return;
                 }
                 else
                 {
@@ -169,7 +167,6 @@ namespace RoleX.Modules.Moderation
                         Description = "That person is above you!?",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
-                    return;
                 }
             }
             else
@@ -180,7 +177,6 @@ namespace RoleX.Modules.Moderation
                     Description = "That user isn't valid ",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
-                return;
             }
         }
     }

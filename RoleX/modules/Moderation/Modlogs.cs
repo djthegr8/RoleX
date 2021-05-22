@@ -1,11 +1,11 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Discord;
 using Discord.Rest;
 using RoleX.Modules.Services;
-using System.Collections.Generic;
-using System.Linq;
 using RoleX.Utilities;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using static RoleX.Modules.Services.SqliteClass;
 
 namespace RoleX.Modules.Moderation
@@ -77,7 +77,8 @@ namespace RoleX.Modules.Moderation
             var eb = new List<EmbedFieldBuilder>();
             foreach (Infraction i in await GetUserModlogs(Context.Guild.Id, user.Id))
             {
-                eb.Add(new EmbedFieldBuilder() {
+                eb.Add(new EmbedFieldBuilder
+                {
                     Name=Infraction.GetPunishment(i.Punishment),
                     Value=$"**Mod:** <@{i.ModeratorId}>\n**Date:** {i.Time.ToUniversalTime().ToShortDateString()}\n**Time: **{(i.Time.ToUniversalTime().TimeOfDay.Hours <= 12 ? i.Time.ToUniversalTime().TimeOfDay.Hours : i.Time.ToUniversalTime().TimeOfDay.Hours - 12)}:{i.Time.ToUniversalTime().TimeOfDay.Minutes} {(i.Time.ToUniversalTime().TimeOfDay.Hours < 12 ? "AM" : "PM")}\n**Reason:** {i.Reason}",
                     IsInline=true });
@@ -87,7 +88,7 @@ namespace RoleX.Modules.Moderation
                 emb.Description = "They've been a good user! No modlogs :)";
             }
             var pm = new PaginatedMessage(PaginatedAppearanceOptions.Default, Context.Message.Channel, new PaginatedMessage.MessagePage { Description = "Error!" });
-            pm.SetPages($"Here's a list of the user's modlogs", eb, 7);
+            pm.SetPages("Here's a list of the user's modlogs", eb, 7);
             await pm.Resend();
         }
     }

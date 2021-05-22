@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using StackExchange.Redis;
+
 namespace RoleX.Modules.Services
 {
     /// <summary>
@@ -26,9 +27,9 @@ namespace RoleX.Modules.Services
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Starting Redis Failed. Try to start...");
                 Console.ForegroundColor = ConsoleColor.Gray;
-                System.Diagnostics.Process process = new System.Diagnostics.Process();
-                System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-                startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                Process process = new Process();
+                ProcessStartInfo startInfo = new ProcessStartInfo();
+                startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 startInfo.FileName = "cmd.exe";
                 startInfo.Arguments = "/C wsl.exe sudo service redis-server restart";
                 process.StartInfo = startInfo;

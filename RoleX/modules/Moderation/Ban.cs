@@ -12,7 +12,7 @@ namespace RoleX.Modules.Moderation
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Ban : CommandModuleBase
     {
-        [RequiredUserPermissions(new[] {GuildPermission.BanMembers })]
+        [RequiredUserPermissions(GuildPermission.BanMembers)]
         [DiscordCommand("ban", commandHelp = "ban <@user> <reason>", example = "ban @Scammer Scamming me friend", description = "Bans the specified user")]
         public async Task Banner(params string[] args)
         {
@@ -36,7 +36,7 @@ namespace RoleX.Modules.Moderation
                         await ReplyAsync("", false, new EmbedBuilder
                         {
                             Title = "Oops, that person is above me :(",
-                            Description = $"I don't have sufficient permissions to ban them",
+                            Description = "I don't have sufficient permissions to ban them",
                             Color = Color.Red
                         }.WithCurrentTimestamp());
                         return;
@@ -58,7 +58,7 @@ namespace RoleX.Modules.Moderation
                     }
                     catch { }
                     await gUser.BanAsync(7, args.Length > 1 ? string.Join(' ', args.Skip(1)) : $"Requested by {Context.User.Username}#{Context.User.Discriminator}");
-                    await AddToModlogs(Context.Guild.Id, gUser.Id, Context.User.Id, Punishment.Ban, DateTime.Now, args.Length > 1 ? string.Join(' ', args.Skip(1)) : $"");
+                    await AddToModlogs(Context.Guild.Id, gUser.Id, Context.User.Id, Punishment.Ban, DateTime.Now, args.Length > 1 ? string.Join(' ', args.Skip(1)) : "");
                     return;
                 }
 
@@ -66,7 +66,7 @@ namespace RoleX.Modules.Moderation
                 {
                     await ReplyAsync("", false, new EmbedBuilder
                     {
-                        Title = $"Seriously??",
+                        Title = "Seriously??",
                         Color = Color.Red,
                         ImageUrl = "https://imgur.com/HaDzAbG"
                     }.WithCurrentTimestamp());
@@ -122,7 +122,6 @@ namespace RoleX.Modules.Moderation
                 Description = "That user isn't valid ",
                 Color = Color.Red
             }.WithCurrentTimestamp());
-            return;
         }
     }
 }

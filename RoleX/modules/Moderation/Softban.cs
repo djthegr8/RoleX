@@ -56,7 +56,7 @@ namespace RoleX.Modules.Moderation
                         await ReplyAsync("", false, new EmbedBuilder
                         {
                             Title = "Oops, that person is above me :(",
-                            Description = $"I don't have perms to ban them :/",
+                            Description = "I don't have perms to ban them :/",
                             Color = Color.Red
                         }.WithCurrentTimestamp());
                         return;
@@ -88,7 +88,7 @@ namespace RoleX.Modules.Moderation
                 {
                     await ReplyAsync("", false, new EmbedBuilder
                     {
-                        Title = $"Seriously??",
+                        Title = "Seriously??",
                         Color = Color.Red,
                         ImageUrl = "https://imgur.com/HaDzAbG"
                     }.WithCurrentTimestamp());
@@ -136,7 +136,7 @@ namespace RoleX.Modules.Moderation
                 catch { }
                 await Context.Guild.AddBanAsync(aa, args.Length == 1 ? 7 : (ulong.TryParse(args[1], out ulong ak47) ? Convert.ToInt32(ak47) : 7));
                 await Context.Guild.RemoveBanAsync(aa);
-                await AddToModlogs(Context.Guild.Id, aa.Id, Context.User.Id, Punishment.Softban, DateTime.Now, "");
+                await AddToModlogs(Context.Guild.Id, aa.Id, Context.User.Id, Punishment.Softban, DateTime.Now);
                 return;
             }
             await ReplyAsync("", false, new EmbedBuilder
@@ -145,7 +145,6 @@ namespace RoleX.Modules.Moderation
                 Description = "That user isn't valid ",
                 Color = Color.Red
             }.WithCurrentTimestamp());
-            return;
         }
     }
 }

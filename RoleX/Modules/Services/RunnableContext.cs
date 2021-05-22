@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing.Imaging;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -24,7 +23,7 @@ namespace RoleX.Modules.Services
                 Color = Color,
                 Description = Description,
                 Footer = FooterText == null
-                    ? new EmbedFooterBuilder()
+                    ? new EmbedFooterBuilder
                     {
                         Text = FooterText,
                         IconUrl = FooterIconUrl

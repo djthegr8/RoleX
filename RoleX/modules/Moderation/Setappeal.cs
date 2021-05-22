@@ -9,7 +9,7 @@ namespace RoleX.Modules.Moderation
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Setappeal : CommandModuleBase
     {
-        [RequiredUserPermissions(new[] {GuildPermission.ManageGuild })]
+        [RequiredUserPermissions(GuildPermission.ManageGuild)]
         [DiscordCommand("setappeal", commandHelp = "setappeal <link>", example = "setappeal https://gforms.com/bah", description = "Sets the appeal link sent to punished members")]
         public async Task R_Setappeal(params string[] args)
         {

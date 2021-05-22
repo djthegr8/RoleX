@@ -1,9 +1,8 @@
-﻿using Discord;
-using MoreLinq;
-using RoleX.Modules.Services;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using Discord;
 using Discord.WebSocket;
+using RoleX.Modules.Services;
 
 namespace RoleX.Modules.Developer
 {
@@ -23,7 +22,7 @@ namespace RoleX.Modules.Developer
                     return;
                 }
 
-                await ReplyAsync("", false, new EmbedBuilder() {Title = guild.Name, Description = await guild.GetInfoString(), Color = Blurple, ThumbnailUrl = guild.IconUrl});
+                await ReplyAsync("", false, new EmbedBuilder {Title = guild.Name, Description = await guild.GetInfoString(), Color = Blurple, ThumbnailUrl = guild.IconUrl});
             }
         }
     }

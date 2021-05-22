@@ -8,7 +8,7 @@ namespace RoleX.Modules.Moderation
     [DiscordCommandClass("Moderation", "Basic Moderation for yer server!")]
     public class Mutedrole : CommandModuleBase
     {
-        [RequiredUserPermissions(new[] { GuildPermission.ManageRoles, GuildPermission.ManageGuild})]
+        [RequiredUserPermissions(GuildPermission.ManageRoles, GuildPermission.ManageGuild)]
         [DiscordCommand("mutedrole", commandHelp = "mutedrole <create/role>", description = "Sets the roles for mutes", example = "mutedrole create`\n`mutedrole @Muted")]
         public async Task SMutedRole(params string[] args)
         {

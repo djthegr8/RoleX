@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -32,7 +33,7 @@ namespace RoleX.Modules.Trading
             Regex regex = new Regex("[a-gi-zA-GI-Z]");
                 
             args[0] = regex.Replace(args[0], "");
-            if (!ushort.TryParse(args[0].Replace("h", "", System.StringComparison.OrdinalIgnoreCase), out ushort t) || t > 180)
+            if (!ushort.TryParse(args[0].Replace("h", "", StringComparison.OrdinalIgnoreCase), out ushort t) || t > 180)
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
@@ -42,7 +43,7 @@ namespace RoleX.Modules.Trading
                 }.WithCurrentTimestamp());
                 return;
             }
-            var hH = System.Convert.ToUInt64(args[0].Any(x => x == 'h' || x == 'H')) * 60 + System.Convert.ToUInt64(!args[0].Any(x => x == 'h' || x == 'H'));
+            var hH = Convert.ToUInt64(args[0].Any(x => x == 'h' || x == 'H')) * 60 + Convert.ToUInt64(!args[0].Any(x => x == 'h' || x == 'H'));
             await SlowdownTimeAdder(Context.Guild.Id, ulong.Parse(args[0]) * hH);
             await ReplyAsync("", false, new EmbedBuilder
             {

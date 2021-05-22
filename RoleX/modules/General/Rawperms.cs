@@ -26,7 +26,7 @@ namespace RoleX.Modules.General
                 Title = "Decoding Permission values",
                 ThumbnailUrl = Context.Client.CurrentUser.GetAvatarUrl(),
                 Description = $"Below is what {raw} means in Discord API language ~",
-                Fields = {new EmbedFieldBuilder()
+                Fields = {new EmbedFieldBuilder
                 {
                     Name = "Permissions",
                     Value = $"```{x}```"

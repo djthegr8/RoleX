@@ -10,7 +10,7 @@ namespace RoleX.Modules.Channel_Permission
     [DiscordCommandClass("Channel Editor", "Edit Channel-wise perms of a Role using these commands!")]
     public class Overwrites : CommandModuleBase
     {
-        [RequiredUserPermissions(new[] { GuildPermission.ManageChannels })]
+        [RequiredUserPermissions(GuildPermission.ManageChannels)]
         [Alt("ow")]
         [DiscordCommand("overwrites", commandHelp = "overwrites <#channel>", description = "Shows the Channel-wise overwrites", example = "overwrites #channel")]
         public async Task Os(params string[] args)

@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using Discord;
-using RoleX.Modules.Services;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Discord;
+using RoleX.Modules.Services;
 
 namespace RoleX.Modules.Channel_Permission
 {

@@ -26,7 +26,7 @@ namespace RoleX.Modules.General
                 Title = "Setting Up RoleX",
                 ThumbnailUrl = Context.Client == null ? "" : Context.Client.CurrentUser.GetAvatarUrl(),
                 Description = (await SqliteClass.PremiumOrNot(Context.Guild.Id)) ? "Whoa you're premium 🤩" : "RoleX is a bot that requires various permissions to do various tasks.",
-                Fields = {new EmbedFieldBuilder()
+                Fields = {new EmbedFieldBuilder
                 {
                     Name = "Permissions",
                     Value = $"```{x}```"

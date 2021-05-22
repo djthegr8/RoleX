@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
+using Discord.Rest;
 using RoleX.Modules.Services;
 
 namespace RoleX.Modules.Webhooks
@@ -17,7 +18,7 @@ namespace RoleX.Modules.Webhooks
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "No webhook name/id given",
-                    Description = $"There were no arguments given",
+                    Description = "There were no arguments given",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
@@ -55,11 +56,10 @@ namespace RoleX.Modules.Webhooks
             }.WithCurrentTimestamp();
             for (int i = 0; i < iGTSW.Count; i++)
             {
-                Discord.Rest.RestWebhook rw = iGTSW[i];
+                RestWebhook rw = iGTSW[i];
                 emb.AddField($"{i + 1}) " + rw.Name, $"Channel: <#{rw.ChannelId}>\nCreated By: {rw.Creator.Username}#{rw.Creator.Discriminator}\nAvatar: [link]({(string.IsNullOrEmpty(rw.GetAvatarUrl()) ? "https://discord.com/assets/6debd47ed13483642cf09e832ed0bc1b.png" : rw.GetAvatarUrl())})");
             }
             await ReplyAsync("", false, emb);
-            return;
         }
     }
 }

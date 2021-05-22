@@ -68,14 +68,13 @@ namespace RoleX.Modules.Role_Editor
                 }.WithCurrentTimestamp());
                 return;
             }
-            await roleA.ModifyAsync(rl => rl.Permissions = EditPerm(roleA, gp.Item1, true));
+            await roleA.ModifyAsync(rl => rl.Permissions = EditPerm(roleA, gp.Item1));
             await ReplyAsync("", false, new EmbedBuilder
             {
-                Title = $"Permission added to Role!",
+                Title = "Permission added to Role!",
                 Description = $"`{roleA.Name}` now has the permission `{args[1]}`",
                 Color = Blurple
             }.WithCurrentTimestamp());
-            return;
         }
     }
 }

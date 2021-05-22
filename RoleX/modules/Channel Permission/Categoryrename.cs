@@ -42,7 +42,6 @@ namespace RoleX.Modules.Channel_Permission
                 Description = $"Your category was renamed to `{string.Join(' ', args.Skip(1))}`",
                 Color = Blurple
             }.WithCurrentTimestamp());
-            return;
         }
     }
 }

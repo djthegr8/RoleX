@@ -39,7 +39,7 @@ namespace RoleX.Modules.Moderation
                         await ReplyAsync("", false, new EmbedBuilder
                         {
                             Title = "Oops, that person is above me",
-                            Description = $"I don't have perms to kick them ",
+                            Description = "I don't have perms to kick them ",
                             Color = Color.Red
                         }.WithCurrentTimestamp());
                         return;
@@ -61,7 +61,7 @@ namespace RoleX.Modules.Moderation
                     }
                     catch { }
                     await gUser.KickAsync(args.Length > 1 ? string.Join(' ', args.Skip(1)) : $"Requested by {Context.User.Username}#{Context.User.Discriminator}");
-                    await AddToModlogs(Context.Guild.Id, gUser.Id, Context.User.Id, Punishment.Kick, DateTime.Now, args.Length > 1 ? string.Join(' ', args.Skip(1)) : $"");
+                    await AddToModlogs(Context.Guild.Id, gUser.Id, Context.User.Id, Punishment.Kick, DateTime.Now, args.Length > 1 ? string.Join(' ', args.Skip(1)) : "");
                     return;
                 }
 
@@ -69,7 +69,7 @@ namespace RoleX.Modules.Moderation
                 {
                     await ReplyAsync("", false, new EmbedBuilder
                     {
-                        Title = $"Seriously??",
+                        Title = "Seriously??",
                         Color = Color.Red,
                         ImageUrl = "https://imgur.com/2tNqJwZ"
                     }.WithCurrentTimestamp());
@@ -90,7 +90,6 @@ namespace RoleX.Modules.Moderation
                 Description = "That user isn't valid ",
                 Color = Color.Red
             }.WithCurrentTimestamp());
-            return;
         }
     }
 }

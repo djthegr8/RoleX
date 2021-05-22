@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
@@ -135,7 +134,7 @@ namespace RoleX.Modules.Channel_Permission
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "That overwrite type is invalid",
-                        Description = $"For assigning the permission, use `y`, `yes`, `positive` or `true`.\nFor Inheriting use `i` or `inherit`\nAnd for revoking use `n`, `no`, `negative` or `false` as the last parameter for the command",
+                        Description = "For assigning the permission, use `y`, `yes`, `positive` or `true`.\nFor Inheriting use `i` or `inherit`\nAnd for revoking use `n`, `no`, `negative` or `false` as the last parameter for the command",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
                     return;
@@ -160,7 +159,6 @@ namespace RoleX.Modules.Channel_Permission
                 Color = Blurple
             }.AddField("Overwrite Details", $"For: {(roleOrNot ? srl.Mention : sus.Mention)}\nPermission: {prm}\nValue: {ovr}")
             .WithCurrentTimestamp());
-            return;
         }
     }
 }

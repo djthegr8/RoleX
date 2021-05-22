@@ -3,15 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using RoleX.Modules.Services;
-using static RoleX.Modules.Services.SqliteClass;
 
 namespace RoleX.Modules.General
 {
     [DiscordCommandClass("General", "General commands for all!")]
     public class _8ball : CommandModuleBase
     {
-        private static string[] Answers = new string[]
-        {
+        private static string[] Answers = {
             "It is certain.",
             "It is decidedly so.",
             "Without a doubt.",
@@ -40,7 +38,7 @@ namespace RoleX.Modules.General
             {
                 // Error
 
-                await Context.Channel.SendMessageAsync("", false, new EmbedBuilder()
+                await Context.Channel.SendMessageAsync("", false, new EmbedBuilder
                 {
                     Title = "Sorry what?",
                     Description = "The magic 8 ball knows everything except what you are thinking <:thinkcat:780422740091338772>",
@@ -60,9 +58,9 @@ namespace RoleX.Modules.General
 
             var av = Context.User.GetAvatarUrl() ?? Context.User.GetDefaultAvatarUrl();
 
-            await Context.Channel.SendMessageAsync("", false, new EmbedBuilder()
+            await Context.Channel.SendMessageAsync("", false, new EmbedBuilder
             {
-                Author = new EmbedAuthorBuilder()
+                Author = new EmbedAuthorBuilder
                 {
                     IconUrl = av,
                     Name = Context.User.Username,

@@ -10,7 +10,7 @@ namespace RoleX.Modules.Role_Editor
     public class Delete : CommandModuleBase
     {
         [Alt("del")]
-        [RequiredUserPermissions(new[] { GuildPermission.ManageGuild, GuildPermission.ManageRoles})]
+        [RequiredUserPermissions(GuildPermission.ManageGuild, GuildPermission.ManageRoles)]
         [DiscordCommand("delete", commandHelp = "delete <@role/id>", description = "Deletes the mentioned role", example = "delete @DumbRole")]
         public async Task DelRole(params string[] args)
         {
@@ -61,7 +61,7 @@ namespace RoleX.Modules.Role_Editor
             await DeleteRole.DeleteAsync();
             await ReplyAsync("", false, new EmbedBuilder
             {
-                Title = $"Role deleted successfully!",
+                Title = "Role deleted successfully!",
                 Description = $"The role `{nm}` was successfully deleted",
                 Color = Blurple
             }.WithCurrentTimestamp());

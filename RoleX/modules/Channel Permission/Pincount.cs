@@ -17,7 +17,7 @@ namespace RoleX.Modules.Channel_Permission
         {
             if (args.Length == 0)
             {
-                args = new string[]{ Context.Channel.Id.ToString()};
+                args = new[]{ Context.Channel.Id.ToString()};
             }
             if (GetChannel(args[0]) == null)
             {
@@ -35,7 +35,7 @@ namespace RoleX.Modules.Channel_Permission
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Big Brain Alert",
-                    Description = $"Can you pin messages in a Voice Channel? *Can* you?",
+                    Description = "Can you pin messages in a Voice Channel? *Can* you?",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
@@ -63,7 +63,6 @@ namespace RoleX.Modules.Channel_Permission
                 Description = pins.Count > 1 ? $"Out of these, the top 3 are ~ \n{string.Join('\n', loa.Select((k, l) => $"{( l == 0 ? "🥇" : (l == 1 ? "🥈" : "🥉"))} **{k.Item1}** with {k.Item2} pins"))}" : "No pins eh",
                 Color = Blurple
             }.WithCurrentTimestamp());
-            return;
         }
     }
 }
