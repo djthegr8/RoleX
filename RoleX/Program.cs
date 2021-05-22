@@ -16,7 +16,7 @@ using RoleX.Modules.Services;
 
 namespace RoleX
 {
-    internal class Program
+    public class Program
     {
         private static readonly IEmote Cooldown = new Emoji("⏳");
         private static readonly string fpath = string.Join(Path.DirectorySeparatorChar, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location).Split(Path.DirectorySeparatorChar).SkipLast(1)) + Path.DirectorySeparatorChar + "Data" + Path.DirectorySeparatorChar + "token.txt";
