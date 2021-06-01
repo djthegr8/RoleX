@@ -34,7 +34,7 @@ namespace RoleX.Modules.Services
     } */
     public class MongoDB
     {
-        public static MongoClient Client = new("mongodb+srv://DMCG:dmcg1234@rolexdb.v0kzl.mongodb.net/Guilds?retryWrites=true&w=majority");
+        public static MongoClient Client = new("yeah this link doesnt work");
         public static async Task RemindersToMongo()
         {
             var rems = await GetReminders("SELECT * from reminders");
