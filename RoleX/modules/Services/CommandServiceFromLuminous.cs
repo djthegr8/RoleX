@@ -832,7 +832,7 @@ namespace RoleX.Modules.Services
             catch { return null; }
 
         }
-        protected SocketGuildChannel GetChannel(string name)
+        public SocketGuildChannel GetChannel(string name)
         {
             var regex = new Regex(@"(\d{18}|\d{17})");
             if (regex.IsMatch(name))
@@ -853,7 +853,7 @@ namespace RoleX.Modules.Services
 
 
         }
-        private SocketCategoryChannel GetCategory(string name)
+        public SocketCategoryChannel GetCategory(string name)
         {
             var regex = new Regex(@"(\d{18}|\d{17})");
             if (!regex.IsMatch(name))
@@ -863,7 +863,7 @@ namespace RoleX.Modules.Services
             var u = Context.Guild.GetCategoryChannel(ulong.Parse(regex.Match(name).Groups[1].Value));
             return u;
         }
-        protected async Task<SocketGuildUser> GetUser(string user)
+        public async Task<SocketGuildUser> GetUser(string user)
         {
             if (user.Length < 3) return null;
             await Context.Guild.DownloadUsersAsync();
@@ -887,13 +887,13 @@ namespace RoleX.Modules.Services
             return Context.Guild.Users.Any(x => x.ToString().ToLower().StartsWith(user)) ? Context.Guild.Users.First(x => x.ToString().ToLower().StartsWith(user)) : Context.Guild.Users.FirstOrDefault(x => x.Nickname != null && x.Nickname.ToLower().StartsWith(user));
         }
 
-        protected async Task<IUser> GetBannedUser(string uname)
+        public async Task<IUser> GetBannedUser(string uname)
         {
             var alr = await Context.Guild.GetBansAsync();
             var regex = new Regex(@"(\d{18}|\d{17})");
             return regex.IsMatch(uname) ? alr.FirstOrDefault(aa => aa.User.Id == ulong.Parse(uname))?.User : alr.FirstOrDefault(x => x.User.Username.ToLower().Contains(uname.ToLower()))?.User;
         }
-        protected static OverwritePermissions GetOP(ChannelPermission cp, PermValue pv, OverwritePermissions eop)
+        public static OverwritePermissions GetOP(ChannelPermission cp, PermValue pv, OverwritePermissions eop)
         {
             var x = cp switch
             {
@@ -923,7 +923,7 @@ namespace RoleX.Modules.Services
             return x;
         }
 
-        protected static GuildPermissions EditPerm(SocketRole roleA, GuildPermission perm, bool add = true)
+        public static GuildPermissions EditPerm(SocketRole roleA, GuildPermission perm, bool add = true)
         {
             Console.WriteLine(roleA.Name);
             Console.WriteLine(perm);
@@ -1019,17 +1019,17 @@ namespace RoleX.Modules.Services
             };
             return gp;
         }
-        protected static Tuple<GuildPermission, bool> GetPermission(string perm)
+        public static Tuple<GuildPermission, bool> GetPermission(string perm)
         {
             perm = perm.Replace("admin", "administrator");
             return Enum.TryParse(perm, true, out GuildPermission Gp) ? new Tuple<GuildPermission, bool>(Gp, true) : new Tuple<GuildPermission, bool>(GuildPermission.AddReactions, false);
         }
 
-        protected static Tuple<ChannelPermission, bool> GetChannelPermission(string perm)
+        public static Tuple<ChannelPermission, bool> GetChannelPermission(string perm)
         {
             return Enum.TryParse(perm, true, out ChannelPermission Gp) ? new Tuple<ChannelPermission, bool>(Gp, true) : new Tuple<ChannelPermission, bool>(ChannelPermission.AddReactions, false);
         }
-        protected SocketRole GetRole(string role)
+        public SocketRole GetRole(string role)
         {
             if (role.Length < 3) return null;
             var regex = new Regex(@"(\d{18}|\d{17})");
@@ -1051,7 +1051,7 @@ namespace RoleX.Modules.Services
         /// <param name="embed">A <c>Discord.EmbedBuilder</c> for editing and making it work</param>
         /// <param name="options">Just a useless param to me ig</param>
         /// <returns></returns>
-        protected async Task<IUserMessage> ReplyAsync(string message = null, bool isTTS = false, EmbedBuilder embed = null, RequestOptions options = null)
+        public async Task<IUserMessage> ReplyAsync(string message = null, bool isTTS = false, EmbedBuilder embed = null, RequestOptions options = null)
         {
             var msgcontent = Context.Message.Content;
             if (!msgcontent.Split(' ')[0].Contains("alias"))
