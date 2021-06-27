@@ -12,6 +12,9 @@
     <Compile Remove="modules\Legacy\**" />
     <EmbeddedResource Remove="modules\Legacy\**" />
     <None Remove="modules\Legacy\**" />
+    <Compile Remove="bin\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <None Remove="bin\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,10 +23,6 @@
 
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="bin\Debug\netcoreapp3.1\rolex.db" />
   </ItemGroup>
 
   <ItemGroup>

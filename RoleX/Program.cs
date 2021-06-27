@@ -635,7 +635,7 @@ namespace RoleX
                 }
                 catch { }
                 if (msg.Content.Length <= prefu.Length) return;
-                if (msg.Content.Substring(0, prefu.Length) == prefu)
+                if (msg.Content[..prefu.Length] == prefu)
                 {
                     if (!context.User.IsBot)
                     {

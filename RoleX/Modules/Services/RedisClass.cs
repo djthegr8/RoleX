@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using StackExchange.Redis;
 
@@ -30,8 +31,17 @@ namespace RoleX.Modules.Services
                 Process process = new Process();
                 ProcessStartInfo startInfo = new ProcessStartInfo();
                 startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                startInfo.FileName = "bash.exe";
-                startInfo.Arguments = "sudo service redis-server restart";
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    startInfo.FileName = "bash.exe";
+                    startInfo.Arguments = "sudo service redis-server restart";
+                }
+                else
+                {
+                    startInfo.FileName = "cmd.exe";
+                    startInfo.Arguments = "/C wsl.exe sudo service redis-server restart";
+                }
+                
                 process.StartInfo = startInfo;
                 process.Start();
                 muxer = ConnectionMultiplexer.Connect("127.0.0.1:6379,password=rolexDatabase286");

@@ -769,7 +769,11 @@ namespace RoleX.Modules.Services
         /// Number of premium aliases allowed
         /// </summary>
         public static readonly ushort AllowedAliasesPremium = 50;
-        public static readonly Color Blurple = new Color(114, 137, 218);
+
+        private static readonly Random _random = new();
+
+        public static Color Blurple => new (_random.Next(255), _random.Next(255), _random.Next(255));
+
         /// <summary>
         /// If the user has execute permission based on the <see cref="CustomCommandService.Settings.HasPermissionMethod"/>
         /// </summary>
@@ -1031,7 +1035,10 @@ namespace RoleX.Modules.Services
         }
         public SocketRole GetRole(string role)
         {
-            if (role.Length < 3) return null;
+            if (role.Length < 3)
+            {
+                return Context.Guild.Roles.FirstOrDefault(k => k.Name.ToLower() == role);
+            }
             var regex = new Regex(@"(\d{18}|\d{17})");
             if (regex.IsMatch(role))
             {
@@ -1050,7 +1057,7 @@ namespace RoleX.Modules.Services
         /// <param name="isTTS">Whether to speak the <paramref name="message"/> or not</param>
         /// <param name="embed">A <c>Discord.EmbedBuilder</c> for editing and making it work</param>
         /// <param name="options">Just a useless param to me ig</param>
-        /// <returns></returns>
+        /// <returns>The msg</returns>
         public async Task<IUserMessage> ReplyAsync(string message = null, bool isTTS = false, EmbedBuilder embed = null, RequestOptions options = null)
         {
             var msgcontent = Context.Message.Content;
@@ -1059,7 +1066,10 @@ namespace RoleX.Modules.Services
                 var alss = await SqliteClass.GuildAliasGetter(Context.Guild.Id);
                 foreach (var (aliasName, aliasContent) in alss)
                 {
+                    if (!msgcontent.Contains(aliasName)) continue;
                     msgcontent = msgcontent.Replace(aliasName, aliasContent);
+                    break;
+
                 }
             }
             if (msgcontent.EndsWith("-q"))
@@ -1129,7 +1139,7 @@ namespace RoleX.Modules.Services
                         xyz = await Context.Channel.SendMessageAsync(message, isTTS);
                     }
                     catch { }
-                    var batches = BatchExtension.Batch(embed.Fields, 10);
+                    var batches = embed.Fields.Batch(10);
                     foreach (var batch in batches)
                     {
                         embed.Fields = batch.ToList();
@@ -1140,7 +1150,8 @@ namespace RoleX.Modules.Services
                     return xyz;
                 }
             }
-            var here = await Context.Channel.SendMessageAsync(message, isTTS, embed?.Build(), options).ConfigureAwait(false);
+            if (embed is { Color: null }) embed.Color = Blurple;
+                var here = await Context.Channel.SendMessageAsync(message, isTTS, embed?.Build(), options).ConfigureAwait(false);
             if (await SqliteClass.PremiumOrNot(Context.Guild.Id)) return here;
             var ranjom = new Random();
             var irdk = ranjom.Next(8);
