@@ -30,7 +30,7 @@ namespace RoleX.Modules.Services
                 Process process = new Process();
                 ProcessStartInfo startInfo = new ProcessStartInfo();
                 startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                startInfo.FileName = "cmd.exe";
+                startInfo.FileName = "C:\system32\WindowsPowerShell\v1.0\powershell.exe";
                 startInfo.Arguments = "memurai --port 1813";
                 process.StartInfo = startInfo;
                 process.Start();
