@@ -17,26 +17,26 @@ namespace RoleX.Modules.Services
         {
             try
             {
-                muxer = ConnectionMultiplexer.Connect("127.0.0.1:1813");
+                muxer = ConnectionMultiplexer.Connect("127.0.0.1:6379,password=rolexDatabase286");
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Started Memurai Successfully");
+                Console.WriteLine("Started Redis Successfully");
                 Console.ForegroundColor = ConsoleColor.Gray;
             }
             catch
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Starting Memurai Failed. Try to start...");
+                Console.WriteLine("Starting Redis Failed. Try to start...");
                 Console.ForegroundColor = ConsoleColor.Gray;
                 Process process = new Process();
                 ProcessStartInfo startInfo = new ProcessStartInfo();
                 startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                startInfo.FileName = @"C:\system32\WindowsPowerShell\v1.0\powershell.exe";
-                startInfo.Arguments = "memurai --port 1813";
+                startInfo.FileName = "bash.exe";
+                startInfo.Arguments = "sudo service redis-server restart";
                 process.StartInfo = startInfo;
                 process.Start();
-                muxer = ConnectionMultiplexer.Connect("127.0.0.1:1813");
+                muxer = ConnectionMultiplexer.Connect("127.0.0.1:6379,password=rolexDatabase286");
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Started Memurai Successfully");
+                Console.WriteLine("Started Redis Successfully");
                 Console.ForegroundColor = ConsoleColor.Gray;
             }
             conn = muxer.GetDatabase();
