@@ -59,7 +59,8 @@ namespace RoleX.Modules.General
                         Color.NavajoWhite,
                         Color.Beige,
                         Color.LightGoldenrodYellow,
-                        Color.LightYellow
+                        Color.LightYellow,
+                        Color.Black
                     };
                     return badcolors.Any(m => m == k);
                 });
@@ -71,7 +72,7 @@ namespace RoleX.Modules.General
 
         [DiscordCommand("chatchart", commandHelp = "chatchart #channel",
             description =
-                "Shows the chat chart for a channel, and no I wont make a cmd that does this for whole server 😫",
+                "Shows the chat chart for a channel",
             example = "chatchart #weirdshitchannel")]
         public async Task GraphChartOrSmthCommand(params string[] args)
         {
@@ -136,7 +137,7 @@ namespace RoleX.Modules.General
 
             ;
             // var messa = await channel.SendMessageAsync("RoleX completed querying. This is a landmark message.\n**DO NOT DELETE THIS MESSAGE**");
-            var messa = (await channel.GetMessagesAsync(1).FlattenAsync()).First();
+            var messa = (await channel.GetMessagesAsync(2).FlattenAsync()).Last();
             await messa.AddReactionAsync(new Emoji("🏁"));
             var mes = new MessageCache
             {
