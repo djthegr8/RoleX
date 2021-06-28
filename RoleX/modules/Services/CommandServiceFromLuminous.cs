@@ -445,7 +445,7 @@ namespace RoleX.Modules.Services
                 var alss = await SqliteClass.GuildAliasGetter(context.Guild.Id);
                 foreach (var (aliasName, aliasContent) in alss)
                 {
-                    msgcontent = msgcontent.Split(" ")[0].Replace(aliasName, aliasContent) + string.Join(" ",msgcontent.Split(" ").Skip(1));
+                    msgcontent = msgcontent.Split(" ")[0].Replace(aliasName, aliasContent) + " " + string.Join(" ",msgcontent.Split(" ").Skip(1));
                 }
             }
 
