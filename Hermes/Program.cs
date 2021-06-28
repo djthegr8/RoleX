@@ -500,16 +500,17 @@ namespace Hermes
                             Color = Color.Green,
                             Title = "**Command Log**",
                             Description = $"The Command {msg.Content[prefi.Length..]} was used in {msg.Channel.Name} of {(msg.Channel as SocketTextChannel).Guild.Name} by {msg.Author.Username + "#" + msg.Author.Discriminator}",
-                            Footer = new EmbedFooterBuilder()
+                            Footer = new EmbedFooterBuilder
+                            {
+                                Text = "Command Autogen",
+                                IconUrl = Client.CurrentUser?.GetAvatarUrl()
+                            }
                         };
-                        eb.Footer.Text = "Command Autogen";
-                        eb.Footer.IconUrl = Client.CurrentUser?.GetAvatarUrl();
                         try
                         {
-                            if (Client == null) break;
-                            var g = Client.GetGuild(755076971041652786);
+                            var g = Client?.GetGuild(858687271308754985);
                             if (g == null) break;
-                            await g.GetTextChannel(758230822057934878).SendMessageAsync("", false, eb.Build());
+                            await g.GetTextChannel(859029290070704128).SendMessageAsync("", false, eb.Build());
                         }
                         catch
                         { // ignore

@@ -194,6 +194,7 @@ namespace Hermes.Modules.Services
             Console.WriteLine(add);
             var gp = perm switch
             {
+                GuildPermission.ViewGuildInsights => roleA.Permissions.Modify(viewGuildInsights:add),
                 GuildPermission.AddReactions => roleA.Permissions.Modify(addReactions: add),
                 GuildPermission.Administrator => roleA.Permissions.Modify(administrator: add),
                 GuildPermission.AttachFiles =>
