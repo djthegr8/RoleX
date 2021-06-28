@@ -101,7 +101,7 @@ namespace RoleX.Modules.Moderation
                     {
                         await gUser.SendMessageAsync("", false, new EmbedBuilder
                         {
-                            Title = "Oops, you were muted!",
+                            Title = "You were muted!",
                             Description = $"You were muted {(isValidTime ? $"for {ts.Days} days, {ts.Minutes} minutes and {ts.Seconds} seconds" : "indefinitely")} from **{Context.Guild.Name}** by {Context.User.Mention} Reason: {(args.Length > 2 ? string.Join(' ', args.Skip(2)) : "Not given")} {(await AppealGetter(Context.Guild.Id) == "" ? "" : "\n[Click here to appeal](" + (await AppealGetter(Context.Guild.Id)))})",
                             Color = Color.Red
                         }.WithCurrentTimestamp().Build());
@@ -129,6 +129,12 @@ namespace RoleX.Modules.Moderation
                         Interval = ts.TotalMilliseconds
                     };
                     Console.WriteLine(ts);
+                    await ReplyAsync("", false, new EmbedBuilder
+                    {
+                        Title = $"{gUser.Username}#{gUser.Discriminator} Hardmuted {(isValidTime ? $"for {ts.Days}d, {ts.Minutes}m and {ts.Seconds}s" : "indefinitely")}!",
+                        Description = $"Reason: {(args.Length > 2 ? string.Join(' ', args.Skip(2)) : $"Requested by { Context.User.Username }#{Context.User.Discriminator}")}",
+                        Color = Blurple
+                    }.WithCurrentTimestamp());
                     tmr.Elapsed += async (send, arg) =>
                     {
                         try
@@ -143,12 +149,6 @@ namespace RoleX.Modules.Moderation
                         }
                     };
                     tmr.Enabled = true;
-                    await ReplyAsync("", false, new EmbedBuilder
-                    {
-                        Title = $"{gUser.Username}#{gUser.Discriminator} Hardmuted {(isValidTime ? $"for {ts.Days}d, {ts.Minutes}m and {ts.Seconds}s" : "indefinitely")}!",
-                        Description = $"Reason: {(args.Length > 2 ? string.Join(' ', args.Skip(2)) : $"Requested by { Context.User.Username }#{Context.User.Discriminator}")}",
-                        Color = Blurple
-                    }.WithCurrentTimestamp());
                 }
                 else if (gUser.Hierarchy == (Context.User as SocketGuildUser).Hierarchy)
                 {
