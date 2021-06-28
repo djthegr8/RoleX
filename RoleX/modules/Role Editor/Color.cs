@@ -1,13 +1,10 @@
 using System;
-using System.ComponentModel;
-using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using RoleX.Modules.Services;
-using Color = Discord.Color;
 
 namespace RoleX.Modules.Role_Editor
 {
@@ -60,7 +57,7 @@ namespace RoleX.Modules.Role_Editor
                 }.WithCurrentTimestamp());
                 return;
             }
-            ColorConverter c = new ColorConverter();
+            System.Drawing.ColorConverter c = new System.Drawing.ColorConverter();
             System.Drawing.Color col = new System.Drawing.Color();
             bool hasC = false;
             var hArgs1 = args[1][0] != '#' ? $"#{args[1]}" : args[1];
@@ -72,7 +69,7 @@ namespace RoleX.Modules.Role_Editor
             }
             else
             {
-                TypeConverter.StandardValuesCollection svc = (TypeConverter.StandardValuesCollection)c.GetStandardValues();
+                System.ComponentModel.TypeConverter.StandardValuesCollection svc = (System.ComponentModel.TypeConverter.StandardValuesCollection)c.GetStandardValues();
                 foreach (System.Drawing.Color o in svc)
                 {
                     if (o.Name.Equals(args[1], StringComparison.OrdinalIgnoreCase))
@@ -99,6 +96,7 @@ namespace RoleX.Modules.Role_Editor
                 Description = $"The role {role.Name} is now set to the color of this embed!",
                 Color = new Color(col.R, col.G, col.B) == new Color(255, 255, 255) ? new Color(254, 254, 254) : new Color(col.R, col.G, col.B)
             }.WithCurrentTimestamp());
+            return;
         }
     }
 }
