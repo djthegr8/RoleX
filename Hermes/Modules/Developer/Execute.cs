@@ -25,7 +25,7 @@ namespace Hermes.Modules.Developer
                 {
                     var state = await create.RunAsync(new CustomCommandGlobals(Context));
                     if (state.ReturnValue == null)
-                        await Context.Message.AddReactionAsync(Emote.Parse("<a:tick:820157048410472469>"));
+                        await Context.Message.AddReactionAsync(Emote.Parse("<a:tick:859032462410907649>"));
 
                 }
                 catch (CompilationErrorException cee)

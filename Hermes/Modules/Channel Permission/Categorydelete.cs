@@ -28,8 +28,8 @@ namespace Hermes.Modules.Channel_Permission
             var ram = await Context.Channel.SendMessageAsync($"Are you sure you want to delete <#{alf.Id}>?\nThis is a potentially destructive action.");
             await ram.AddReactionsAsync(
                 new IEmote[] {
-                        Emote.Parse("<a:tick:820157048410472469>"),
-                        Emote.Parse("<a:cros:792389968890429461>")
+                        Emote.Parse("<a:tick:859032462410907649>"),
+                        Emote.Parse("<a:cros:859033035545378826>")
             });
             bool isTick = true;
             Func<Cacheable<IUserMessage, ulong>, ISocketMessageChannel, SocketReaction, Task> weird = null;
@@ -40,11 +40,11 @@ namespace Hermes.Modules.Channel_Permission
                         UserMsg.Id == ram.Id &&
                         Reaction.UserId == Context.User.Id
                         && (
-                        Reaction.Emote.ToString() == "<a:tick:820157048410472469>" ||
-                        Reaction.Emote.ToString() == "<a:cros:792389968890429461>"
+                        Reaction.Emote.ToString() == "<a:tick:859032462410907649>" ||
+                        Reaction.Emote.ToString() == "<a:cros:859033035545378826>"
                         ))
                     {
-                        var tick = Emote.Parse("<a:tick:820157048410472469>");
+                        var tick = Emote.Parse("<a:tick:859032462410907649>");
                         isTick = Reaction.Emote.ToString() == tick.ToString();
                         if (!isTick)
                         {
