@@ -160,7 +160,7 @@ namespace Hermes.Modules.General
             else
             {
                 var coll = new PrivateFontCollection();
-                coll.AddFontFile("/home/ubuntu/seguisb.ttf");
+                coll.AddFontFile("/home/Hermes/seguisb.ttf");
                 font = coll.Families.Length == 0 ? new Font(SystemFonts.DefaultFont, FontStyle.Regular) : new Font(coll.Families[0],30);
 
             }
