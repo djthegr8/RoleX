@@ -52,7 +52,7 @@ namespace Hermes.Modules.Channel_Permission
                             {
                                 Title = "Alright then...",
                                 Color = Blurple,
-                                ImageUrl = "https://imgur.com/RBC7KUt"
+                                ImageUrl = "https://i.imgur.com/RBC7KUt.png"
                             }.WithCurrentTimestamp().Build());
                             Program.Client.ReactionAdded -= weird;
                             return;

@@ -143,7 +143,7 @@ namespace Hermes.Modules.Moderation
                     {
                         Title = "Seriously?? <a:clapjohn:785371886695612427>",
                         Color = Color.Red,
-                        ImageUrl = "https://imgur.com/RBC7KUt"
+                        ImageUrl = "https://i.imgur.com/RBC7KUt.png"
                     }.WithCurrentTimestamp());
                     return;
                 }
