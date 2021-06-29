@@ -14,9 +14,14 @@ namespace Hermes.Modules.Channel_Permission
         [Alt("chdelete")]
         
         [DiscordCommand("channeldelete", description = "Deletes specified channel", example = "channeldelete #general", commandHelp = "channeldelete <#channel>")]
-        public async Task Cdel(string ags)
+        public async Task Cdel(params string[] ags)
         {
-            var aaa = GetChannel(ags);
+            if (ags.Length == 0)
+                ags = new[]
+                {
+                    Context.Channel.Id.ToString()
+                };
+            var aaa = GetChannel(ags[0]);
             if (aaa == null)
             {
                 await ReplyAsync("", false, new EmbedBuilder

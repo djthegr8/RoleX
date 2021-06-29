@@ -98,6 +98,10 @@ namespace Hermes.Modules.Services
         }
         public SocketGuildChannel GetChannel(string name)
         {
+            if (string.IsNullOrEmpty(name))
+            {
+                return null;
+            }
             var regex = new Regex(@"(\d{18}|\d{17})");
             if (regex.IsMatch(name))
             {
@@ -114,11 +118,13 @@ namespace Hermes.Modules.Services
                 var x = Context.Guild?.Channels?.FirstOrDefault(ch => ch.Name.ToLower().StartsWith(name.ToLower()));
                 return x is SocketCategoryChannel ? null : x;
             }
-
-
         }
         public SocketCategoryChannel GetCategory(string name)
         {
+            if (string.IsNullOrEmpty(name))
+            {
+                return null;
+            }
             var regex = new Regex(@"(\d{18}|\d{17})");
             if (!regex.IsMatch(name))
                 return ulong.TryParse(name, out var res)

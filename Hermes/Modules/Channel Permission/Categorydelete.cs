@@ -12,9 +12,10 @@ namespace Hermes.Modules.Channel_Permission
         [RequiredUserPermissions(GuildPermission.ManageChannels)]
         [Alt("catdel")]
         [DiscordCommand("categorydelete", commandHelp = "categorydelete <category-name>", description = "Deletes given category and all its channels", example = "categorydelete Useless")]
-        public async Task CatDel(string aa)
+        public async Task CatDel(params string[] aa)
         {
-            var alf = GetCategory(aa);
+            if (aa.Length == 0) aa = new[] { Context.Channel.Id.ToString() };
+            var alf = GetCategory(aa[0]);
             if (alf == null)
             {
                 await ReplyAsync("", false, new EmbedBuilder
