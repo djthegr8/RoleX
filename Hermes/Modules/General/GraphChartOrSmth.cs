@@ -151,7 +151,6 @@ namespace Hermes.Modules.General
             var nextsum = selected.Sum(dj => float.Parse(dj.Item2.ToString()));
             var rest = count - nextsum;
             var toStr = selected.Select(m => new Tuple<string, ulong>(m.Item1.ToString(), m.Item2)).ToList();
-            
             var bitmap = new Bitmap(2000, 1000);
             var gr = Graphics.FromImage(bitmap);
             var sb = SliceBrushes;
@@ -185,6 +184,12 @@ namespace Hermes.Modules.General
             Rectangle rect, float initial_angle, IReadOnlyList<Brush> brushes, IReadOnlyList<Pen> pens,
             IReadOnlyList<Tuple<string, ulong>> lis, Brush label_brush, Font label_font, float total, IChannel chnl)
         {
+            if (total > 50000){
+                total /= 10;
+                foreach (var itm in lis){
+                    itm.Item2 /= 10;
+                }
+            }
             var start_angle = initial_angle;
             var values = lis.Select(mk => mk.Item2).ToArray();
             gr.DrawString($"Stats in {chnl.Name}", label_font, label_brush, new PointF(280,50));
