@@ -188,6 +188,7 @@ namespace Hermes.Modules.General
             var start_angle = initial_angle;
             var values = lis.Select(mk => mk.Item2).ToArray();
             gr.DrawString($"Stats in {chnl.Name}", label_font, label_brush, new PointF(280,50));
+            Console.WriteLine(string.Join('\n', values));
             for (var i = 0; i < values.Length; i++)
             {
                 var sweep_angle = values[i] * 360f / total;
