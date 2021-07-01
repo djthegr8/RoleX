@@ -15,7 +15,17 @@ namespace Hermes.Modules.Channel_Permission
         public async Task Cdel(params string[] args)
         {
             if (args.Length == 0) args = new[] {Context.Channel.Id.ToString()};
-            var chnl = GetChannel(args[0]);
+            var chnl = GetChannel(string.Join("", args));
+            if (chnl == null){
+                await ReplyAsync(embed:
+                    new EmbedBuilder
+                    {
+                        Title = "This channel doesn't exist",
+                        Description = $"There's no channel called `{args[0]}`",
+                        Color = Color.Red
+                    }.WithCurrentTimestamp());
+                 return;
+            }
             var foot = new EmbedFooterBuilder
             {
                 Text = "Discord channel positions dont make much sense dont blame me"
