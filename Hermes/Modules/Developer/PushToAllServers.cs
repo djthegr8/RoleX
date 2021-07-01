@@ -17,8 +17,10 @@ namespace Hermes.Modules.Developer
                 string[] splitted = x.Split(',');
                 string title = splitted[0];
                 string description = string.Join(' ', splitted.Skip(1));
+                var pcg = Program.Client.Guilds
                 foreach (var server in Program.Client.Guilds)
                 {
+                    if (server.Id == 629798125879558154) continue;
                     var channel = server.DefaultChannel;
                     try
                     {
