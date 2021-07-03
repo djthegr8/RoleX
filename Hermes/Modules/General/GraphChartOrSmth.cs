@@ -182,12 +182,14 @@ namespace Hermes.Modules.General
         }
         private static void DrawPieChart(Graphics gr,
             Rectangle rect, float initial_angle, IReadOnlyList<Brush> brushes, IReadOnlyList<Pen> pens,
-            IReadOnlyList<Tuple<string, ulong>> lis, Brush label_brush, Font label_font, float total, IChannel chnl)
+            List<Tuple<string, ulong>> lis, Brush label_brush, Font label_font, float total, IChannel chnl)
         {
             if (total > 50000){
                 total /= 10;
-                foreach (var itm in lis){
-                    itm.Item2 /= 10;
+                for (int i = 0; i < lis.Count; i++)
+                {
+                    Tuple<string, ulong> itm = lis[i];
+                    lis[i] = new Tuple<string, ulong>(itm.Item1, itm.Item2 / 10);
                 }
             }
             var start_angle = initial_angle;

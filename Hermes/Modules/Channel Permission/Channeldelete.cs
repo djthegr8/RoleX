@@ -1,8 +1,8 @@
-using System;
-using System.Threading.Tasks;
 using Discord;
-using Discord.WebSocket;
 using Hermes.Modules.Services;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Hermes.Modules.Channel_Permission
 {
@@ -12,7 +12,7 @@ namespace Hermes.Modules.Channel_Permission
         [RequiredUserPermissions(GuildPermission.ManageChannels)]
         [Alt("chdel")]
         [Alt("chdelete")]
-        
+
         [DiscordCommand("channeldelete", description = "Deletes specified channel", example = "channeldelete #general", commandHelp = "channeldelete <#channel>")]
         public async Task Cdel(params string[] ags)
         {
@@ -32,55 +32,44 @@ namespace Hermes.Modules.Channel_Permission
                 }.WithCurrentTimestamp());
                 return;
             }
-
-            var ram = await Context.Channel.SendMessageAsync($"Are you sure you want to delete <#{aaa.Id}>?\nThis is a potentially destructive action.");
-            await ram.AddReactionsAsync(
-                new IEmote[] {
-                    Emote.Parse("<a:tick:859032462410907649>"),
-                    Emote.Parse("<a:cros:859033035545378826>")
-                });
-            bool isTick = true;
-            Func<Cacheable<IUserMessage, ulong>, ISocketMessageChannel, SocketReaction, Task> weird = null;
-            weird =
-                async (UserMsg, MsgChannel, Reaction) =>
+            Emote cros = Emote.Parse("<a:cros:859033035545378826>");
+            Emote tickk = Emote.Parse("<a:tick:859032462410907649>");
+            var gc = Guid.NewGuid();
+            var cb = new ComponentBuilder().
+                WithButton("", $"{gc}Tick", ButtonStyle.Secondary, tickk).
+                WithButton("", $"{gc}Cros", ButtonStyle.Secondary, cros);
+            var ram = await Context.Channel.SendMessageAsync($"Are you sure you want to delete <#{aaa.Id}>?\nThis is a potentially destructive action.", component: cb.Build());
+            CancellationTokenSource cancelSource = new CancellationTokenSource();
+            cancelSource.CancelAfter(15000);
+            var Interaction = await InteractionHandler.NextButtonAsync(k => k.Data.CustomId.Contains(gc.ToString()) && k.User.Id == Context.User.Id, cancelSource.Token);
+            if (Interaction != null)
+            {
+                var isTick = Interaction.Data.ToString().Contains("Tick");
+                if (!isTick)
                 {
-                    if (MsgChannel == ram.Channel &&
-                        UserMsg.Id == ram.Id &&
-                        Reaction.UserId == Context.User.Id
-                        && (
-                            Reaction.Emote.ToString() == "<a:tick:859032462410907649>" ||
-                            Reaction.Emote.ToString() == "<a:cros:859033035545378826>"
-                        ))
+                    await Context.Channel.SendMessageAsync("", false, new EmbedBuilder
                     {
-                        var tick = Emote.Parse("<a:tick:859032462410907649>");
-                        isTick = Reaction.Emote.ToString() == tick.ToString();
-                        if (!isTick)
-                        {
-                            await Context.Channel.SendMessageAsync("", false, new EmbedBuilder
-                            {
-                                Title = "Alright then...",
-                                Color = Blurple,
-                                ImageUrl = "https://i.imgur.com/RBC7KUt.png"
-                            }.WithCurrentTimestamp().Build());
-                            Program.Client.ReactionAdded -= weird;
-                            return;
-                        }
-
-                        isTick = false;
-                        await aaa.DeleteAsync();
-                        await Context.Channel.SendMessageAsync(embed: new EmbedBuilder
-                        {
-                            Title = "Deleted Channel Successfully",
-                            Description = $"Channel `#{aaa.Name}` was deleted!",
-                            Color = Blurple
-                        }.WithCurrentTimestamp().Build());
-                        Program.Client.ReactionAdded -= weird;
-                    }
-                };
-            Program.Client.ReactionAdded += weird;
-            await Task.Delay(15000);
-            if (isTick) await Context.Channel.SendMessageAsync("No response received!");
-            Program.Client.ReactionAdded -= weird;
+                        Title = "Alright then...",
+                        Color = Blurple,
+                        ImageUrl = "https://i.imgur.com/RBC7KUt.png"
+                    }.WithCurrentTimestamp().Build());
+                    return;
+                }
+                await aaa.DeleteAsync();
+                try
+                {
+                    await Context.Channel.SendMessageAsync(embed: new EmbedBuilder
+                    {
+                        Title = "Deleted Channel Successfully",
+                        Description = $"Channel `#{aaa.Name}` was deleted!",
+                        Color = Blurple
+                    }.WithCurrentTimestamp().Build());
+                }
+                catch
+                {
+                    Console.WriteLine("Ch del'd");
+                }
+            } else await Context.Channel.SendMessageAsync("No response received!");
         }
     }
 }

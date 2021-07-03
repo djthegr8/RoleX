@@ -325,7 +325,7 @@ namespace Hermes.Modules.Services
         /// <param name="embed">A <c>Discord.EmbedBuilder</c> for editing and making it work</param>
         /// <param name="options">Just a useless param to me ig</param>
         /// <returns>The msg</returns>
-        public async Task<IUserMessage> ReplyAsync(string message = null, bool isTTS = false, EmbedBuilder embed = null, RequestOptions options = null)
+        public async Task<IUserMessage> ReplyAsync(string message = null, bool isTTS = false, EmbedBuilder embed = null, MessageComponent mcom = null, RequestOptions options = null)
         {
             var msgcontent = Context.Message.Content;
             if (!msgcontent.Split(' ')[0].Contains("alias"))
@@ -373,7 +373,7 @@ namespace Hermes.Modules.Services
                     IUserMessage xyz = null;
                     try
                     {
-                        xyz = await Context.Channel.SendMessageAsync(message, isTTS);
+                        xyz = await Context.Channel.SendMessageAsync(message, isTTS, component:mcom);
                     }
                     catch
                     {
@@ -389,7 +389,7 @@ namespace Hermes.Modules.Services
 
                 if (embed?.Title?.Length >= EmbedBuilder.MaxTitleLength)
                 {
-                    return await Context.Channel.SendMessageAsync(embed: embed.WithTitle(embed.Title.Substring(0, EmbedBuilder.MaxTitleLength - 5) + "...").Build());
+                    return await Context.Channel.SendMessageAsync(embed: embed.WithTitle(embed.Title.Substring(0, EmbedBuilder.MaxTitleLength - 5) + "...").Build(), component:mcom);
                 }
                 if (embed?.Fields?.Count >= 6)
                 {
@@ -403,7 +403,7 @@ namespace Hermes.Modules.Services
                     IUserMessage xyz = null;
                     try
                     {
-                        xyz = await Context.Channel.SendMessageAsync(message, isTTS);
+                        xyz = await Context.Channel.SendMessageAsync(message, isTTS, component: mcom);
                     }
                     catch { }
                     var batches = embed.Fields.Batch(10);
@@ -418,7 +418,7 @@ namespace Hermes.Modules.Services
                 }
             }
             if (embed is { Color: null }) embed.Color = Blurple;
-            var here = await Context.Channel.SendMessageAsync(message, isTTS, embed?.Build(), options).ConfigureAwait(false);
+            var here = await Context.Channel.SendMessageAsync(message, isTTS, embed?.Build(),  options, component: mcom).ConfigureAwait(false);
             if (await SqliteClass.PremiumOrNot(Context.Guild.Id)) return here;
             var ranjom = new Random();
             var irdk = ranjom.Next(8);
