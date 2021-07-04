@@ -181,7 +181,7 @@ namespace Hermes.Modules.Services
                 ChannelPermission.MoveMembers => eop.Modify(moveMembers: pv),
                 ChannelPermission.MuteMembers => eop.Modify(muteMembers: pv),
                 ChannelPermission.ReadMessageHistory => eop.Modify(readMessageHistory: pv),
-                ChannelPermission.ReadMessages or ChannelPermission.ViewChannel => eop.Modify(viewChannel: pv),
+                ChannelPermission.ViewChannel => eop.Modify(viewChannel: pv),
                 ChannelPermission.SendMessages => eop.Modify(sendMessages: pv),
                 ChannelPermission.SendTTSMessages => eop.Modify(sendTTSMessages: pv),
                 ChannelPermission.Speak => eop.Modify(speak: pv),
@@ -263,7 +263,7 @@ namespace Hermes.Modules.Services
                 GuildPermission.ReadMessageHistory =>
                     roleA.Permissions.Modify(readMessageHistory: add)
                 ,
-                GuildPermission.ReadMessages or GuildPermission.ViewChannel =>
+                GuildPermission.ViewChannel =>
                     roleA.Permissions.Modify(viewChannel: add)
                 ,
                 GuildPermission.SendMessages =>

@@ -42,8 +42,8 @@ namespace Hermes
             //    Console.WriteLine(db);
             //}
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-            Client = new DiscordShardedClient(new DiscordSocketConfig { AlwaysDownloadUsers = true, LargeThreshold = 250, GuildSubscriptions = true, TotalShards = 3 });
-            CL2 = new DiscordRestClient(new DiscordSocketConfig { AlwaysDownloadUsers = true, LargeThreshold = 250, GuildSubscriptions = true });
+            Client = new DiscordShardedClient(new DiscordSocketConfig { AlwaysDownloadUsers = true, LargeThreshold = 250, GatewayIntents = GatewayIntents.All, TotalShards = 3 });
+            CL2 = new DiscordRestClient(new DiscordSocketConfig { AlwaysDownloadUsers = true, LargeThreshold = 250, GatewayIntents = GatewayIntents.All });
             Client.Log += Log;
 
             Client.MessageReceived += HandleCommandAsync;
@@ -88,12 +88,13 @@ namespace Hermes
                     });
                 }
             }, null, 0, 1000);
-            Client.GuildMemberUpdated += async (previous, later) =>
+            Client.GuildMemberUpdated += async (_previous, later) =>
             {
                 try
                 {
                     new Thread(async () =>
                     {
+                        var previous = await _previous.GetOrDownloadAsync();
                         if (previous.Status != later.Status && later.Status != UserStatus.Offline && await SqliteClass.TrackCdAllUlongIDs($"select UserID from track_cd where TUserID = {later.Id};") != new List<ulong>())
                         {
                             var lis = await SqliteClass.TrackCdAllUlongIDs($"select UserID from track_cd where TUserID = {later.Id};");
@@ -117,7 +118,7 @@ namespace Hermes
 
         public DateTime lastAmariRequest = DateTime.MinValue;
 
-        private async Task HandleReactionAsync(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
+        private async Task HandleReactionAsync(Cacheable<IUserMessage, ulong> arg1, Cacheable<IMessageChannel, ulong> _arg2, SocketReaction arg3)
         {
             try
             {
@@ -125,6 +126,7 @@ namespace Hermes
                 {
                     try
                     {
+                        var arg2 = await _arg2.GetOrDownloadAsync();
                         var msgid = arg1.Id;
                         var chnlId = arg2.Id;
                         var stc = arg2 as SocketTextChannel;
