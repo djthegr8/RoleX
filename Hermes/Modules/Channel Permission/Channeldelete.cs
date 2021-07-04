@@ -42,8 +42,11 @@ namespace Hermes.Modules.Channel_Permission
             CancellationTokenSource cancelSource = new CancellationTokenSource();
             cancelSource.CancelAfter(15000);
             var Interaction = await InteractionHandler.NextButtonAsync(k => k.Data.CustomId.Contains(gc.ToString()) && k.User.Id == Context.User.Id, cancelSource.Token);
-            if (Interaction != null)
+            if (Interaction == null)
+                await Context.Channel.SendMessageAsync("No response received!");
+            else
             {
+                await Interaction.AcknowledgeAsync();
                 var isTick = Interaction.Data.ToString().Contains("Tick");
                 if (!isTick)
                 {
@@ -69,7 +72,7 @@ namespace Hermes.Modules.Channel_Permission
                 {
                     Console.WriteLine("Ch del'd");
                 }
-            } else await Context.Channel.SendMessageAsync("No response received!");
+            }
         }
     }
 }

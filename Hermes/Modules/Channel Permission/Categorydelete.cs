@@ -42,6 +42,7 @@ namespace Hermes.Modules.Channel_Permission
                 return;
             }
             var isTick = Interaction.Data.CustomId.Contains("Tick");
+            await Interaction.AcknowledgeAsync();
             if (!isTick)
             {
                 await Context.Channel.SendMessageAsync("", false, new EmbedBuilder

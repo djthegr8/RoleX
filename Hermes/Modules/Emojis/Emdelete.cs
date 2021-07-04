@@ -49,6 +49,7 @@ namespace Hermes.Modules.Emojis
                 await ReplyAsync("No response received!");
                 return;
             }
+            await Interaction.AcknowledgeAsync();
             var isTick = Interaction.Data.CustomId.Contains("Tick");
             if (!isTick)
             {
