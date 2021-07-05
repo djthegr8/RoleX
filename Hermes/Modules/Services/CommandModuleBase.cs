@@ -300,6 +300,7 @@ namespace Hermes.Modules.Services
         {
             return Enum.TryParse(perm, true, out ChannelPermission Gp) ? new Tuple<ChannelPermission, bool>(Gp, true) : new Tuple<ChannelPermission, bool>(ChannelPermission.AddReactions, false);
         }
+        /// <exception cref="Discord.Net.HttpException"/> Throws when role is everyone role and some ops are run
         public SocketRole GetRole(string role)
         {
             if (role.Length < 3)
@@ -310,12 +311,12 @@ namespace Hermes.Modules.Services
             if (regex.IsMatch(role))
             {
                 var u = Context.Guild.GetRole(ulong.Parse(regex.Match(role).Groups[1].Value));
-                return u is {IsEveryone: false} ? u : null;
+                return u;
             }
 
-            if (Context.Guild.Roles.Any(x => !x.IsEveryone && x.Name.ToLower().StartsWith(role.ToLower())))
+            if (Context.Guild.Roles.Any(x => x.Name.ToLower().StartsWith(role.ToLower())))
                 return Context.Guild.Roles.First(x => x.Name.ToLower().StartsWith(role.ToLower()));
-            return Context.Guild.Roles.Any(x => !x.IsEveryone && x.Name.ToLower().StartsWith(role.ToLower())) ? Context.Guild.Roles.First(x => x.Name.ToLower().StartsWith(role.ToLower())) : null;
+            return Context.Guild.Roles.Any(x => x.Name.ToLower().StartsWith(role.ToLower())) ? Context.Guild.Roles.First(x => x.Name.ToLower().StartsWith(role.ToLower())) : null;
         }
         /// <summary>
         /// Takes an Context, and sends a message to the channel it was sent in, while customizing the embed to fit parameters.
@@ -397,6 +398,7 @@ namespace Hermes.Modules.Services
                     var lofb = embed.Fields;
                     pM.SetPages(embed.Description, lofb, 5);
                     await pM.Resend();
+                    return pM.Message;
                 }
                 else if (embed?.Length >= EmbedBuilder.MaxEmbedLength)
                 {
