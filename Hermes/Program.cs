@@ -30,7 +30,7 @@ namespace Hermes
             return Task.CompletedTask;
         }
         public static DiscordShardedClient Client;
-        public static DiscordRestClient CL2;
+        // public static DiscordRestClient CL2;
         public static CustomCommandService _service = new(new Settings());
 
         public async Task MainlikeAsync()
@@ -43,7 +43,7 @@ namespace Hermes
             //}
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
             Client = new DiscordShardedClient(new DiscordSocketConfig { AlwaysAcknowledgeInteractions = false, AlwaysDownloadUsers = true, LargeThreshold = 250, GatewayIntents = GatewayIntents.All, TotalShards = 3 });
-            CL2 = new DiscordRestClient(new DiscordSocketConfig { AlwaysAcknowledgeInteractions = false, AlwaysDownloadUsers = true, LargeThreshold = 250, GatewayIntents = GatewayIntents.All });
+            // CL2 = new DiscordRestClient(new DiscordSocketConfig { AlwaysAcknowledgeInteractions = false, AlwaysDownloadUsers = true, LargeThreshold = 250, GatewayIntents = GatewayIntents.All });
             Client.Log += Log;
 
             Client.MessageReceived += HandleCommandAsync;
@@ -109,7 +109,7 @@ namespace Hermes
                 }
                 catch { }
             };
-            await CL2.LoginAsync(TokenType.Bot, token);
+            // await CL2.LoginAsync(TokenType.Bot, token);
             await Client.LoginAsync(TokenType.Bot, token);
             await Client.StartAsync();
             await Client.SetGameAsync("Supervising Roles!");

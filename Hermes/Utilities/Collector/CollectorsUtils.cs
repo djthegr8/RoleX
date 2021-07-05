@@ -9,8 +9,8 @@ using Discord.WebSocket;
 
 namespace Hermes.Utilities.Collector {
     public static class CollectorsUtils {
-        private static Subject<(Cacheable<IUserMessage, ulong>, ISocketMessageChannel, SocketReaction)> ReactionAdded =
-            new Subject<(Cacheable<IUserMessage, ulong>, ISocketMessageChannel, SocketReaction)>();
+        private static Subject<(Cacheable<IUserMessage, ulong>, Cacheable<IMessageChannel, ulong>, SocketReaction)> ReactionAdded =
+            new();
 
         private static Subject<SocketMessage> MessageReceived = new Subject<SocketMessage>();
 

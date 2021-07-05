@@ -41,7 +41,7 @@ namespace Hermes.Modules.Webhooks
                 }
                 catch { }
             }
-            await (await Context.User.GetOrCreateDMChannelAsync()).SendMessageAsync("", false, new EmbedBuilder
+            await (await Context.User.CreateDMChannelAsync()).SendMessageAsync("", false, new EmbedBuilder
             {
                 Title = "New Webhook Creation Successful",
                 Description = $"**Name:** {weh.Name}\n**Channel:** <#{weh.ChannelId}>\n**Link:** [Click here or on the title](https://discordapp.com/api/webhooks/{weh.Id}/{weh.Token})",

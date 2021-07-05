@@ -20,19 +20,19 @@ namespace Hermes.Modules.General
             if (user.Length == 0)
             {
                 userGuildAccount = Context.User as SocketGuildUser;
-                userAccount = await Program.CL2.GetUserAsync(userGuildAccount.Id);
+                userAccount = await Program.Client.Rest.GetUserAsync(userGuildAccount.Id);
             }
             else
             {
                 userGuildAccount = await GetUser(user[0]);
-                userAccount = userGuildAccount == null ? null : await Program.CL2.GetUserAsync(userGuildAccount.Id);
+                userAccount = userGuildAccount == null ? null : await Program.Client.Rest.GetUserAsync(userGuildAccount.Id);
             }
 
             if (userAccount == null)
             {
                 if (ulong.TryParse(user[0], out ulong ide))
                 {
-                    userAccount = await Program.CL2.GetUserAsync(ide);
+                    userAccount = await Program.Client.Rest.GetUserAsync(ide);
                 }
                 if (userAccount == null)
                 {

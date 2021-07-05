@@ -424,7 +424,7 @@ namespace Hermes.Modules.Services
             var irdk = ranjom.Next(8);
             if (irdk != 1 || await TopGG.HasVoted(Context.User.Id)) return here;
             var idk = ranjom.Next(2);
-            if (idk == 1 || (await Program.CL2.GetGuildsAsync()).Any(x => x.Id == 591660163229024287 && x.GetUserAsync(Context.User.Id) != null)) await Context.Channel.SendMessageAsync("", false, new EmbedBuilder { Title = "Vote for Hermes!", Url = "https://tiny.cc/rolexdsl", Description = "Support Hermes by [voting](http:/tiny.cc/rolexdsl) for it in top.gg!", ImageUrl = "https://media.discordapp.net/attachments/745266816179241050/808311320373624832/B22rOemKFGmIAAAAAElFTkSuQmCC.png", Color = Blurple }.WithCurrentTimestamp().Build());
+            if (idk == 1 || (await Program.Client.Rest.GetGuildsAsync()).Any(x => x.Id == 591660163229024287 && x.GetUserAsync(Context.User.Id) != null)) await Context.Channel.SendMessageAsync("", false, new EmbedBuilder { Title = "Vote for Hermes!", Url = "https://tiny.cc/rolexdsl", Description = "Support Hermes by [voting](http:/tiny.cc/rolexdsl) for it in top.gg!", ImageUrl = "https://media.discordapp.net/attachments/745266816179241050/808311320373624832/B22rOemKFGmIAAAAAElFTkSuQmCC.png", Color = Blurple }.WithCurrentTimestamp().Build());
             else await Context.Channel.SendMessageAsync("", false, new EmbedBuilder { Title = "Join our support server!", Url = "https://tiny.cc/rolexdsl", Description = "Support Hermes by [voting](http:/tiny.cc/rolexdsl) for it on top.gg!", Color = Blurple }.WithCurrentTimestamp().Build());
             return here;
         }
