@@ -135,8 +135,12 @@ namespace Hermes.Modules.Services
         }
         public async Task<SocketGuildUser> GetUser(string user)
         {
-            if (user.Length < 3) return null;
             await Context.Guild.DownloadUsersAsync();
+            if (Context.Guild.Users.Any(k => k.Nickname == user || k.Username == user))
+            {
+                return Context.Guild.Users.First(k => k.Nickname == user || k.Username == user);
+            }
+            if (user.Length < 3) return null;
             var regex = new Regex(@"(\d{18}|\d{17})");
             if (regex.IsMatch(user))
             {
