@@ -335,7 +335,7 @@ namespace Hermes
                         );
                         break;
                     case CommandStatus.Error:
-                        if (result.Exception.GetType().ToString() == "System.AggregateException" && result.Exception.InnerException.GetType().ToString() == "Discord.Net.HttpException")
+                        if (result.Exception.GetType() == typeof(AggregateException) && result.Exception.InnerException.GetType() == typeof(Discord.Net.HttpException))
                         {
                             EmbedBuilder ella = new EmbedBuilder
                             {
@@ -351,6 +351,17 @@ namespace Hermes
                             {
                                 await msg.Channel.SendMessageAsync(embed: ella.Build());
                             }
+                            return;
+                        }
+                        else if (result.Exception.GetType() == typeof(AggregateException) && result.Exception.InnerException.GetType() == typeof(ArgumentException))
+                        {
+                            EmbedBuilder embed = new EmbedBuilder
+                            {
+                                Title = "That operation is not allowed!",
+                                Description = "You cannot add or remove the `@everyone` role from a user",
+                                Color = Color.Red
+                            }.WithCurrentTimestamp();
+                            await msg.Channel.SendMessageAsync(embed: embed.Build());
                             return;
                         }
                         EmbedBuilder emb = new EmbedBuilder
@@ -385,7 +396,7 @@ namespace Hermes
                         await msg.Channel.SendMessageAsync("", false,
                             new EmbedBuilder
                             {
-                                Title = "<:rolex:782837804208095273> Your server isn't Premium <:rolex:782837804208095273>",
+                                Title = "Your server isn't Premium",
                                 Description = "Support us on [Patreon](https://patreon.com/rolexbot) to make this server a Premium server!",
                                 Url = "https://patreon.com/rolexbot",
                                 Color = Color.Red
