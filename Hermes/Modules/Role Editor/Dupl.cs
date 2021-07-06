@@ -12,7 +12,9 @@ namespace Hermes.Modules.Role_Editor
     {
         [Alt("dup")]
         [RequiredUserPermissions(GuildPermission.ManageRoles, GuildPermission.ManageGuild)]
-        [DiscordCommand("duplicate", commandHelp = "duplicate <@role-to-be-duplicated> <@role-to-be-placed-below>", description = "Duplicates a role and places it above the given second role", example = "duplicate @Admin @Moderator")]
+        [DiscordCommand("duplicate", commandHelp = "duplicate <@role-to-be-duplicated> <@role-to-be-placed-below>",
+            description = "Duplicates a role and places it above the given second role",
+            example = "duplicate @Admin @Moderator")]
         public async Task CreateRole(params string[] args)
         {
             switch (args.Length)
@@ -21,11 +23,13 @@ namespace Hermes.Modules.Role_Editor
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "Insufficient Parameters",
-                        Description = $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}duplicate <@role-to-be-duplicated> <@role-to-be-placed-below>`",
+                        Description =
+                            $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}duplicate <@role-to-be-duplicated> <@role-to-be-placed-below>`",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
                     return;
             }
+
             var rlD = GetRole(args[0]);
             var rlA = GetRole(args[1]);
             if (rlD == null || rlA == null)
@@ -33,12 +37,16 @@ namespace Hermes.Modules.Role_Editor
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Couldn't find the role",
-                    Description = $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}duplicate <@role-to-be-duplicated> <@role-to-be-placed-below>`",
+                    Description =
+                        $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}duplicate <@role-to-be-duplicated> <@role-to-be-placed-below>`",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
             }
-            if (((Context.User as SocketGuildUser).Roles.Max().Position <= rlA.Position || (Context.User as SocketGuildUser).Roles.Max().Position <= rlD.Position) && Context.Guild.OwnerId != Context.User.Id && devids.All(k => k != Context.User.Id))
+
+            if (((Context.User as SocketGuildUser).Roles.Max().Position <= rlA.Position ||
+                 (Context.User as SocketGuildUser).Roles.Max().Position <= rlD.Position) &&
+                Context.Guild.OwnerId != Context.User.Id && devids.All(k => k != Context.User.Id))
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
@@ -48,8 +56,11 @@ namespace Hermes.Modules.Role_Editor
                 }.WithCurrentTimestamp());
                 return;
             }
-            var newlyMadeRole = await Context.Guild.CreateRoleAsync(rlD.Name + "~1", rlD.Permissions, rlD.Color, rlD.IsHoisted, rlD.IsMentionable);
-            await Context.Guild.ReorderRolesAsync(new List<ReorderRoleProperties> { new ReorderRoleProperties(newlyMadeRole.Id, rlA.Position) });
+
+            var newlyMadeRole = await Context.Guild.CreateRoleAsync(rlD.Name + "~1", rlD.Permissions, rlD.Color,
+                rlD.IsHoisted, rlD.IsMentionable);
+            await Context.Guild.ReorderRolesAsync(new List<ReorderRoleProperties>
+                {new(newlyMadeRole.Id, rlA.Position)});
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "Role Duplicated Successfully",

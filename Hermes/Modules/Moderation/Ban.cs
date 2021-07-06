@@ -13,7 +13,8 @@ namespace Hermes.Modules.Moderation
     public class Ban : CommandModuleBase
     {
         [RequiredUserPermissions(GuildPermission.BanMembers)]
-        [DiscordCommand("ban", commandHelp = "ban <@user> <reason>", example = "ban @Scammer Scamming me friend", description = "Bans the specified user")]
+        [DiscordCommand("ban", commandHelp = "ban <@user> <reason>", example = "ban @Scammer Scamming me friend",
+            description = "Bans the specified user")]
         public async Task Banner(params string[] args)
         {
             if (args.Length == 0)
@@ -26,6 +27,7 @@ namespace Hermes.Modules.Moderation
                 }.WithCurrentTimestamp());
                 return;
             }
+
             if (await GetUser(args[0]) != null || Context.Message.MentionedUsers.Any())
             {
                 var gUser = await GetUser(args[0]) ?? Context.Message.MentionedUsers.First() as SocketGuildUser;
@@ -41,10 +43,12 @@ namespace Hermes.Modules.Moderation
                         }.WithCurrentTimestamp());
                         return;
                     }
+
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = $"{gUser.Username}#{gUser.Discriminator} Banned Successfully!",
-                        Description = $"Reason: {(args.Length > 1 ? string.Join(' ', args.Skip(1)) : $"Requested by { Context.User.Username }#{Context.User.Discriminator}")}",
+                        Description =
+                            $"Reason: {(args.Length > 1 ? string.Join(' ', args.Skip(1)) : $"Requested by {Context.User.Username}#{Context.User.Discriminator}")}",
                         Color = Blurple
                     }.WithCurrentTimestamp());
                     try
@@ -52,13 +56,21 @@ namespace Hermes.Modules.Moderation
                         await gUser.SendMessageAsync("", false, new EmbedBuilder
                         {
                             Title = "Oops, you were banned!",
-                            Description = $"You were banned from **{Context.Guild.Name}** by {Context.User.Mention} {(args.Length > 1 ? $"Reason:{args[1]}" : "")}\n[Click here to appeal]({(await AppealGetter(Context.Guild.Id) == "" ? "" : await AppealGetter(Context.Guild.Id))})",
+                            Description =
+                                $"You were banned from **{Context.Guild.Name}** by {Context.User.Mention} {(args.Length > 1 ? $"Reason:{args[1]}" : "")}\n[Click here to appeal]({(await AppealGetter(Context.Guild.Id) == "" ? "" : await AppealGetter(Context.Guild.Id))})",
                             Color = Color.Red
                         }.WithCurrentTimestamp().Build());
                     }
-                    catch { }
-                    await gUser.BanAsync(7, args.Length > 1 ? string.Join(' ', args.Skip(1)) : $"Requested by {Context.User.Username}#{Context.User.Discriminator}");
-                    await AddToModlogs(Context.Guild.Id, gUser.Id, Context.User.Id, Punishment.Ban, DateTime.Now, args.Length > 1 ? string.Join(' ', args.Skip(1)) : "");
+                    catch
+                    {
+                    }
+
+                    await gUser.BanAsync(7,
+                        args.Length > 1
+                            ? string.Join(' ', args.Skip(1))
+                            : $"Requested by {Context.User.Username}#{Context.User.Discriminator}");
+                    await AddToModlogs(Context.Guild.Id, gUser.Id, Context.User.Id, Punishment.Ban, DateTime.Now,
+                        args.Length > 1 ? string.Join(' ', args.Skip(1)) : "");
                     return;
                 }
 
@@ -72,6 +84,7 @@ namespace Hermes.Modules.Moderation
                     }.WithCurrentTimestamp());
                     return;
                 }
+
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Not gonna happen",
@@ -81,7 +94,7 @@ namespace Hermes.Modules.Moderation
                 return;
             }
 
-            if (ulong.TryParse(args[0].Replace("<@","").Replace(">",""), out ulong ide))
+            if (ulong.TryParse(args[0].Replace("<@", "").Replace(">", ""), out var ide))
             {
                 var aadrc = new DiscordRestClient();
                 await aadrc.LoginAsync(TokenType.Bot, Program.token);
@@ -96,10 +109,12 @@ namespace Hermes.Modules.Moderation
                     }.WithCurrentTimestamp());
                     return;
                 }
+
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = $"{aa.Username}#{aa.Discriminator} Banned Successfully!",
-                    Description = $"Reason: {(args.Length > 1 ? string.Join(' ', args.Skip(1)) : $"Requested by { Context.User.Username }#{Context.User.Discriminator}")}",
+                    Description =
+                        $"Reason: {(args.Length > 1 ? string.Join(' ', args.Skip(1)) : $"Requested by {Context.User.Username}#{Context.User.Discriminator}")}",
                     Color = Blurple
                 }.WithCurrentTimestamp());
                 try
@@ -107,15 +122,24 @@ namespace Hermes.Modules.Moderation
                     await aa.SendMessageAsync("", false, new EmbedBuilder
                     {
                         Title = "Oops, you were banned!",
-                        Description = $"You were banned from **{Context.Guild.Name}** by {Context.User.Mention} {(args.Length > 1 ? $"Reason:{args[1]}" : "")}\n[Click here to appeal]({(await AppealGetter(Context.Guild.Id) == "" ? "" : await AppealGetter(Context.Guild.Id))})",
+                        Description =
+                            $"You were banned from **{Context.Guild.Name}** by {Context.User.Mention} {(args.Length > 1 ? $"Reason:{args[1]}" : "")}\n[Click here to appeal]({(await AppealGetter(Context.Guild.Id) == "" ? "" : await AppealGetter(Context.Guild.Id))})",
                         Color = Color.Red
                     }.WithCurrentTimestamp().Build());
                 }
-                catch { }
-                await Context.Guild.AddBanAsync(aa, 7, args.Length > 1 ? string.Join(' ', args.Skip(1)) : $"Requested by {Context.User.Username}#{Context.User.Discriminator}");
-                await AddToModlogs(Context.Guild.Id, aa.Id, Context.User.Id, Punishment.Ban, DateTime.Now, args.Length > 1 ? string.Join(' ', args.Skip(1)) : "");
+                catch
+                {
+                }
+
+                await Context.Guild.AddBanAsync(aa, 7,
+                    args.Length > 1
+                        ? string.Join(' ', args.Skip(1))
+                        : $"Requested by {Context.User.Username}#{Context.User.Discriminator}");
+                await AddToModlogs(Context.Guild.Id, aa.Id, Context.User.Id, Punishment.Ban, DateTime.Now,
+                    args.Length > 1 ? string.Join(' ', args.Skip(1)) : "");
                 return;
             }
+
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "What user?",

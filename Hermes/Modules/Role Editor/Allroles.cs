@@ -16,23 +16,27 @@ namespace Hermes.Modules.Role_Editor
         public async Task AllRoles(params string[] _)
         {
             //string rlx = "```" + string.Join('\n', Context.Guild.Roles.OrderByDescending(x => x.Position).Select(x => $"{x.Name} ID: {x.Id}")) + "```";
-            var paginatedMessage = new PaginatedMessage(PaginatedAppearanceOptions.Default, Context.Channel, new PaginatedMessage.MessagePage("Loading..."))
+            var paginatedMessage = new PaginatedMessage(PaginatedAppearanceOptions.Default, Context.Channel,
+                new PaginatedMessage.MessagePage("Loading..."))
             {
                 Title = $"All roles in {Context.Guild.Name}",
                 Timestamp = DateTimeOffset.Now,
                 Color = Blurple
             };
             var embb = new List<EmbedFieldBuilder>();
-            for (int y = 0; y < Context.Guild.Roles.Count; y++)
+            for (var y = 0; y < Context.Guild.Roles.Count; y++)
             {
                 var x = Context.Guild.Roles.OrderByDescending(x => x.Position).ElementAt(y);
                 embb.Add(new EmbedFieldBuilder
                 {
                     Name = x.Name,
-                    Value = $"ID: {x.Id}\nPermValue: [{x.Permissions.RawValue}](http://discordapi.com/permissions.html#{x.Permissions.RawValue})\n",
-                    IsInline = (y % 2 == 0)
+                    Value =
+                        $"ID: {x.Id}\nPermValue: [{x.Permissions.RawValue}](http://discordapi.com/permissions.html#{x.Permissions.RawValue})\n",
+                    IsInline = y % 2 == 0
                 });
-            };
+            }
+
+            ;
             paginatedMessage.SetPages("Here's a list of all roles in the Server", embb, 5);
             await paginatedMessage.Resend();
         }

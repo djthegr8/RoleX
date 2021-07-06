@@ -13,10 +13,10 @@ namespace Hermes.Modules.Developer
         {
             if (devids.Any(x => x == Context.User.Id))
             {
-                string x = string.Join(' ', args);
-                string[] splitted = x.Split(',');
-                string title = splitted[0];
-                string description = string.Join(' ', splitted.Skip(1));
+                var x = string.Join(' ', args);
+                var splitted = x.Split(',');
+                var title = splitted[0];
+                var description = string.Join(' ', splitted.Skip(1));
                 foreach (var server in Program.Client.Guilds)
                 {
                     if (server.Id == 629798125879558154) continue;

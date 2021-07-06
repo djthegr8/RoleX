@@ -12,24 +12,19 @@ namespace Hermes.Modules.Developer
         public async Task getInves(params string[] args)
         {
             if (devids.Any(x => x == Context.User.Id))
-            {
-                
                 foreach (var x in CustomCommandService.Modules)
                 {
-                    string xyz = "# Hermes\n";
+                    var xyz = "# Hermes\n";
                     xyz += $"## {x.Key}\n*{x.Value}*\n";
                     foreach (var y in Commands.Where(y => y.ModuleName == x.Key))
-                    {
-                        xyz += $"### r{y.CommandName}         \nDescription: {(string.IsNullOrEmpty(y.CommandDescription) ? "None" : y.CommandDescription)}          \n{(y.RequireUsrPerm != null ? $"Permissions required: ```\n{string.Join(",\n",y.RequireUsrPerm.Select(k => k.ToString()))}```                \n" : "")}Alts: `{(string.IsNullOrEmpty(string.Join(", ",y.Alts)) ? "None" : string.Join(", ", y.Alts))}`          \nExamples: `{(string.IsNullOrEmpty(y.example) ? "None" : y.example)}`          \n";
-                    }
-                    FileStream fst = new FileStream($"../Data/{x.Key}.md", FileMode.Create);
-                    StreamWriter swr = new StreamWriter(fst);
+                        xyz +=
+                            $"### r{y.CommandName}         \nDescription: {(string.IsNullOrEmpty(y.CommandDescription) ? "None" : y.CommandDescription)}          \n{(y.RequireUsrPerm != null ? $"Permissions required: ```\n{string.Join(",\n", y.RequireUsrPerm.Select(k => k.ToString()))}```                \n" : "")}Alts: `{(string.IsNullOrEmpty(string.Join(", ", y.Alts)) ? "None" : string.Join(", ", y.Alts))}`          \nExamples: `{(string.IsNullOrEmpty(y.example) ? "None" : y.example)}`          \n";
+                    var fst = new FileStream($"../Data/{x.Key}.md", FileMode.Create);
+                    var swr = new StreamWriter(fst);
                     await swr.WriteLineAsync(xyz);
                     await swr.FlushAsync();
                     swr.Close();
                 }
-                
-            }
         }
     }
 }

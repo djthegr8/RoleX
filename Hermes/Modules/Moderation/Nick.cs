@@ -10,7 +10,7 @@ namespace Hermes.Modules.Moderation
     public class Nick : CommandModuleBase
     {
         [RequiredUserPermissions(GuildPermission.ManageNicknames)]
-        [DiscordCommand("nick", commandHelp = "nick @User <multi-word-string>", example ="nick @DJ001 Weird Dumbass")]
+        [DiscordCommand("nick", commandHelp = "nick @User <multi-word-string>", example = "nick @DJ001 Weird Dumbass")]
         [Alt("nickname")]
         public async Task RNick(params string[] args)
         {
@@ -19,11 +19,13 @@ namespace Hermes.Modules.Moderation
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Insufficient Parameters!",
-                    Description = $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}nick <@User> <new-user-nickname>`",
+                    Description =
+                        $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}nick <@User> <new-user-nickname>`",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
             }
+
             if (await GetUser(args[0]) == null)
             {
                 await ReplyAsync("", false, new EmbedBuilder
@@ -34,17 +36,20 @@ namespace Hermes.Modules.Moderation
                 }.WithCurrentTimestamp());
                 return;
             }
+
             var bchname = string.Join(' ', args.Skip(1));
             if (bchname.Length < 0 || bchname.Length > 32)
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Invalid user nickname",
-                    Description = $"`{bchname}` is an invalid name, as it either ~ \n1) Contains non-allowed characters\n 2) Is too long",
+                    Description =
+                        $"`{bchname}` is an invalid name, as it either ~ \n1) Contains non-allowed characters\n 2) Is too long",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
             }
+
             var cha = await GetUser(args[0]);
             if (cha.Hierarchy >= (Context.User as SocketGuildUser).Hierarchy && cha.Id != Context.User.Id)
             {
@@ -56,6 +61,7 @@ namespace Hermes.Modules.Moderation
                 }.WithCurrentTimestamp());
                 return;
             }
+
             if (cha.Hierarchy >= Context.Guild.CurrentUser.Hierarchy)
             {
                 await ReplyAsync("", false, new EmbedBuilder
@@ -66,6 +72,7 @@ namespace Hermes.Modules.Moderation
                 }.WithCurrentTimestamp());
                 return;
             }
+
             await cha.ModifyAsync(i => i.Nickname = bchname);
             await ReplyAsync("", false, new EmbedBuilder
             {

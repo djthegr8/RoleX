@@ -8,30 +8,41 @@ using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Discord.Rest;
+using Discord.Net;
 using Discord.WebSocket;
-using Hermes.Modules.Services;
 using Hermes.Modules.Developer;
+using Hermes.Modules.Services;
 
 namespace Hermes
 {
     public class Program
     {
         private static readonly IEmote Cooldown = new Emoji("⏳");
-        private static readonly string fpath = string.Join(Path.DirectorySeparatorChar, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location).Split(Path.DirectorySeparatorChar).SkipLast(1)) + Path.DirectorySeparatorChar + "Data" + Path.DirectorySeparatorChar + "token.txt";
+
+        private static readonly string fpath =
+            string.Join(Path.DirectorySeparatorChar,
+                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location).Split(Path.DirectorySeparatorChar)
+                    .SkipLast(1)) + Path.DirectorySeparatorChar + "Data" + Path.DirectorySeparatorChar + "token.txt";
+
         public static readonly string token = File.ReadAllLines(fpath)[0];
+
+        public static DiscordShardedClient Client;
+
+        // public static DiscordRestClient CL2;
+        public static CustomCommandService _service = new(new Settings());
+
+        public DateTime lastAmariRequest = DateTime.MinValue;
+
         public static void Main(string[] _)
         {
             new Program().MainlikeAsync().GetAwaiter().GetResult();
         }
+
         private Task Log(LogMessage msg)
         {
             Console.WriteLine(msg.ToString());
             return Task.CompletedTask;
         }
-        public static DiscordShardedClient Client;
-        // public static DiscordRestClient CL2;
-        public static CustomCommandService _service = new(new Settings());
 
         public async Task MainlikeAsync()
         {
@@ -42,7 +53,11 @@ namespace Hermes
             //    Console.WriteLine(db);
             //}
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-            Client = new DiscordShardedClient(new DiscordSocketConfig { AlwaysAcknowledgeInteractions = false, AlwaysDownloadUsers = true, LargeThreshold = 250, GatewayIntents = GatewayIntents.All, TotalShards = 3 });
+            Client = new DiscordShardedClient(new DiscordSocketConfig
+            {
+                AlwaysAcknowledgeInteractions = false, AlwaysDownloadUsers = true, LargeThreshold = 250,
+                GatewayIntents = GatewayIntents.All, TotalShards = 3
+            });
             // CL2 = new DiscordRestClient(new DiscordSocketConfig { AlwaysAcknowledgeInteractions = false, AlwaysDownloadUsers = true, LargeThreshold = 250, GatewayIntents = GatewayIntents.All });
             Client.Log += Log;
 
@@ -60,15 +75,13 @@ namespace Hermes
 
             var __ = new Timer(async _ =>
             {
-                if (Client.LoginState != LoginState.LoggedIn)
-                {
-                    return;
-                }
+                if (Client.LoginState != LoginState.LoggedIn) return;
                 // Reminder thingies
                 var currTime = DateTime.UtcNow;
-                var allRems = await SqliteClass.GetReminders($"Select * from reminders where Finished = 0 and Time = \"{currTime:u}\"");
+                var allRems =
+                    await SqliteClass.GetReminders(
+                        $"Select * from reminders where Finished = 0 and Time = \"{currTime:u}\"");
                 if (allRems.Count > 0)
-                {
                     allRems.ForEach(async x =>
                     {
                         try
@@ -82,11 +95,10 @@ namespace Hermes
                         }
                         catch
                         {
-
                         }
+
                         await SqliteClass.ReminderFinished(x);
                     });
-                }
             }, null, 0, 1000);
             Client.GuildMemberUpdated += async (_previous, later) =>
             {
@@ -95,19 +107,24 @@ namespace Hermes
                     new Thread(async () =>
                     {
                         var previous = await _previous.GetOrDownloadAsync();
-                        if (previous.Status != later.Status && later.Status != UserStatus.Offline && await SqliteClass.TrackCdAllUlongIDs($"select UserID from track_cd where TUserID = {later.Id};") != new List<ulong>())
+                        if (previous.Status != later.Status && later.Status != UserStatus.Offline &&
+                            await SqliteClass.TrackCdAllUlongIDs(
+                                $"select UserID from track_cd where TUserID = {later.Id};") != new List<ulong>())
                         {
-                            var lis = await SqliteClass.TrackCdAllUlongIDs($"select UserID from track_cd where TUserID = {later.Id};");
+                            var lis = await SqliteClass.TrackCdAllUlongIDs(
+                                $"select UserID from track_cd where TUserID = {later.Id};");
                             foreach (var user in lis)
                             {
                                 await Client.GetUser(user)
-                                            .SendMessageAsync($"<@{later.Id}> is now {later.Status}! Chat with them now!");
+                                    .SendMessageAsync($"<@{later.Id}> is now {later.Status}! Chat with them now!");
                                 await SqliteClass.Track_CDRemover(user, later.Id);
                             }
                         }
                     }).Start();
                 }
-                catch { }
+                catch
+                {
+                }
             };
             // await CL2.LoginAsync(TokenType.Bot, token);
             await Client.LoginAsync(TokenType.Bot, token);
@@ -116,9 +133,8 @@ namespace Hermes
             await Task.Delay(-1);
         }
 
-        public DateTime lastAmariRequest = DateTime.MinValue;
-
-        private async Task HandleReactionAsync(Cacheable<IUserMessage, ulong> arg1, Cacheable<IMessageChannel, ulong> _arg2, SocketReaction arg3)
+        private async Task HandleReactionAsync(Cacheable<IUserMessage, ulong> arg1,
+            Cacheable<IMessageChannel, ulong> _arg2, SocketReaction arg3)
         {
             try
             {
@@ -158,7 +174,6 @@ namespace Hermes
                         {
                             //ignore
                         }
-
                     }
                     catch
                     {
@@ -170,21 +185,16 @@ namespace Hermes
                 // continue to ignore
             }
         }
+
         public async Task<string> GetAsync(string uri)
         {
-            var request = (HttpWebRequest)WebRequest.Create(uri);
+            var request = (HttpWebRequest) WebRequest.Create(uri);
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
-            using var response = (HttpWebResponse)await request.GetResponseAsync();
+            using var response = (HttpWebResponse) await request.GetResponseAsync();
             await using var stream = response.GetResponseStream();
             using var reader = new StreamReader(stream);
             return await reader.ReadToEndAsync();
-        }
-        private enum RequirementType
-        {
-            RoleReq,
-            WeeklyReq,
-            AmariLevelReq
         }
 
         private async Task LeftGuildAsync(SocketGuild arg)
@@ -192,19 +202,20 @@ namespace Hermes
             try
             {
                 foreach (var devid in CommandModuleBase.devids)
-                {
                     await Client.GetUser(devid)
                         .SendMessageAsync(
-                            $"I left {arg.Name}, a Guild of {arg.MemberCount} members, current count is at {Client.Guilds.Count}", false, new EmbedBuilder
+                            $"I left {arg.Name}, a Guild of {arg.MemberCount} members, current count is at {Client.Guilds.Count}",
+                            false, new EmbedBuilder
                             {
                                 Title = "We left this dump",
-                                Description =await arg.GetInfoString(),
+                                Description = await arg.GetInfoString(),
                                 Color = Color.Red
                             }.WithCurrentTimestamp().Build());
-                }
                 await TopGG.topGGUPD(Client.Guilds.Count);
             }
-            catch { }
+            catch
+            {
+            }
         }
 
         private async Task AltAlertAsync(SocketGuildUser arg)
@@ -214,17 +225,26 @@ namespace Hermes
                 new Thread(async () =>
                 {
                     var aca = await SqliteClass.AlertChanGetter(arg.Guild.Id);
-                    if (aca != 0 && arg.CreatedAt.UtcDateTime.CompareTo(DateTime.UtcNow.AddMonths(Convert.ToInt32(-await SqliteClass.AltTimePeriodGetter(arg.Guild.Id)))) > 0)
+                    if (aca != 0 && arg.CreatedAt.UtcDateTime.CompareTo(
+                        DateTime.UtcNow.AddMonths(
+                            Convert.ToInt32(-await SqliteClass.AltTimePeriodGetter(arg.Guild.Id)))) > 0)
                     {
                         var hopefullyValidChannel = arg.Guild.GetTextChannel(aca);
                         if (hopefullyValidChannel != null)
-                        {
-                            await hopefullyValidChannel.SendMessageAsync("", false, new EmbedBuilder { Title = "Suspicious User Detected!!!!!", Description = $"**Name:** <@{arg.Id}>\n**ID: **{arg.Id}\n**Date Created: ** `{arg.CreatedAt:D}`, which seems sus to me...", Color = Color.Red }.WithCurrentTimestamp().Build());
-                        }
+                            await hopefullyValidChannel.SendMessageAsync("", false,
+                                new EmbedBuilder
+                                {
+                                    Title = "Suspicious User Detected!!!!!",
+                                    Description =
+                                        $"**Name:** <@{arg.Id}>\n**ID: **{arg.Id}\n**Date Created: ** `{arg.CreatedAt:D}`, which seems sus to me...",
+                                    Color = Color.Red
+                                }.WithCurrentTimestamp().Build());
                     }
                 }).Start();
             }
-            catch { }
+            catch
+            {
+            }
         }
 
         private async Task HandleReadyAsync(DiscordSocketClient _)
@@ -237,15 +257,15 @@ namespace Hermes
                 await ch.SendMessageAsync("We're back on bois!");
                 var lor = await SqliteClass.GetReminders("Select * from reminders where Finished = 0;");
                 foreach (var idek in lor)
-                {
                     if (idek.TimeS.CompareTo(DateTime.UtcNow) > 0)
                     {
                         await SqliteClass.ReminderFinished(idek);
                         Console.WriteLine($"Ignoring reminder {idek.Id}, was offline.");
                     }
-                }
             }
-            catch { }
+            catch
+            {
+            }
         }
 
         private async Task HandleGuildJoinAsync(SocketGuild arg)
@@ -257,56 +277,65 @@ namespace Hermes
                 // <@701029647760097361> or <@615873008959225856>
                 foreach (var devid in CommandModuleBase.devids)
                 {
-                    var user =  Client.GetUser(devid);
-                        await user.SendMessageAsync(
-                        $"I joined {arg.Name}, a Guild of {arg.MemberCount} members, making the count at {Client.Guilds.Count}.", false, new EmbedBuilder {Title="Server Info", Url = arg.IconUrl, Description = text}.WithCurrentTimestamp().Build());
+                    var user = Client.GetUser(devid);
+                    await user.SendMessageAsync(
+                        $"I joined {arg.Name}, a Guild of {arg.MemberCount} members, making the count at {Client.Guilds.Count}.",
+                        false,
+                        new EmbedBuilder {Title = "Server Info", Url = arg.IconUrl, Description = text}
+                            .WithCurrentTimestamp().Build());
 
+                    try
+                    {
                         try
                         {
-                            try
-                            {
+                            var rim = (await arg.GetInvitesAsync()).FirstOrDefault() ??
+                                      await arg.DefaultChannel.CreateInviteAsync();
 
-                                var rim = (await arg.GetInvitesAsync()).FirstOrDefault() ??
-                                          await arg.DefaultChannel.CreateInviteAsync();
-
-                                await user.SendMessageAsync(
-                                    $"Here's an invite!\n{rim}");
-                            }
-                            catch
-                            {
-                                // idc
-                            }
+                            await user.SendMessageAsync(
+                                $"Here's an invite!\n{rim}");
                         }
                         catch
                         {
-                            // let it be, let it beeeeee
+                            // idc
                         }
+                    }
+                    catch
+                    {
+                        // let it be, let it beeeeee
+                    }
                 }
                 //try block so no errors :)
 
                 try
                 {
-                    await arg.CurrentUser.ModifyAsync(async idk => idk.Nickname = $"[{await SqliteClass.PrefixGetter(arg.Id)}] Hermes");
+                    await arg.CurrentUser.ModifyAsync(async idk =>
+                        idk.Nickname = $"[{await SqliteClass.PrefixGetter(arg.Id)}] Hermes");
                 }
-                catch { }
+                catch
+                {
+                }
             }
-            catch { }
+            catch
+            {
+            }
         }
 
-        internal static async Task HandleCommandResult(CustomCommandService.ICommandResult result, SocketUserMessage msg, string prefi)
+        internal static async Task HandleCommandResult(CustomCommandService.ICommandResult result,
+            SocketUserMessage msg, string prefi)
         {
             try
             {
                 await Task.Delay(10);
-                string completed = Resultformat(result.IsSuccess);
+                var completed = Resultformat(result.IsSuccess);
                 switch (result.Result)
                 {
                     case CommandStatus.Success:
-                        EmbedBuilder eb = new EmbedBuilder
+                        var eb = new EmbedBuilder
                         {
                             Color = Color.Green,
                             Title = "**Command Log**",
-                            Description = $"The Command {msg.Content[prefi.Length..]} was used in {msg.Channel.Name} of {(msg.Channel as SocketTextChannel).Guild.Name} by {msg.Author.Username + "#" + msg.Author.Discriminator}",
+                            Description =
+                                $"The Command {msg.Content[prefi.Length..]} was used in {msg.Channel.Name} of {(msg.Channel as SocketTextChannel).Guild.Name} by {msg.Author.Username + "#" + msg.Author.Discriminator}",
                             Footer = new EmbedFooterBuilder
                             {
                                 Text = "Command Autogen",
@@ -320,28 +349,32 @@ namespace Hermes
                             await g.GetTextChannel(859029290070704128).SendMessageAsync("", false, eb.Build());
                         }
                         catch
-                        { // ignore
+                        {
+                            // ignore
                         }
 
                         break;
                     case CommandStatus.BotMissingPermissions:
                         await msg.Channel.SendMessageAsync("", false, new EmbedBuilder
-                        {
-                            Title = $"I require the {result.ResultMessage} permission",
-                            Description = $"For this command to run, we require the `{result.ResultMessage}` permission.\n To understand all our required permissions, run `{await SqliteClass.PrefixGetter((msg.Channel as SocketGuildChannel).Guild.Id)}setup`",
-                            Color = Color.Red
-                        }.WithCurrentTimestamp()
-                        .Build()
+                            {
+                                Title = $"I require the {result.ResultMessage} permission",
+                                Description =
+                                    $"For this command to run, we require the `{result.ResultMessage}` permission.\n To understand all our required permissions, run `{await SqliteClass.PrefixGetter((msg.Channel as SocketGuildChannel).Guild.Id)}setup`",
+                                Color = Color.Red
+                            }.WithCurrentTimestamp()
+                            .Build()
                         );
                         break;
                     case CommandStatus.Error:
-                        if (result.Exception.GetType() == typeof(AggregateException) && result.Exception.InnerException.GetType() == typeof(Discord.Net.HttpException))
+                        if (result.Exception.GetType() == typeof(AggregateException) &&
+                            result.Exception.InnerException.GetType() == typeof(HttpException))
                         {
-                            EmbedBuilder ella = new EmbedBuilder
+                            var ella = new EmbedBuilder
                             {
                                 Color = Color.Red,
                                 Title = "**I don't have permissions!!!**",
-                                Description = "Hermes does not have the permission to do execute your command...\nThis may be because: \n1) You haven't given Hermes the needed permission for the command\n2) The user you want to mute/ban/kick is above Hermes"
+                                Description =
+                                    "Hermes does not have the permission to do execute your command...\nThis may be because: \n1) You haven't given Hermes the needed permission for the command\n2) The user you want to mute/ban/kick is above Hermes"
                             }.WithCurrentTimestamp();
                             try
                             {
@@ -351,11 +384,13 @@ namespace Hermes
                             {
                                 await msg.Channel.SendMessageAsync(embed: ella.Build());
                             }
+
                             return;
                         }
-                        else if (result.Exception.GetType() == typeof(AggregateException) && result.Exception.InnerException.GetType() == typeof(ArgumentException))
+                        else if (result.Exception.GetType() == typeof(AggregateException) &&
+                                 result.Exception.InnerException.GetType() == typeof(ArgumentException))
                         {
-                            EmbedBuilder embed = new EmbedBuilder
+                            var embed = new EmbedBuilder
                             {
                                 Title = "That operation is not allowed!",
                                 Description = "You cannot add or remove the `@everyone` role from a user",
@@ -364,21 +399,30 @@ namespace Hermes
                             await msg.Channel.SendMessageAsync(embed: embed.Build());
                             return;
                         }
-                        EmbedBuilder emb = new EmbedBuilder
+
+                        var emb = new EmbedBuilder
                         {
                             Color = Color.Red,
-                            Title = $"**An error occured in <#{msg.Channel.Id}> of Guild (ID: {(msg.Channel as SocketGuildChannel).Guild.Id})**",
-                            Description = "We are on towards fixing it! In case of any problem, DM <@701029647760097361> or <@615873008959225856>" + $"\nRefer to the below error message: ```{ string.Join("", result.Exception.Message.Take(1000))}```",
+                            Title =
+                                $"**An error occured in <#{msg.Channel.Id}> of Guild (ID: {(msg.Channel as SocketGuildChannel).Guild.Id})**",
+                            Description =
+                                "We are on towards fixing it! In case of any problem, DM <@701029647760097361> or <@615873008959225856>" +
+                                $"\nRefer to the below error message: ```{string.Join("", result.Exception.Message.Take(1000))}```"
                         }.WithCurrentTimestamp();
                         await msg.Channel.SendMessageAsync(embed: emb.Build());
-                        await Client.GetUser(701029647760097361).SendMessageAsync(embed: emb.WithDescription("We are on towards fixing it! In case of any problem, DM <@701029647760097361> or <@615873008959225856>" + $"\nRefer to the below error message: ```{ string.Join("", result.Exception.ToString())}```").Build());
+                        await Client.GetUser(701029647760097361).SendMessageAsync(embed: emb
+                            .WithDescription(
+                                "We are on towards fixing it! In case of any problem, DM <@701029647760097361> or <@615873008959225856>" +
+                                $"\nRefer to the below error message: ```{string.Join("", result.Exception.ToString())}```")
+                            .Build());
                         break;
                     case CommandStatus.MissingGuildPermission:
                         await msg.Channel.SendMessageAsync("", false, new EmbedBuilder
                         {
                             Title = "**:lock: You're Missing Permissions :lock:**",
                             Color = Color.Red,
-                            Description = $"Hey {msg.Author.Mention}, you're missing these permissions:\n{result.ResultMessage}"
+                            Description =
+                                $"Hey {msg.Author.Mention}, you're missing these permissions:\n{result.ResultMessage}"
                         }.WithCurrentTimestamp().Build());
                         break;
                     case CommandStatus.NotEnoughParams or CommandStatus.InvalidParams:
@@ -387,7 +431,8 @@ namespace Hermes
                         {
                             Title = "**That isn't how to use that command**",
                             Color = Color.Red,
-                            Description = $"Do `{pref}help {msg.Content.Split(' ')[0].Remove(0, pref.Length)}` to know how!"
+                            Description =
+                                $"Do `{pref}help {msg.Content.Split(' ')[0].Remove(0, pref.Length)}` to know how!"
                         }.WithCurrentTimestamp().Build());
                         break;
                     case CommandStatus.NotFound:
@@ -397,7 +442,8 @@ namespace Hermes
                             new EmbedBuilder
                             {
                                 Title = "Your server isn't Premium",
-                                Description = "Support us on [Patreon](https://patreon.com/rolexbot) to make this server a Premium server!",
+                                Description =
+                                    "Support us on [Patreon](https://patreon.com/rolexbot) to make this server a Premium server!",
                                 Url = "https://patreon.com/rolexbot",
                                 Color = Color.Red
                             }.WithCurrentTimestamp().Build());
@@ -406,12 +452,16 @@ namespace Hermes
                         await msg.AddReactionAsync(Cooldown);
                         break;
                     default:
-                        await Client.GetUser(701029647760097361).SendMessageAsync($"See kid Idk what happened but here it is {result.Result}\n{result.ResultMessage}\n{result.Exception}");
+                        await Client.GetUser(701029647760097361).SendMessageAsync(
+                            $"See kid Idk what happened but here it is {result.Result}\n{result.ResultMessage}\n{result.Exception}");
                         break;
                 }
             }
-            catch { }
+            catch
+            {
+            }
         }
+
         internal static string Resultformat(bool isSuccess)
         {
             if (isSuccess)
@@ -424,47 +474,48 @@ namespace Hermes
         public async Task HandleCommandAsync(SocketMessage s)
         {
 #pragma warning disable IDE0019 // Use pattern matching
-            SocketUserMessage msg = s as SocketUserMessage;
+            var msg = s as SocketUserMessage;
 #pragma warning restore IDE0019 // Use pattern matching
             try
             {
                 if (msg == null) return;
-                if (msg.Channel.GetType() == typeof(SocketDMChannel))
-                {
-                    return;
-                }
+                if (msg.Channel.GetType() == typeof(SocketDMChannel)) return;
                 var ca = msg.Content.ToCharArray();
                 if (ca.Length == 0) return;
                 var context = new ShardedCommandContext(Client, msg);
                 var prefu = await SqliteClass.PrefixGetter(context.Guild.Id);
                 try
                 {
-                    if (context.Client.CurrentUser != null && (msg.Content == $"<@{context.Client.CurrentUser.Id}>" || msg.Content == $"<@!{context.Client.CurrentUser.Id}>"))
+                    if (context.Client.CurrentUser != null && (msg.Content == $"<@{context.Client.CurrentUser.Id}>" ||
+                                                               msg.Content == $"<@!{context.Client.CurrentUser.Id}>"))
                     {
                         await context.Message.Channel.SendMessageAsync("", false, new EmbedBuilder
-                        {
-                            Title = "Hi! I am Hermes",
-                            Description = $"The prefix of your favourite role editor bot is {prefu}\nTo see documentation, come up [here](https://tiny.cc/rolexgit)",
-                            Color = CommandModuleBase.Blurple,
-                            ThumbnailUrl = context.Client.CurrentUser.GetAvatarUrl()
-                        }.WithCurrentTimestamp().Build()
+                            {
+                                Title = "Hi! I am Hermes",
+                                Description =
+                                    $"The prefix of your favourite role editor bot is {prefu}\nTo see documentation, come up [here](https://tiny.cc/rolexgit)",
+                                Color = CommandModuleBase.Blurple,
+                                ThumbnailUrl = context.Client.CurrentUser.GetAvatarUrl()
+                            }.WithCurrentTimestamp().Build()
                         );
                         return;
                     }
                 }
-                catch { }
+                catch
+                {
+                }
+
                 if (msg.Content.Length <= prefu.Length) return;
                 if (msg.Content[..prefu.Length] == prefu)
-                {
                     if (!context.User.IsBot)
-                    {
                         new Thread(async () =>
                         {
                             try
                             {
                                 var x = await _service.ExecuteAsync(context, prefu);
                                 await HandleCommandResult(x, msg, prefu);
-                                Console.WriteLine(context.User.Username + ": " + x.Result + " in channel " + context.Channel.Name + " of guild " + context.Guild.Name);
+                                Console.WriteLine(context.User.Username + ": " + x.Result + " in channel " +
+                                                  context.Channel.Name + " of guild " + context.Guild.Name);
                             }
                             catch (Exception ex)
                             {
@@ -480,15 +531,21 @@ namespace Hermes
                                 }
                             }
                         }).Start();
-                    }
-                }
             }
             catch (Exception e)
             {
                 Console.WriteLine($"We have encountered an error {e}");
-                await Client.GetUser(701029647760097361).SendMessageAsync($"There was an error in {(msg.Channel as SocketGuildChannel).Guild.Name}\n{e}");
+                await Client.GetUser(701029647760097361)
+                    .SendMessageAsync($"There was an error in {(msg.Channel as SocketGuildChannel).Guild.Name}\n{e}");
                 await Task.Delay(2000);
             }
+        }
+
+        private enum RequirementType
+        {
+            RoleReq,
+            WeeklyReq,
+            AmariLevelReq
         }
     }
 }

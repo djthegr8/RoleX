@@ -9,7 +9,8 @@ namespace Hermes.Modules.General
     [DiscordCommandClass("General", "General commands for all!")]
     public class _8ball : CommandModuleBase
     {
-        private static string[] Answers = {
+        private static readonly string[] Answers =
+        {
             "It is certain.",
             "It is decidedly so.",
             "Without a doubt.",
@@ -29,9 +30,11 @@ namespace Hermes.Modules.General
             "My reply is no.",
             "My sources say no.",
             "Outlook not so good.",
-            "Very doubtful.",
+            "Very doubtful."
         };
-        [DiscordCommand("8ball", commandHelp = "8ball <question>", description = "Asks the 8ball a question", example = "8ball Will I ever succeed?`\n> Absolutely not.")]
+
+        [DiscordCommand("8ball", commandHelp = "8ball <question>", description = "Asks the 8ball a question",
+            example = "8ball Will I ever succeed?`\n> Absolutely not.")]
         public async Task _8ballCmd(params string[] args)
         {
             if (args.Length == 0)
@@ -41,17 +44,18 @@ namespace Hermes.Modules.General
                 await Context.Channel.SendMessageAsync("", false, new EmbedBuilder
                 {
                     Title = "Sorry what?",
-                    Description = "The magic 8 ball knows everything except what you are thinking <:thinkcat:780422740091338772>",
+                    Description =
+                        "The magic 8 ball knows everything except what you are thinking <:thinkcat:780422740091338772>",
                     Color = Color.Red
                 }.WithCurrentTimestamp().Build());
                 return;
             }
 
-            string question = string.Join(" ", Context.Message.Content.Split(' ').Skip(1));
+            var question = string.Join(" ", Context.Message.Content.Split(' ').Skip(1));
 
-            int seed = 0;
+            var seed = 0;
 
-            foreach (char c in question)
+            foreach (var c in question)
                 seed += c;
 
             var indx = new Random(seed).Next(Answers.Length);
@@ -63,11 +67,11 @@ namespace Hermes.Modules.General
                 Author = new EmbedAuthorBuilder
                 {
                     IconUrl = av,
-                    Name = Context.User.Username,
+                    Name = Context.User.Username
                 },
                 Description = $"```{question}```\n> **{Answers[indx]}**",
-                Color = Blurple,
+                Color = Blurple
             }.WithCurrentTimestamp().Build());
         }
     }
-    }
+}

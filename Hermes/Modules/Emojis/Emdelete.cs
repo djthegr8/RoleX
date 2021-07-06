@@ -1,8 +1,8 @@
-using Discord;
-using Hermes.Modules.Services;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Discord;
+using Hermes.Modules.Services;
 
 namespace Hermes.Modules.Emojis
 {
@@ -10,7 +10,8 @@ namespace Hermes.Modules.Emojis
     public class Emdelete : CommandModuleBase
     {
         [RequiredUserPermissions(GuildPermission.ManageEmojis)]
-        [DiscordCommand("emdelete", description = "Deletes given emoji.", example = "emdelete kekw", commandHelp = "emrename emoji_name")]
+        [DiscordCommand("emdelete", description = "Deletes given emoji.", example = "emdelete kekw",
+            commandHelp = "emrename emoji_name")]
         public async Task EMDEL(params string[] args)
         {
             if (args.Length == 0)
@@ -18,11 +19,13 @@ namespace Hermes.Modules.Emojis
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Emoji not provided",
-                    Description = $"Command Syntax: `{await SqliteClass.PrefixGetter(Context.Guild.Id)}emdelete emote_name`",
+                    Description =
+                        $"Command Syntax: `{await SqliteClass.PrefixGetter(Context.Guild.Id)}emdelete emote_name`",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
             }
+
             if (await GetEmote(args[0]) == null)
             {
                 await ReplyAsync("", false, new EmbedBuilder
@@ -33,22 +36,26 @@ namespace Hermes.Modules.Emojis
                 }.WithCurrentTimestamp());
                 return;
             }
+
             var i = await GetEmote(args[0]);
-            Emote cros = Emote.Parse("<a:cros:859033035545378826>");
-            Emote tickk = Emote.Parse("<a:tick:859032462410907649>");
+            var cros = Emote.Parse("<a:cros:859033035545378826>");
+            var tickk = Emote.Parse("<a:tick:859032462410907649>");
             var gc = Guid.NewGuid();
-            var cb = new ComponentBuilder().
-                WithButton("", $"{gc}Tick", ButtonStyle.Secondary, tickk).
-                WithButton("", $"{gc}Cros", ButtonStyle.Secondary, cros);
-            await Context.Channel.SendMessageAsync($"Are you sure you want to delete {i}?\nThis is a potentially destructive action.", component: cb.Build());
-            CancellationTokenSource cancelSource = new CancellationTokenSource();
+            var cb = new ComponentBuilder().WithButton("", $"{gc}Tick", ButtonStyle.Secondary, tickk)
+                .WithButton("", $"{gc}Cros", ButtonStyle.Secondary, cros);
+            await Context.Channel.SendMessageAsync(
+                $"Are you sure you want to delete {i}?\nThis is a potentially destructive action.",
+                component: cb.Build());
+            var cancelSource = new CancellationTokenSource();
             cancelSource.CancelAfter(15000);
-            var Interaction = await InteractionHandler.NextButtonAsync(k => k.Data.CustomId.Contains(gc.ToString()) && k.User.Id == Context.User.Id, cancelSource.Token);
+            var Interaction = await InteractionHandler.NextButtonAsync(
+                k => k.Data.CustomId.Contains(gc.ToString()) && k.User.Id == Context.User.Id, cancelSource.Token);
             if (Interaction == null)
             {
                 await ReplyAsync("No response received!");
                 return;
             }
+
             await Interaction.AcknowledgeAsync();
             var isTick = Interaction.Data.CustomId.Contains("Tick");
             if (!isTick)
@@ -61,6 +68,7 @@ namespace Hermes.Modules.Emojis
                 }.WithCurrentTimestamp().Build());
                 return;
             }
+
             var in_ = i.Name;
             await Context.Guild.DeleteEmoteAsync(i);
             await ReplyAsync("", false, new EmbedBuilder
@@ -69,7 +77,6 @@ namespace Hermes.Modules.Emojis
                 Description = $"`:{in_}:` was deleted successfully!",
                 Color = Blurple
             }.WithCurrentTimestamp());
-
         }
     }
 }

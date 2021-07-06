@@ -9,7 +9,8 @@ namespace Hermes.Modules.Moderation
     public class Unmute : CommandModuleBase
     {
         [RequiredUserPermissions(GuildPermission.ManageRoles)]
-        [DiscordCommand("unmute", commandHelp = "unmute <@user>", example = "unmute @RegretfulMan", description = "Unmutes given user")]
+        [DiscordCommand("unmute", commandHelp = "unmute <@user>", example = "unmute @RegretfulMan",
+            description = "Unmutes given user")]
         public async Task RUnmute(params string[] args)
         {
             if (args.Length == 0)
@@ -33,11 +34,16 @@ namespace Hermes.Modules.Moderation
                 }.WithCurrentTimestamp());
                 return;
             }
+
             try
             {
-                await (await GetUser(args[0])).RemoveRoleAsync(Context.Guild.GetRole(await MutedRoleIdGetter(Context.Guild.Id)));
+                await (await GetUser(args[0])).RemoveRoleAsync(
+                    Context.Guild.GetRole(await MutedRoleIdGetter(Context.Guild.Id)));
             }
-            catch { }
+            catch
+            {
+            }
+
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "User unmuted successfully!",

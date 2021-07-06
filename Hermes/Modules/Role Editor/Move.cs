@@ -12,7 +12,8 @@ namespace Hermes.Modules.Role_Editor
     {
         [Alt("moverole")]
         [RequiredUserPermissions(GuildPermission.ManageRoles, GuildPermission.ManageGuild)]
-        [DiscordCommand("move", commandHelp = "move <@role-to-be-moved> <@role-to-be-placed-below>", description = "Moves a role below the given second role", example = "move @Moderator @Admin")]
+        [DiscordCommand("move", commandHelp = "move <@role-to-be-moved> <@role-to-be-placed-below>",
+            description = "Moves a role below the given second role", example = "move @Moderator @Admin")]
         public async Task CreateRole(params string[] args)
         {
             switch (args.Length)
@@ -21,11 +22,13 @@ namespace Hermes.Modules.Role_Editor
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "Insufficient Parameters",
-                        Description = $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}move <@role-to-be-moved> <@role-to-be-placed-below>`",
+                        Description =
+                            $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}move <@role-to-be-moved> <@role-to-be-placed-below>`",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
                     return;
             }
+
             var rlD = GetRole(args[0]);
             var rlA = GetRole(args[1]);
             if (rlD == null || rlA == null)
@@ -33,12 +36,16 @@ namespace Hermes.Modules.Role_Editor
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Couldn't find the role",
-                    Description = $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}move <@role-to-be-moved> <@role-to-be-placed-below>`",
+                    Description =
+                        $"The way to use the command is \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}move <@role-to-be-moved> <@role-to-be-placed-below>`",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
             }
-            if (((Context.User as SocketGuildUser).Roles.Max().Position <= rlA.Position || (Context.User as SocketGuildUser).Roles.Max().Position <= rlD.Position) && Context.Guild.OwnerId != Context.User.Id && devids.All(k => k != Context.User.Id))
+
+            if (((Context.User as SocketGuildUser).Roles.Max().Position <= rlA.Position ||
+                 (Context.User as SocketGuildUser).Roles.Max().Position <= rlD.Position) &&
+                Context.Guild.OwnerId != Context.User.Id && devids.All(k => k != Context.User.Id))
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
@@ -48,6 +55,7 @@ namespace Hermes.Modules.Role_Editor
                 }.WithCurrentTimestamp());
                 return;
             }
+
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "Role Moved Successfully",

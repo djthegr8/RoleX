@@ -11,7 +11,8 @@ namespace Hermes.Modules.Channel_Permission
         [Alt("catre")]
         [Alt("catrename")]
         [RequiredUserPermissions(GuildPermission.ManageChannels, GuildPermission.ManageGuild)]
-        [DiscordCommand("categoryrename", commandHelp = "categoryrename <old-category-name> <new-category-name>", description = "Renames given category", example = "categoryrename Trading Xtreme Trading")]
+        [DiscordCommand("categoryrename", commandHelp = "categoryrename <old-category-name> <new-category-name>",
+            description = "Renames given category", example = "categoryrename Trading Xtreme Trading")]
         public async Task CatRename(params string[] args)
         {
             if (args.Length < 2)
@@ -19,11 +20,13 @@ namespace Hermes.Modules.Channel_Permission
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Insufficient Parameters!",
-                    Description = $"Command Syntax: \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}categoryrename <old-category-name> <new-category-name>`",
+                    Description =
+                        $"Command Syntax: \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}categoryrename <old-category-name> <new-category-name>`",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
             }
+
             var alf = GetCategory(args[0]);
             if (alf == null)
             {
@@ -35,6 +38,7 @@ namespace Hermes.Modules.Channel_Permission
                 }.WithCurrentTimestamp());
                 return;
             }
+
             await alf.ModifyAsync(x => x.Name = string.Join(' ', args.Skip(1)));
             await ReplyAsync("", false, new EmbedBuilder
             {

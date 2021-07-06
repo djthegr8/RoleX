@@ -12,7 +12,8 @@ namespace Hermes.Modules.Moderation
     public class Kick : CommandModuleBase
     {
         [RequiredUserPermissions(GuildPermission.KickMembers)]
-        [DiscordCommand("kick", commandHelp = "kick <@user> <reason>", example = "kick @NotAScammer Scamming my friend", description = "Kicks the specified user")]
+        [DiscordCommand("kick", commandHelp = "kick <@user> <reason>", example = "kick @NotAScammer Scamming my friend",
+            description = "Kicks the specified user")]
         public async Task Kicker(params string[] args)
         {
             if (args.Length == 0)
@@ -25,13 +26,11 @@ namespace Hermes.Modules.Moderation
                 }.WithCurrentTimestamp());
                 return;
             }
+
             if (await GetUser(args[0]) != null || Context.Message.MentionedUsers.Any())
             {
                 var gUser = await GetUser(args[0]);
-                if (gUser == null)
-                {
-                    gUser = Context.Message.MentionedUsers.First() as SocketGuildUser;
-                }
+                if (gUser == null) gUser = Context.Message.MentionedUsers.First() as SocketGuildUser;
                 if (gUser.Hierarchy < (Context.User as SocketGuildUser).Hierarchy)
                 {
                     if (gUser.Hierarchy >= Context.Guild.CurrentUser.Hierarchy)
@@ -44,10 +43,12 @@ namespace Hermes.Modules.Moderation
                         }.WithCurrentTimestamp());
                         return;
                     }
+
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = $"{gUser.Username}#{gUser.Discriminator} Kicked Successfully!",
-                        Description = $"Reason: {(args.Length > 1 ? string.Join(' ', args.Skip(1)) : $"Requested by { Context.User.Username }#{Context.User.Discriminator}")}",
+                        Description =
+                            $"Reason: {(args.Length > 1 ? string.Join(' ', args.Skip(1)) : $"Requested by {Context.User.Username}#{Context.User.Discriminator}")}",
                         Color = Blurple
                     }.WithCurrentTimestamp());
                     try
@@ -55,13 +56,20 @@ namespace Hermes.Modules.Moderation
                         await gUser.SendMessageAsync("", false, new EmbedBuilder
                         {
                             Title = "Oops, you were kicked!",
-                            Description = $"You were kicked from **{Context.Guild.Name}** by {Context.User.Mention} {(args.Length > 1 ? $"Reason:{args[1]}" : "")}\n[Click here to appeal]({(await AppealGetter(Context.Guild.Id) == "" ? "" : await AppealGetter(Context.Guild.Id))})",
+                            Description =
+                                $"You were kicked from **{Context.Guild.Name}** by {Context.User.Mention} {(args.Length > 1 ? $"Reason:{args[1]}" : "")}\n[Click here to appeal]({(await AppealGetter(Context.Guild.Id) == "" ? "" : await AppealGetter(Context.Guild.Id))})",
                             Color = Color.Red
                         }.WithCurrentTimestamp().Build());
                     }
-                    catch { }
-                    await gUser.KickAsync(args.Length > 1 ? string.Join(' ', args.Skip(1)) : $"Requested by {Context.User.Username}#{Context.User.Discriminator}");
-                    await AddToModlogs(Context.Guild.Id, gUser.Id, Context.User.Id, Punishment.Kick, DateTime.Now, args.Length > 1 ? string.Join(' ', args.Skip(1)) : "");
+                    catch
+                    {
+                    }
+
+                    await gUser.KickAsync(args.Length > 1
+                        ? string.Join(' ', args.Skip(1))
+                        : $"Requested by {Context.User.Username}#{Context.User.Discriminator}");
+                    await AddToModlogs(Context.Guild.Id, gUser.Id, Context.User.Id, Punishment.Kick, DateTime.Now,
+                        args.Length > 1 ? string.Join(' ', args.Skip(1)) : "");
                     return;
                 }
 
@@ -75,6 +83,7 @@ namespace Hermes.Modules.Moderation
                     }.WithCurrentTimestamp());
                     return;
                 }
+
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Not gonna happen",

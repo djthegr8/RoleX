@@ -21,11 +21,13 @@ namespace Hermes.Modules.Developer
                     await ReplyAsync("Why are you like this <:noob:756055614861344849>");
                     return;
                 }
+
                 if (await SqliteClass.PremiumOrNot(guild.Id))
                 {
                     await ReplyAsync("Making a server premium 2 times gets u nothing so shut up and die");
                     return;
                 }
+
                 await SqliteClass.NonQueryFunctionCreator(
                     $"UPDATE prefixes SET Premium = 1 WHERE guildid = {Context.Guild.Id};");
                 await ReplyAsync($"Made the server {guild.Name} premium, will DM owner with the good news!");
@@ -47,22 +49,20 @@ namespace Hermes.Modules.Developer
 
                 try
                 {
-                    var sc =  guild.SystemChannel;
+                    var sc = guild.SystemChannel;
                     if (sc != null)
-                    {
                         await sc.SendMessageAsync(embed: embed);
-                    }
                     else
-                    {
-                        await guild.DefaultChannel.SendMessageAsync(embed:embed);
-                    }
-
+                        await guild.DefaultChannel.SendMessageAsync(embed: embed);
                 }
                 catch
                 {
                     // let it be, let it beee
                 }
-                devids.ForEach(id => Program.Client.GetUser(id).SendMessageAsync($"The server {guild.Name} just went premium <a:vibing:782998739865305089>"));
+
+                devids.ForEach(id =>
+                    Program.Client.GetUser(id)
+                        .SendMessageAsync($"The server {guild.Name} just went premium <a:vibing:782998739865305089>"));
             }
         }
     }

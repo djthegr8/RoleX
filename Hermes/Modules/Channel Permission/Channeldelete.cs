@@ -1,8 +1,8 @@
-using Discord;
-using Hermes.Modules.Services;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Discord;
+using Hermes.Modules.Services;
 
 namespace Hermes.Modules.Channel_Permission
 {
@@ -12,8 +12,8 @@ namespace Hermes.Modules.Channel_Permission
         [RequiredUserPermissions(GuildPermission.ManageChannels)]
         [Alt("chdel")]
         [Alt("chdelete")]
-
-        [DiscordCommand("channeldelete", description = "Deletes specified channel", example = "channeldelete #general", commandHelp = "channeldelete <#channel>")]
+        [DiscordCommand("channeldelete", description = "Deletes specified channel", example = "channeldelete #general",
+            commandHelp = "channeldelete <#channel>")]
         public async Task Cdel(params string[] ags)
         {
             if (ags.Length == 0)
@@ -32,18 +32,23 @@ namespace Hermes.Modules.Channel_Permission
                 }.WithCurrentTimestamp());
                 return;
             }
-            Emote cros = Emote.Parse("<a:cros:859033035545378826>");
-            Emote tickk = Emote.Parse("<a:tick:859032462410907649>");
+
+            var cros = Emote.Parse("<a:cros:859033035545378826>");
+            var tickk = Emote.Parse("<a:tick:859032462410907649>");
             var gc = Guid.NewGuid();
-            var cb = new ComponentBuilder().
-                WithButton("", $"{gc}Tick", ButtonStyle.Secondary, tickk).
-                WithButton("", $"{gc}Cros", ButtonStyle.Secondary, cros);
-            var ram = await Context.Channel.SendMessageAsync($"Are you sure you want to delete <#{aaa.Id}>?\nThis is a potentially destructive action.", component: cb.Build());
-            CancellationTokenSource cancelSource = new CancellationTokenSource();
+            var cb = new ComponentBuilder().WithButton("", $"{gc}Tick", ButtonStyle.Secondary, tickk)
+                .WithButton("", $"{gc}Cros", ButtonStyle.Secondary, cros);
+            var ram = await Context.Channel.SendMessageAsync(
+                $"Are you sure you want to delete <#{aaa.Id}>?\nThis is a potentially destructive action.",
+                component: cb.Build());
+            var cancelSource = new CancellationTokenSource();
             cancelSource.CancelAfter(15000);
-            var Interaction = await InteractionHandler.NextButtonAsync(k => k.Data.CustomId.Contains(gc.ToString()) && k.User.Id == Context.User.Id, cancelSource.Token);
+            var Interaction = await InteractionHandler.NextButtonAsync(
+                k => k.Data.CustomId.Contains(gc.ToString()) && k.User.Id == Context.User.Id, cancelSource.Token);
             if (Interaction == null)
+            {
                 await Context.Channel.SendMessageAsync("No response received!");
+            }
             else
             {
                 await Interaction.AcknowledgeAsync();
@@ -58,6 +63,7 @@ namespace Hermes.Modules.Channel_Permission
                     }.WithCurrentTimestamp().Build());
                     return;
                 }
+
                 await aaa.DeleteAsync();
                 try
                 {

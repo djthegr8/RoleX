@@ -6,9 +6,11 @@ namespace Hermes.Modules.Services
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public class RequiredUserPermissions : Attribute
     {
-        public GuildPermission[] Permissions { get; set; }
-
         public RequiredUserPermissions(params GuildPermission[] perms)
-            => Permissions = perms;
+        {
+            Permissions = perms;
+        }
+
+        public GuildPermission[] Permissions { get; set; }
     }
 }

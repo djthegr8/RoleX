@@ -11,12 +11,17 @@ namespace Hermes.Modules.Webhooks
     public class Addwh : CommandModuleBase
     {
         [RequiredUserPermissions(GuildPermission.ManageWebhooks)]
-        [DiscordCommand("addwh", commandHelp = "addwh <#channel> <Webhook-Name> <WebhookAvatarUrl>", description = "Creates a new webhook in given channel of given name, avatar & DMs the Webhook URL", example = "addwh #memes MemeWebhook https://tiny.cc/joketoyou")]
+        [DiscordCommand("addwh", commandHelp = "addwh <#channel> <Webhook-Name> <WebhookAvatarUrl>",
+            description = "Creates a new webhook in given channel of given name, avatar & DMs the Webhook URL",
+            example = "addwh #memes MemeWebhook https://tiny.cc/joketoyou")]
         public async Task AddWH(params string[] args)
         {
             SocketTextChannel achan;
             MemoryStream pfp;
-            if (args.Length == 0) achan = Context.Channel as SocketTextChannel;
+            if (args.Length == 0)
+            {
+                achan = Context.Channel as SocketTextChannel;
+            }
             else
             {
                 achan = GetChannel(args[0]) as SocketTextChannel;
@@ -31,24 +36,29 @@ namespace Hermes.Modules.Webhooks
                     return;
                 }
             }
-            var weh = await achan.CreateWebhookAsync(args.Length <= 1 ? $"Hermes Created Webhook (Requester ID:{Context.User.Id})" : args[1]);
+
+            var weh = await achan.CreateWebhookAsync(args.Length <= 1
+                ? $"Hermes Created Webhook (Requester ID:{Context.User.Id})"
+                : args[1]);
             if (args.Length > 2)
-            {
                 try
                 {
                     pfp = new MemoryStream(new WebClient().DownloadData(args[2]));
                     await weh.ModifyAsync(x => x.Image = new Image(pfp));
                 }
-                catch { }
-            }
+                catch
+                {
+                }
+
             await (await Context.User.CreateDMChannelAsync()).SendMessageAsync("", false, new EmbedBuilder
-            {
-                Title = "New Webhook Creation Successful",
-                Description = $"**Name:** {weh.Name}\n**Channel:** <#{weh.ChannelId}>\n**Link:** [Click here or on the title](https://discordapp.com/api/webhooks/{weh.Id}/{weh.Token})",
-                Url = $"https://discordapp.com/api/webhooks/{weh.Id}/{weh.Token}",
-                ImageUrl = weh.GetAvatarUrl(),
-                Color = Blurple
-            }.WithCurrentTimestamp().Build()
+                {
+                    Title = "New Webhook Creation Successful",
+                    Description =
+                        $"**Name:** {weh.Name}\n**Channel:** <#{weh.ChannelId}>\n**Link:** [Click here or on the title](https://discordapp.com/api/webhooks/{weh.Id}/{weh.Token})",
+                    Url = $"https://discordapp.com/api/webhooks/{weh.Id}/{weh.Token}",
+                    ImageUrl = weh.GetAvatarUrl(),
+                    Color = Blurple
+                }.WithCurrentTimestamp().Build()
             );
             await ReplyAsync(Context.User.Mention, false, new EmbedBuilder
             {

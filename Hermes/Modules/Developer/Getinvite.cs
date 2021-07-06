@@ -15,27 +15,31 @@ namespace Hermes.Modules.Developer
         {
             if (devids.Any(x => x == Context.User.Id))
             {
-                if (args.Length == 0 || !ulong.TryParse(args[0], out ulong _)) { await ReplyAsync("Why are you like this <:noob:756055614861344849>"); return; }
-                ulong x = ulong.Parse(args[0]);
+                if (args.Length == 0 || !ulong.TryParse(args[0], out var _))
+                {
+                    await ReplyAsync("Why are you like this <:noob:756055614861344849>");
+                    return;
+                }
+
+                var x = ulong.Parse(args[0]);
                 try
                 {
                     var gild = Program.Client.GetGuild(x);
                     if (gild == null) throw new ArgumentException();
                     var aaa = (await gild.GetInvitesAsync()).FirstOrDefault();
-                    if (aaa == default(RestInviteMetadata))
-                    {
-                        throw new Exception();
-                    }
+                    if (aaa == default(RestInviteMetadata)) throw new Exception();
                     await Context.User.SendMessageAsync(aaa.Url);
                 }
                 catch (ArgumentException)
                 {
-                    await ReplyAsync("Why are you like this <:noob:756055614861344849> (that server exists only in yer fantasies)");
+                    await ReplyAsync(
+                        "Why are you like this <:noob:756055614861344849> (that server exists only in yer fantasies)");
                 }
                 catch
                 {
-                    await ReplyAsync($"I don't fricking have perms, but hey u can DM the owner. He is <@{Program.Client.GetGuild(x).OwnerId}>");
-                } 
+                    await ReplyAsync(
+                        $"I don't fricking have perms, but hey u can DM the owner. He is <@{Program.Client.GetGuild(x).OwnerId}>");
+                }
             }
         }
     }

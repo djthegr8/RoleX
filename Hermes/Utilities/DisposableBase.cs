@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Reactive.Subjects;
 
-namespace Hermes.Utilities {
-    public class DisposableBase : IDisposable {
-        public ISubject<DisposableBase> Disposed { get; private set; } = new Subject<DisposableBase>();
+namespace Hermes.Utilities
+{
+    public class DisposableBase : IDisposable
+    {
+        public ISubject<DisposableBase> Disposed { get; } = new Subject<DisposableBase>();
         public bool IsDisposed { get; private set; }
-        public void Dispose() {
+
+        public void Dispose()
+        {
             if (!IsDisposed) DisposeInternal();
         }
 
-        protected virtual void DisposeInternal() {
+        protected virtual void DisposeInternal()
+        {
             IsDisposed = true;
             Disposed.OnNext(this);
             (Disposed as IDisposable)?.Dispose();

@@ -18,15 +18,19 @@ namespace Hermes.Modules.Developer
         {
             if (devids.Any(x => x == Context.User.Id))
             {
-                var joined = string.Join(" ",Context.Message.Content.Replace("```cs", "").Replace("```","").Split(' ').Skip(1));
-                var create = CSharpScript.Create(joined, ScriptOptions.Default.WithImports("System", "System.Threading.Tasks", "System.Linq").WithReferences(Assembly.GetAssembly(typeof(EmbedBuilder)), Assembly.GetAssembly(typeof(DiscordWebhookClient)), Assembly.GetExecutingAssembly()).WithImports("Discord", "Discord.WebSocket"),
+                var joined = string.Join(" ",
+                    Context.Message.Content.Replace("```cs", "").Replace("```", "").Split(' ').Skip(1));
+                var create = CSharpScript.Create(joined,
+                    ScriptOptions.Default.WithImports("System", "System.Threading.Tasks", "System.Linq")
+                        .WithReferences(Assembly.GetAssembly(typeof(EmbedBuilder)),
+                            Assembly.GetAssembly(typeof(DiscordWebhookClient)), Assembly.GetExecutingAssembly())
+                        .WithImports("Discord", "Discord.WebSocket"),
                     typeof(CustomCommandGlobals));
                 try
                 {
                     var state = await create.RunAsync(new CustomCommandGlobals(Context));
                     if (state.ReturnValue == null)
                         await Context.Message.AddReactionAsync(Emote.Parse("<a:tick:859032462410907649>"));
-
                 }
                 catch (CompilationErrorException cee)
                 {
@@ -41,8 +45,6 @@ namespace Hermes.Modules.Developer
                 {
                     // um irdc
                 }
-                
-                
             }
         }
     }

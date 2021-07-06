@@ -6,7 +6,7 @@ namespace Hermes.Utilities
     public static class TaskEx
     {
         /// <summary>
-        /// Blocks while condition is true or timeout occurs.
+        ///     Blocks while condition is true or timeout occurs.
         /// </summary>
         /// <param name="condition">The condition that will perpetuate the block.</param>
         /// <param name="frequency">The frequency at which the condition will be check, in milliseconds.</param>
@@ -25,7 +25,7 @@ namespace Hermes.Utilities
         }
 
         /// <summary>
-        /// Blocks until condition is true or timeout occurs.
+        ///     Blocks until condition is true or timeout occurs.
         /// </summary>
         /// <param name="condition">The break condition.</param>
         /// <param name="frequency">The frequency at which the condition will be checked.</param>
@@ -39,7 +39,7 @@ namespace Hermes.Utilities
             });
 
             if (waitTask != await Task.WhenAny(waitTask,
-                    Task.Delay(timeout)))
+                Task.Delay(timeout)))
                 throw new TimeoutException();
         }
     }

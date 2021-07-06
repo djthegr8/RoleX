@@ -1,8 +1,8 @@
-using Discord;
-using Hermes.Modules.Services;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Discord;
+using Hermes.Modules.Services;
 
 namespace Hermes.Modules.Channel_Permission
 {
@@ -11,10 +11,11 @@ namespace Hermes.Modules.Channel_Permission
     {
         [RequiredUserPermissions(GuildPermission.ManageChannels)]
         [Alt("catdel")]
-        [DiscordCommand("categorydelete", commandHelp = "categorydelete <category-name>", description = "Deletes given category and all its channels", example = "categorydelete Useless")]
+        [DiscordCommand("categorydelete", commandHelp = "categorydelete <category-name>",
+            description = "Deletes given category and all its channels", example = "categorydelete Useless")]
         public async Task CatDel(params string[] aa)
         {
-            if (aa.Length == 0) aa = new[] { Context.Channel.Id.ToString() };
+            if (aa.Length == 0) aa = new[] {Context.Channel.Id.ToString()};
             var alf = GetCategory(aa[0]);
             if (alf == null)
             {
@@ -26,21 +27,25 @@ namespace Hermes.Modules.Channel_Permission
                 }.WithCurrentTimestamp());
                 return;
             }
-            Emote cros = Emote.Parse("<a:cros:859033035545378826>");
-            Emote tickk = Emote.Parse("<a:tick:859032462410907649>");
+
+            var cros = Emote.Parse("<a:cros:859033035545378826>");
+            var tickk = Emote.Parse("<a:tick:859032462410907649>");
             var gc = Guid.NewGuid();
-            var cb = new ComponentBuilder().
-                WithButton("", $"{gc}Tick", ButtonStyle.Secondary, tickk).
-                WithButton("", $"{gc}Cros", ButtonStyle.Secondary, cros);
-            var ram = await Context.Channel.SendMessageAsync($"Are you sure you want to delete `{alf.Name}`?\nThis is a potentially destructive action.", component: cb.Build());
-            CancellationTokenSource cancelSource = new CancellationTokenSource();
+            var cb = new ComponentBuilder().WithButton("", $"{gc}Tick", ButtonStyle.Secondary, tickk)
+                .WithButton("", $"{gc}Cros", ButtonStyle.Secondary, cros);
+            var ram = await Context.Channel.SendMessageAsync(
+                $"Are you sure you want to delete `{alf.Name}`?\nThis is a potentially destructive action.",
+                component: cb.Build());
+            var cancelSource = new CancellationTokenSource();
             cancelSource.CancelAfter(15000);
-            var Interaction = await InteractionHandler.NextButtonAsync(k => k.Data.CustomId.Contains(gc.ToString()) && k.User.Id == Context.User.Id, cancelSource.Token);
+            var Interaction = await InteractionHandler.NextButtonAsync(
+                k => k.Data.CustomId.Contains(gc.ToString()) && k.User.Id == Context.User.Id, cancelSource.Token);
             if (Interaction == null)
             {
                 await Context.Channel.SendMessageAsync("No response received!");
                 return;
             }
+
             var isTick = Interaction.Data.CustomId.Contains("Tick");
             await Interaction.AcknowledgeAsync();
             if (!isTick)
@@ -54,10 +59,7 @@ namespace Hermes.Modules.Channel_Permission
                 return;
             }
 
-            foreach (var ch in alf.Channels)
-            {
-                await ch.DeleteAsync();
-            }
+            foreach (var ch in alf.Channels) await ch.DeleteAsync();
             await alf.DeleteAsync();
             try
             {
@@ -72,9 +74,6 @@ namespace Hermes.Modules.Channel_Permission
             {
                 Console.WriteLine("Cat del'd");
             }
-
         }
-
-
     }
 }

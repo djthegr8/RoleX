@@ -10,7 +10,8 @@ namespace Hermes.Modules.Emojis
     public class Emrename : CommandModuleBase
     {
         [RequiredUserPermissions(GuildPermission.ManageEmojis)]
-        [DiscordCommand("emrename", commandHelp = "emrename :old_emote: new_emote_name", description = "Renames provided emoji :)", example ="emrename kek kekw")]
+        [DiscordCommand("emrename", commandHelp = "emrename :old_emote: new_emote_name",
+            description = "Renames provided emoji :)", example = "emrename kek kekw")]
         public async Task EmRename(params string[] args)
         {
             if (args.Length < 2 || await GetEmote(args[0]) == null)
@@ -18,11 +19,13 @@ namespace Hermes.Modules.Emojis
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "What emoji and what name?",
-                    Description = $"Command Syntax: `{await SqliteClass.PrefixGetter(Context.Guild.Id)}emrename old_emote new_emote_name`",
+                    Description =
+                        $"Command Syntax: `{await SqliteClass.PrefixGetter(Context.Guild.Id)}emrename old_emote new_emote_name`",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
             }
+
             var em = await GetEmote(args[0]);
             var strj = string.Join('_', args.Skip(1));
             var regex = new Regex("[^a-zA-Z0-9_]");
@@ -31,11 +34,13 @@ namespace Hermes.Modules.Emojis
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Invalid emote name!",
-                    Description = "The emote name must contain only letters, numbers, and underscores and has to be at least 2 and at max 32 characters in length.",
+                    Description =
+                        "The emote name must contain only letters, numbers, and underscores and has to be at least 2 and at max 32 characters in length.",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
             }
+
             await Context.Guild.ModifyEmoteAsync(em, k => k.Name = strj);
             await ReplyAsync(embed: new EmbedBuilder
             {

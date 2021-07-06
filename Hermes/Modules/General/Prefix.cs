@@ -8,7 +8,8 @@ namespace Hermes.Modules.General
     public class Prefix : CommandModuleBase
     {
         [RequiredUserPermissions(GuildPermission.ManageGuild)]
-        [DiscordCommand("prefix", commandHelp ="prefix <newprefix>", description ="Changes the prefix!", example ="prefix !")]
+        [DiscordCommand("prefix", commandHelp = "prefix <newprefix>", description = "Changes the prefix!",
+            example = "prefix !")]
         public async Task Pre(params string[] args)
         {
             if (args.Length == 0)
@@ -20,11 +21,12 @@ namespace Hermes.Modules.General
                     Color = Blurple,
                     Footer = new EmbedFooterBuilder
                     {
-                        Text= $"Do {await SqliteClass.PrefixGetter(Context.Guild.Id)}prefix <prefix> to change it!"
+                        Text = $"Do {await SqliteClass.PrefixGetter(Context.Guild.Id)}prefix <prefix> to change it!"
                     }
                 }.WithCurrentTimestamp());
                 return;
             }
+
             await SqliteClass.PrefixAdder(Context.Guild.Id, args[0]);
             await ReplyAsync("", false, new EmbedBuilder
             {
@@ -36,7 +38,8 @@ namespace Hermes.Modules.General
                     Text = "Bot nickname updated to reflect prefix changes"
                 }
             }.WithCurrentTimestamp());
-            await Context.Guild.CurrentUser.ModifyAsync(async dood => dood.Nickname = $"[{await SqliteClass.PrefixGetter(Context.Guild.Id)}] Hermes");
+            await Context.Guild.CurrentUser.ModifyAsync(async dood =>
+                dood.Nickname = $"[{await SqliteClass.PrefixGetter(Context.Guild.Id)}] Hermes");
         }
     }
 }

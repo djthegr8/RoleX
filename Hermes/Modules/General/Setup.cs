@@ -8,7 +8,7 @@ namespace Hermes.Modules.General
     [DiscordCommandClass("General", "General commands for all!")]
     public class Setup : CommandModuleBase
     {
-        [DiscordCommand("setup", commandHelp ="setup", description ="Helps set the bot up!")]
+        [DiscordCommand("setup", commandHelp = "setup", description = "Helps set the bot up!")]
         public async Task RSetup(params string[] _)
         {
             var x = "";
@@ -22,21 +22,27 @@ namespace Hermes.Modules.General
             x += $"Roles:        {(Context.Guild.CurrentUser.GuildPermissions.ManageRoles ? "✅" : "❌")}\n";
             x += $"Webhooks:     {(Context.Guild.CurrentUser.GuildPermissions.ManageWebhooks ? "✅" : "❌")}\n";
             await ReplyAsync("", false, new EmbedBuilder
-            {
-                Title = "Setting Up Hermes",
-                ThumbnailUrl = Context.Client == null ? "" : Context.Client.CurrentUser.GetAvatarUrl(),
-                Description = (await SqliteClass.PremiumOrNot(Context.Guild.Id)) ? "Whoa you're premium 🤩" : "Hermes is a bot that requires various permissions to do various tasks.",
-                Fields = {new EmbedFieldBuilder
                 {
-                    Name = "Permissions",
-                    Value = $"```{x}```"
-                } },
-                Color = Context.Guild.CurrentUser.GuildPermissions.Administrator ? Color.Green : (x.Count(k => k == '✅') == 7 ? Color.Green : Color.Red),
-                Footer = new EmbedFooterBuilder
-                {
-                    Text = "Command Inspired from LuminousBot (ID: 722435272532426783)"
-                }
-            }.WithCurrentTimestamp()
+                    Title = "Setting Up Hermes",
+                    ThumbnailUrl = Context.Client == null ? "" : Context.Client.CurrentUser.GetAvatarUrl(),
+                    Description = await SqliteClass.PremiumOrNot(Context.Guild.Id)
+                        ? "Whoa you're premium 🤩"
+                        : "Hermes is a bot that requires various permissions to do various tasks.",
+                    Fields =
+                    {
+                        new EmbedFieldBuilder
+                        {
+                            Name = "Permissions",
+                            Value = $"```{x}```"
+                        }
+                    },
+                    Color = Context.Guild.CurrentUser.GuildPermissions.Administrator ? Color.Green :
+                        x.Count(k => k == '✅') == 7 ? Color.Green : Color.Red,
+                    Footer = new EmbedFooterBuilder
+                    {
+                        Text = "Command Inspired from LuminousBot (ID: 722435272532426783)"
+                    }
+                }.WithCurrentTimestamp()
             );
         }
     }

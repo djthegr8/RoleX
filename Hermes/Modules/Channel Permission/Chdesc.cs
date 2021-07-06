@@ -21,11 +21,13 @@ namespace Hermes.Modules.Channel_Permission
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Insufficient Parameters!",
-                    Description = $"Command Syntax: \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}channeldesc <#channel> <new-channel-name>`",
+                    Description =
+                        $"Command Syntax: \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}channeldesc <#channel> <new-channel-name>`",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
             }
+
             var cha = GetChannel(args[0]);
             if (cha == null)
             {
@@ -34,10 +36,14 @@ namespace Hermes.Modules.Channel_Permission
                 argsL.Insert(0, "");
                 args = argsL.ToArray();
             }
+
             var bchname = string.Join(' ', args.Skip(1));
-            if (cha as SocketTextChannel == null){ await ReplyAsync("This command cannot be used on Voice Channels!");
+            if (cha as SocketTextChannel == null)
+            {
+                await ReplyAsync("This command cannot be used on Voice Channels!");
                 return;
             }
+
             await (cha as SocketTextChannel).ModifyAsync(d => d.Topic = bchname);
             await ReplyAsync("", false, new EmbedBuilder
             {

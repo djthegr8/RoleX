@@ -9,7 +9,9 @@ namespace Hermes.Modules.Channel_Permission
     {
         [RequiredUserPermissions(GuildPermission.ManageChannels)]
         [Alt("mtcat")]
-        [DiscordCommand("movetocat", commandHelp = "movetocat <channel> <channel>", description = "Moves channel to the category of second channel", example = "chmove #weirdchan #weird2chan", IsPremium = true)]
+        [DiscordCommand("movetocat", commandHelp = "movetocat <channel> <channel>",
+            description = "Moves channel to the category of second channel", example = "chmove #weirdchan #weird2chan",
+            IsPremium = true)]
         public async Task RCreate(params string[] args)
         {
             switch (args.Length)
@@ -28,16 +30,15 @@ namespace Hermes.Modules.Channel_Permission
                     {
                         await InvalidChannel(args[0]);
                         return;
-                    } 
+                    }
+
                     if (GetChannel(args[1]) is not INestedChannel chan2)
                     {
                         await InvalidChannel(args[1]);
                         return;
                     }
-                    await chan.ModifyAsync(channel =>
-                    {
-                        channel.CategoryId = chan2.CategoryId;
-                    });
+
+                    await chan.ModifyAsync(channel => { channel.CategoryId = chan2.CategoryId; });
                     // Console.WriteLine(string.Join('\n', Context.Guild.Channels.OrderBy(k => k.Position).Select(k => k.Name)));
                     await ReplyAsync("", false, new EmbedBuilder
                     {
@@ -46,19 +47,18 @@ namespace Hermes.Modules.Channel_Permission
                         Color = Blurple
                     }.WithCurrentTimestamp());
                     break;
-                    
             }
 
             async Task InvalidChannel(string channel)
-        {
-            await ReplyAsync("", false, new EmbedBuilder
             {
-                Title = "Invalid channel",
-                Description =
-                    $"Couldn't parse {channel} as channel",
-                Color = Color.Red
-            }.WithCurrentTimestamp());
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "Invalid channel",
+                    Description =
+                        $"Couldn't parse {channel} as channel",
+                    Color = Color.Red
+                }.WithCurrentTimestamp());
+            }
         }
-    }
     }
 }

@@ -2,30 +2,36 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Hermes.Utilities.Collector {
-    public class CollectorController {
-        public event EventHandler<CollectorEventArgsBase>? RemoveArgsFailed;
+namespace Hermes.Utilities.Collector
+{
+    public class CollectorController
+    {
         private Timer? _timer;
 
-        public void SetTimeout(TimeSpan timeout) {
+        public TaskCompletionSource<CollectorEventArgsBase?>? TaskCompletionSource;
+        public event EventHandler<CollectorEventArgsBase>? RemoveArgsFailed;
+
+        public void SetTimeout(TimeSpan timeout)
+        {
             _timer = new Timer(state => { Dispose(); }, null, timeout, TimeSpan.FromSeconds(0));
         }
 
         public event EventHandler? Stop;
 
-        public void Dispose() {
+        public void Dispose()
+        {
             TaskCompletionSource?.SetResult(null);
             Stop?.Invoke(null, EventArgs.Empty);
             _timer?.Dispose();
         }
 
-        public virtual void OnRemoveArgsFailed(CollectorEventArgsBase e) {
+        public virtual void OnRemoveArgsFailed(CollectorEventArgsBase e)
+        {
             RemoveArgsFailed?.Invoke(this, e);
         }
 
-        public TaskCompletionSource<CollectorEventArgsBase?>? TaskCompletionSource;
-
-        public async Task<CollectorEventArgsBase?> WaitForEventOrDispose() {
+        public async Task<CollectorEventArgsBase?> WaitForEventOrDispose()
+        {
             if (TaskCompletionSource != null) return await TaskCompletionSource.Task;
             TaskCompletionSource = new TaskCompletionSource<CollectorEventArgsBase?>();
             var result = await TaskCompletionSource.Task;
@@ -34,7 +40,8 @@ namespace Hermes.Utilities.Collector {
         }
     }
 
-    public enum CollectorFilter {
+    public enum CollectorFilter
+    {
         Off,
         IgnoreSelf,
         IgnoreBots

@@ -14,8 +14,8 @@ namespace Hermes.Modules.Moderation
     public class Modlogs : CommandModuleBase
     {
         [RequiredUserPermissions(GuildPermission.KickMembers)]
-
-        [DiscordCommand("modlogs", commandHelp = "modlogs <@user>", description = "Shows all modlogs of a user", example = "modlogs @WeirdMan")]
+        [DiscordCommand("modlogs", commandHelp = "modlogs <@user>", description = "Shows all modlogs of a user",
+            example = "modlogs @WeirdMan")]
         public async Task MLogs(params string[] aa)
         {
             if (aa.Length == 0)
@@ -28,6 +28,7 @@ namespace Hermes.Modules.Moderation
                 }.WithCurrentTimestamp());
                 return;
             }
+
             IUser user;
             if (await GetUser(aa[0]) == null)
             {
@@ -47,6 +48,7 @@ namespace Hermes.Modules.Moderation
                         }.WithCurrentTimestamp());
                         return;
                     }
+
                     user = aala;
                 }
                 else if (Context.Message.MentionedUsers.Any())
@@ -68,26 +70,25 @@ namespace Hermes.Modules.Moderation
             {
                 user = await GetUser(aa[0]);
             }
-            EmbedBuilder emb = new EmbedBuilder
+
+            var emb = new EmbedBuilder
             {
                 Title = $"Modlogs for user {user.Username}#{user.Discriminator}",
                 Color = Blurple,
                 ThumbnailUrl = user.GetAvatarUrl(size: 64)
             };
             var eb = new List<EmbedFieldBuilder>();
-            foreach (SqliteClass.Infraction i in await GetUserModlogs(Context.Guild.Id, user.Id))
-            {
+            foreach (var i in await GetUserModlogs(Context.Guild.Id, user.Id))
                 eb.Add(new EmbedFieldBuilder
                 {
-                    Name=SqliteClass.Infraction.GetPunishment(i.Punishment),
-                    Value=$"**Mod:** <@{i.ModeratorId}>\n**Date:** {i.Time.ToUniversalTime().ToShortDateString()}\n**Time: **{(i.Time.ToUniversalTime().TimeOfDay.Hours <= 12 ? i.Time.ToUniversalTime().TimeOfDay.Hours : i.Time.ToUniversalTime().TimeOfDay.Hours - 12)}:{i.Time.ToUniversalTime().TimeOfDay.Minutes} {(i.Time.ToUniversalTime().TimeOfDay.Hours < 12 ? "AM" : "PM")}\n**Reason:** {i.Reason}",
-                    IsInline=true });
-            }
-            if (eb.Count == 0)
-            {
-                emb.Description = "They've been a good user! No modlogs :)";
-            }
-            var pm = new PaginatedMessage(PaginatedAppearanceOptions.Default, Context.Message.Channel, new PaginatedMessage.MessagePage { Description = "Error!" });
+                    Name = Infraction.GetPunishment(i.Punishment),
+                    Value =
+                        $"**Mod:** <@{i.ModeratorId}>\n**Date:** {i.Time.ToUniversalTime().ToShortDateString()}\n**Time: **{(i.Time.ToUniversalTime().TimeOfDay.Hours <= 12 ? i.Time.ToUniversalTime().TimeOfDay.Hours : i.Time.ToUniversalTime().TimeOfDay.Hours - 12)}:{i.Time.ToUniversalTime().TimeOfDay.Minutes} {(i.Time.ToUniversalTime().TimeOfDay.Hours < 12 ? "AM" : "PM")}\n**Reason:** {i.Reason}",
+                    IsInline = true
+                });
+            if (eb.Count == 0) emb.Description = "They've been a good user! No modlogs :)";
+            var pm = new PaginatedMessage(PaginatedAppearanceOptions.Default, Context.Message.Channel,
+                new PaginatedMessage.MessagePage {Description = "Error!"});
             pm.SetPages("Here's a list of the user's modlogs", eb, 7);
             await pm.Resend();
         }

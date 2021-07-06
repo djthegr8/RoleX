@@ -7,7 +7,8 @@ namespace Hermes.Modules.General
     [DiscordCommandClass("General", "General Commands for all!")]
     internal class Untrack : CommandModuleBase
     {
-        [DiscordCommand("untrack", commandHelp = "untrack <@user>", description = "Untracks the given user", example = "Untrack @weirdDude")]
+        [DiscordCommand("untrack", commandHelp = "untrack <@user>", description = "Untracks the given user",
+            example = "Untrack @weirdDude")]
         public async Task UntrackCommand(params string[] args)
         {
             if (args.Length == 0)
@@ -20,10 +21,8 @@ namespace Hermes.Modules.General
                 }.WithCurrentTimestamp());
                 return;
             }
-            if (await GetUser(args[0]) != null)
-            {
-                args[0] = (await GetUser(args[0])).Id.ToString();
-            }
+
+            if (await GetUser(args[0]) != null) args[0] = (await GetUser(args[0])).Id.ToString();
             if (args[0] == "all")
             {
                 await SqliteClass.Track_AllCDRemover(Context.User.Id);
@@ -35,17 +34,19 @@ namespace Hermes.Modules.General
                 }.WithCurrentTimestamp());
                 return;
             }
+
             if (
-                ulong.TryParse(args[0], out ulong userID) &&
+                ulong.TryParse(args[0], out var userID) &&
                 Program.Client.GetUser(userID) != null
-                )
+            )
             {
                 var user = Program.Client.GetUser(userID);
                 await SqliteClass.Track_CDRemover(Context.User.Id, user.Id);
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "User untracked",
-                    Description = "If you were tracking that user, you are now not!\nIf you don't remember who you were tracking run `untrack all` to remove all.",
+                    Description =
+                        "If you were tracking that user, you are now not!\nIf you don't remember who you were tracking run `untrack all` to remove all.",
                     Color = Blurple
                 }.WithCurrentTimestamp());
             }

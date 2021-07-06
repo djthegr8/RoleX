@@ -14,9 +14,8 @@ namespace Hermes.Modules.Developer
         {
             if (devids.Any(x => x == Context.User.Id))
             {
-                string st = "```";
+                var st = "```";
                 foreach (var srver in Program.Client.Guilds)
-                {
                     try
                     {
                         /*string inv;
@@ -26,15 +25,20 @@ namespace Hermes.Modules.Developer
                         }
                         catch { inv = "No Perms LMAO!"; }*/
                         /*st += $"{srver.Name}\t{inv}\n";*/
-                        st += $"{srver.Name} (ID: {srver.Id})\n{srver.MemberCount} members (Perms: {(srver?.CurrentUser?.GuildPermissions == null ? "idk" : srver?.CurrentUser?.GuildPermissions)})\n";
-                    } catch { }
-                }
+                        st +=
+                            $"{srver.Name} (ID: {srver.Id})\n{srver.MemberCount} members (Perms: {(srver?.CurrentUser?.GuildPermissions == null ? "idk" : srver?.CurrentUser?.GuildPermissions)})\n";
+                    }
+                    catch
+                    {
+                    }
+
                 st += "```";
-                string filePath = "nice.txt";
-                using (StreamWriter sw = File.CreateText(filePath))
+                var filePath = "nice.txt";
+                using (var sw = File.CreateText(filePath))
                 {
                     sw.WriteLine(st);
                 }
+
                 await Context.Channel.SendFileAsync(filePath,
                     embed: new EmbedBuilder
                     {

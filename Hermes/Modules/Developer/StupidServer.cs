@@ -12,13 +12,22 @@ namespace Hermes.Modules.Developer
         {
             if (devids.Any(x => x == Context.User.Id))
             {
-                if (args.Length == 0 || !ulong.TryParse(args[0], out ulong _)) { await ReplyAsync("Why are you like this <:noob:756055614861344849>"); return; }
-                ulong x = ulong.Parse(args[0]);
+                if (args.Length == 0 || !ulong.TryParse(args[0], out var _))
+                {
+                    await ReplyAsync("Why are you like this <:noob:756055614861344849>");
+                    return;
+                }
+
+                var x = ulong.Parse(args[0]);
                 try
                 {
-                    await Program.Client.GetGuild(x).SystemChannel.SendMessageAsync("Leaving this server <:catthumbsup:780419880385380352>");
+                    await Program.Client.GetGuild(x).SystemChannel
+                        .SendMessageAsync("Leaving this server <:catthumbsup:780419880385380352>");
                 }
-                catch { }
+                catch
+                {
+                }
+
                 await Program.Client.GetGuild(x).LeaveAsync();
             }
         }

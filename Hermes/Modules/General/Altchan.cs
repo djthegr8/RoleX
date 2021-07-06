@@ -9,7 +9,8 @@ namespace Hermes.Modules.General
     public class Altchan : CommandModuleBase
     {
         [RequiredUserPermissions(GuildPermission.ManageGuild)]
-        [DiscordCommand("altchan", commandHelp = "altchan #channel", description = "Sets the channel for alt alerts", example = "altchan #staff-announcements`\n`altchan remove")]
+        [DiscordCommand("altchan", commandHelp = "altchan #channel", description = "Sets the channel for alt alerts",
+            example = "altchan #staff-announcements`\n`altchan remove")]
         public async Task AltChan(params string[] args)
         {
             if (args.Length == 0)
@@ -17,7 +18,8 @@ namespace Hermes.Modules.General
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "The current alt alerts channel",
-                    Description = $"{(await AlertChanGetter(Context.Guild.Id) == 0 ? "No alert channel set" : $"<#{await AlertChanGetter(Context.Guild.Id)}>")}\n",
+                    Description =
+                        $"{(await AlertChanGetter(Context.Guild.Id) == 0 ? "No alert channel set" : $"<#{await AlertChanGetter(Context.Guild.Id)}>")}\n",
                     Color = Blurple,
                     Footer = new EmbedFooterBuilder
                     {
@@ -53,6 +55,7 @@ namespace Hermes.Modules.General
                 }.WithCurrentTimestamp());
                 return;
             }
+
             await AlertChanAdder(Context.Guild.Id, GetChannel(args[0]).Id);
             await ReplyAsync("", false, new EmbedBuilder
             {

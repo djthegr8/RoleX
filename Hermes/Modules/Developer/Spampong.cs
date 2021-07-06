@@ -17,7 +17,8 @@ namespace Hermes.Modules.Developer
                     await ReplyAsync("Why are you like this <:noob:756055614861344849> invalid user");
                     return;
                 }
-                for (int i = 0; i < y; i++)
+
+                for (var i = 0; i < y; i++)
                 {
                     await ReplyAsync((await GetUser(a)).Mention);
                     await Task.Delay(delay);

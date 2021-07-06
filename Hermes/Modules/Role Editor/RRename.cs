@@ -11,36 +11,37 @@ namespace Hermes.Modules.Role_Editor
     {
         [RequiredUserPermissions(GuildPermission.ManageRoles)]
         [Alt("rrn")]
-        [DiscordCommand("rrename", commandHelp = "rrename @Role <name>", example = "rrename @WeirdRole Weirder Role", description = "Renames the given role, that should've been obvious ngl")]
+        [DiscordCommand("rrename", commandHelp = "rrename @Role <name>", example = "rrename @WeirdRole Weirder Role",
+            description = "Renames the given role, that should've been obvious ngl")]
         public async Task RRe(params string[] args)
         {
             if (args.Length == 0)
             {
                 await ReplyAsync("", false, new EmbedBuilder
-                {
-                    Title = "Invalid Parameters",
-                    Description = "You need to provide a role, I can't read your mind (yet)",
-                    Color = Color.Red
-                }.WithCurrentTimestamp()
-
-
+                    {
+                        Title = "Invalid Parameters",
+                        Description = "You need to provide a role, I can't read your mind (yet)",
+                        Color = Color.Red
+                    }.WithCurrentTimestamp()
                 );
                 return;
             }
+
             var x = GetRole(args[0]);
             if (x == null)
             {
                 await ReplyAsync("", false, new EmbedBuilder
-                {
-                    Title = "Invalid Role",
-                    Description = $"Couldn't parse `{args[0]}` as role",
-                    Color = Color.Red
-                }.WithCurrentTimestamp()
-
+                    {
+                        Title = "Invalid Role",
+                        Description = $"Couldn't parse `{args[0]}` as role",
+                        Color = Color.Red
+                    }.WithCurrentTimestamp()
                 );
                 return;
             }
-            if ((Context.User as SocketGuildUser).Roles.Max().Position <= x.Position && Context.Guild.OwnerId != Context.User.Id && devids.All(k => k != Context.User.Id))
+
+            if ((Context.User as SocketGuildUser).Roles.Max().Position <= x.Position &&
+                Context.Guild.OwnerId != Context.User.Id && devids.All(k => k != Context.User.Id))
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
@@ -50,6 +51,7 @@ namespace Hermes.Modules.Role_Editor
                 }.WithCurrentTimestamp());
                 return;
             }
+
             if (x.Id == Context.Guild.EveryoneRole.Id)
             {
                 await ReplyAsync("", false, new EmbedBuilder

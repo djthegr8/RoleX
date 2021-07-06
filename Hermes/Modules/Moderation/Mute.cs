@@ -13,7 +13,8 @@ namespace Hermes.Modules.Moderation
     public class Mute : CommandModuleBase
     {
         [RequiredUserPermissions(GuildPermission.ManageRoles)]
-        [DiscordCommand("mute", description = "Mutes the given user", example = "mute @scam 5m trying to ping everyone", commandHelp = "mute <@user> <time> <reason>")]
+        [DiscordCommand("mute", description = "Mutes the given user", example = "mute @scam 5m trying to ping everyone",
+            commandHelp = "mute <@user> <time> <reason>")]
         public async Task RMute(params string[] args)
         {
             if (await MutedRoleIdGetter(Context.Guild.Id) == 0)
@@ -21,12 +22,14 @@ namespace Hermes.Modules.Moderation
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "No muted role set",
-                    Description = $"Set muted role by running `{await PrefixGetter(Context.Guild.Id)}mutedrole <create/@Role>`",
+                    Description =
+                        $"Set muted role by running `{await PrefixGetter(Context.Guild.Id)}mutedrole <create/@Role>`",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
             }
-            bool isValidTime = false;
+
+            var isValidTime = false;
             TimeSpan ts;
             if (args.Length == 0)
             {
@@ -38,26 +41,27 @@ namespace Hermes.Modules.Moderation
                 }.WithCurrentTimestamp());
                 return;
             }
+
             if (args.Length >= 2)
             {
                 isValidTime = args[1].Last() switch
                 {
                     'm' or 'M' or 'd' or 'D' or 'Y' or 'y' or 's' or 'S' => true,
                     _ => false
-                } && int.TryParse(string.Join("", args[1].SkipLast(1)), out int _);
+                } && int.TryParse(string.Join("", args[1].SkipLast(1)), out var _);
                 if (!isValidTime)
                 {
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "The time parameter is invalid",
-                        Description = $"Couldn't parse `{args[1]}` as time, see key below\n```s => seconds\nm => minutes\nh => hours\nd => days```",
+                        Description =
+                            $"Couldn't parse `{args[1]}` as time, see key below\n```s => seconds\nm => minutes\nh => hours\nd => days```",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
                     return;
                 }
 
-                if (int.TryParse(string.Join("", args[1].SkipLast(1)), out int timezar))
-                {
+                if (int.TryParse(string.Join("", args[1].SkipLast(1)), out var timezar))
                     ts = args[1].Last() switch
                     {
                         'h' or 'H' => new TimeSpan(timezar, 0, 0),
@@ -67,23 +71,18 @@ namespace Hermes.Modules.Moderation
                         //Non possible outcome but IDE is boss
                         _ => new TimeSpan()
                     };
-                }
                 else
-                {
                     ts = TimeSpan.Zero;
-                }
             }
             else
             {
                 ts = TimeSpan.Zero;
             }
+
             if (await GetUser(args[0]) != null || Context.Message.MentionedUsers.Any())
             {
                 var gUser = await GetUser(args[0]);
-                if (gUser == null)
-                {
-                    gUser = Context.Message.MentionedUsers.First() as SocketGuildUser;
-                }
+                if (gUser == null) gUser = Context.Message.MentionedUsers.First() as SocketGuildUser;
                 if (gUser.Hierarchy < (Context.User as SocketGuildUser).Hierarchy)
                 {
                     if (gUser.Hierarchy >= Context.Guild.CurrentUser.Hierarchy)
@@ -96,10 +95,13 @@ namespace Hermes.Modules.Moderation
                         }.WithCurrentTimestamp());
                         return;
                     }
+
                     await ReplyAsync("", false, new EmbedBuilder
                     {
-                        Title = $"{gUser.Username}#{gUser.Discriminator} Muted {(isValidTime ? $"for {ts.Days}d, {ts.Minutes}m and {ts.Seconds}s" : "indefinitely")}!",
-                        Description = $"Reason: {(args.Length > 2 ? string.Join(' ', args.Skip(2)) : $"Requested by { Context.User.Username }#{Context.User.Discriminator}")}",
+                        Title =
+                            $"{gUser.Username}#{gUser.Discriminator} Muted {(isValidTime ? $"for {ts.Days}d, {ts.Minutes}m and {ts.Seconds}s" : "indefinitely")}!",
+                        Description =
+                            $"Reason: {(args.Length > 2 ? string.Join(' ', args.Skip(2)) : $"Requested by {Context.User.Username}#{Context.User.Discriminator}")}",
                         Color = Blurple
                     }.WithCurrentTimestamp());
                     try
@@ -107,19 +109,21 @@ namespace Hermes.Modules.Moderation
                         await gUser.SendMessageAsync("", false, new EmbedBuilder
                         {
                             Title = "Oops, you were muted!",
-                            Description = $"You were muted {(isValidTime ? $"for {ts.Days} days, {ts.Minutes} minutes and {ts.Seconds} seconds" : "indefinitely")} from **{Context.Guild.Name}** by {Context.User.Mention} {(args.Length > 1 ? $"Reason:{args[1]}" : "")}{(await AppealGetter(Context.Guild.Id) == "" ? "" : "\n[Click here to appeal](" + await AppealGetter(Context.Guild.Id))})",
+                            Description =
+                                $"You were muted {(isValidTime ? $"for {ts.Days} days, {ts.Minutes} minutes and {ts.Seconds} seconds" : "indefinitely")} from **{Context.Guild.Name}** by {Context.User.Mention} {(args.Length > 1 ? $"Reason:{args[1]}" : "")}{(await AppealGetter(Context.Guild.Id) == "" ? "" : "\n[Click here to appeal](" + await AppealGetter(Context.Guild.Id))})",
                             Color = Color.Red
                         }.WithCurrentTimestamp().Build());
                     }
-                    catch { }
-                    string guildName = Context.Guild.Name;
-                    await AddToModlogs(Context.Guild.Id, gUser.Id, Context.User.Id, Punishment.Mute, DateTime.Now, args.Length > 2 ? string.Join(' ', args.Skip(2)) : "");
-                    await gUser.AddRoleAsync(Context.Guild.GetRole(await MutedRoleIdGetter(Context.Guild.Id)));
-                    if (!isValidTime)
+                    catch
                     {
-                        return;
                     }
-                    Timer tmr = new Timer
+
+                    var guildName = Context.Guild.Name;
+                    await AddToModlogs(Context.Guild.Id, gUser.Id, Context.User.Id, Punishment.Mute, DateTime.Now,
+                        args.Length > 2 ? string.Join(' ', args.Skip(2)) : "");
+                    await gUser.AddRoleAsync(Context.Guild.GetRole(await MutedRoleIdGetter(Context.Guild.Id)));
+                    if (!isValidTime) return;
+                    var tmr = new Timer
                     {
                         AutoReset = false,
                         Interval = ts.TotalMilliseconds,
@@ -129,10 +133,13 @@ namespace Hermes.Modules.Moderation
                     {
                         try
                         {
-                            await gUser.RemoveRoleAsync(Context.Guild.GetRole(await MutedRoleIdGetter(Context.Guild.Id)));
+                            await gUser.RemoveRoleAsync(
+                                Context.Guild.GetRole(await MutedRoleIdGetter(Context.Guild.Id)));
                             await gUser.SendMessageAsync($"**You have been unmuted on {guildName}**");
                         }
-                        catch { }
+                        catch
+                        {
+                        }
                     };
                     return;
                 }
@@ -147,6 +154,7 @@ namespace Hermes.Modules.Moderation
                     }.WithCurrentTimestamp());
                     return;
                 }
+
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Not gonna happen",

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
@@ -11,11 +12,12 @@ namespace Hermes.Modules.React_Roles
     {
         [RequiredUserPermissions(GuildPermission.ManageRoles)]
         [DiscordCommand("readd",
-            commandHelp = "readd <message-link> <emoji> <role>", 
-            description = "Adds a reaction role", 
-            example = "readd https://discord.com/channels/591660163229024287/790477735352336384/798021230774321162 :weirdemoji: Weirds",
+            commandHelp = "readd <message-link> <emoji> <role>",
+            description = "Adds a reaction role",
+            example =
+                "readd https://discord.com/channels/591660163229024287/790477735352336384/798021230774321162 :weirdemoji: Weirds",
             IsPremium = true
-            )]
+        )]
         public async Task RRaddCommand(params string[] args)
         {
             switch (args.Length)
@@ -24,11 +26,13 @@ namespace Hermes.Modules.React_Roles
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "Insufficient Parameters",
-                        Description = $"The way to use the command is `{await SqliteClass.PrefixGetter(Context.Guild.Id)}readd <link-to-message> <emoji> <role>`",
+                        Description =
+                            $"The way to use the command is `{await SqliteClass.PrefixGetter(Context.Guild.Id)}readd <link-to-message> <emoji> <role>`",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
                     return;
             }
+
             var reg = new Regex(@"^https:\/\/discord.com\/channels\/[0-9]{17,18}\/[0-9]{17,18}\/[0-9]{17,18}$");
             if (!reg.IsMatch(args[0]))
             {
@@ -40,6 +44,7 @@ namespace Hermes.Modules.React_Roles
                 }.WithCurrentTimestamp());
                 return;
             }
+
             var dry = args[0].Replace(@"https://discord.com/channels/", "").Split('/');
             var chnlid = ulong.Parse(dry[1]);
             var msgid = ulong.Parse(dry[2]);
@@ -49,28 +54,30 @@ namespace Hermes.Modules.React_Roles
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Which message?",
-                    Description = $"Couldn't parse `{args[0]}` as a Discord Message link\nHint: We cannot find the channel. This might be due to Permissions, or that Channel (and Message) is from another server.",
+                    Description =
+                        $"Couldn't parse `{args[0]}` as a Discord Message link\nHint: We cannot find the channel. This might be due to Permissions, or that Channel (and Message) is from another server.",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
             }
+
             var message = await channel.GetMessageAsync(msgid);
             if (message == null)
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Which message?",
-                    Description = $"Couldn't parse `{args[0]}` as a Discord Message link\nHint: We cannot find the message. This might be due to deletion or permissions.",
+                    Description =
+                        $"Couldn't parse `{args[0]}` as a Discord Message link\nHint: We cannot find the message. This might be due to deletion or permissions.",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
             }
 
-            var isEmote = Emote.TryParse(args[1], out Emote emz);
+            var isEmote = Emote.TryParse(args[1], out var emz);
             IEmote em = emz;
             if (isEmote == false)
             {
-
                 var el = new Emoji(args[1]);
                 if (el == null)
                 {
@@ -82,8 +89,10 @@ namespace Hermes.Modules.React_Roles
                     }.WithCurrentTimestamp());
                     return;
                 }
+
                 em = el;
             }
+
             var role = GetRole(args[2]);
             if (role == null)
             {
@@ -95,7 +104,9 @@ namespace Hermes.Modules.React_Roles
                 }.WithCurrentTimestamp());
                 return;
             }
-            var reros = (await SqliteClass.GetReactRoleAsync($"SELECT * FROM reactroles WHERE ChannelID = {chnlid} AND MessageID = {msgid}"));
+
+            var reros = await SqliteClass.GetReactRoleAsync(
+                $"SELECT * FROM reactroles WHERE ChannelID = {chnlid} AND MessageID = {msgid}");
             SqliteClass.ReactRole rero;
             if (reros.Count == 0)
             {
@@ -104,8 +115,8 @@ namespace Hermes.Modules.React_Roles
                     ChannelId = chnlid,
                     MessageId = msgid,
                     GuildId = Context.Guild.Id,
-                    Emojis = new() { em.ToString() },
-                    Roles = new() { role.Id },
+                    Emojis = new List<string> {em.ToString()},
+                    Roles = new List<ulong> {role.Id},
                     BlackListedRoles = new ulong[] { },
                     WhiteListedRoles = new ulong[] { },
                     Unique = false,
@@ -118,6 +129,7 @@ namespace Hermes.Modules.React_Roles
                 rero.Roles.Add(role.Id);
                 rero.Emojis.Add(em.ToString());
             }
+
             await SqliteClass.AddOrUpdateReactRole(rero);
             await message.AddReactionAsync(em);
             await ReplyAsync("", false, new EmbedBuilder

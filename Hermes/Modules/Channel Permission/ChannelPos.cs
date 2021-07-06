@@ -10,13 +10,15 @@ namespace Hermes.Modules.Channel_Permission
         [RequiredUserPermissions(GuildPermission.Administrator)]
         [Alt("chpos")]
         [Alt("chposition")]
-        
-        [DiscordCommand("channelpos", description = "Gets/sets the position of a specified channel", example = "channelpos #general`\n`channelpos #general 3", commandHelp = "channelpos <#channel> (to get) and channelpos <#channel> <position> (to set)")]
+        [DiscordCommand("channelpos", description = "Gets/sets the position of a specified channel",
+            example = "channelpos #general`\n`channelpos #general 3",
+            commandHelp = "channelpos <#channel> (to get) and channelpos <#channel> <position> (to set)")]
         public async Task Cdel(params string[] args)
         {
             if (args.Length == 0) args = new[] {Context.Channel.Id.ToString()};
             var chnl = GetChannel(string.Join("", args));
-            if (chnl == null){
+            if (chnl == null)
+            {
                 await ReplyAsync(embed:
                     new EmbedBuilder
                     {
@@ -24,8 +26,9 @@ namespace Hermes.Modules.Channel_Permission
                         Description = $"There's no channel called `{args[0]}`",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
-                 return;
+                return;
             }
+
             var foot = new EmbedFooterBuilder
             {
                 Text = "Discord channel positions dont make much sense dont blame me"

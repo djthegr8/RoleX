@@ -11,7 +11,9 @@ namespace Hermes.Modules.Emojis
     public class EmSteal : CommandModuleBase
     {
         [RequiredUserPermissions(GuildPermission.ManageEmojis)]
-        [DiscordCommand("emsteal", description ="Steals given emoji from given server", example ="emsteal 8325280985332 285098320958583", commandHelp ="emrename <server_id> <emoji/emoji_id>, <emoji2/emoji2_id>, <emoji3/emoji3_id>...")]
+        [DiscordCommand("emsteal", description = "Steals given emoji from given server",
+            example = "emsteal 8325280985332 285098320958583",
+            commandHelp = "emrename <server_id> <emoji/emoji_id>, <emoji2/emoji2_id>, <emoji3/emoji3_id>...")]
         public async Task EMDEL(params string[] args)
         {
             if (args.Length < 2)
@@ -19,14 +21,15 @@ namespace Hermes.Modules.Emojis
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "What emoji to steal?",
-                    Description = $"Command Syntax: `{await SqliteClass.PrefixGetter(Context.Guild.Id)}emsteal server_id <emoji_id>, <emoji2_id>, <emoji3_id>...`",
+                    Description =
+                        $"Command Syntax: `{await SqliteClass.PrefixGetter(Context.Guild.Id)}emsteal server_id <emoji_id>, <emoji2_id>, <emoji3_id>...`",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
             }
 
             var fax = ulong.TryParse(args[0], out var gid);
-            
+
             if (!fax)
             {
                 var gg = Program.Client.GetGuild(gid);
@@ -69,6 +72,7 @@ namespace Hermes.Modules.Emojis
                 }.WithCurrentTimestamp());
                 return;
             }
+
             WebClient wc = new();
             foreach (var emoji in emojis)
             {
@@ -78,17 +82,17 @@ namespace Hermes.Modules.Emojis
                     await ems.ModifyAsync(k => k.Content = ems.Content + $"\nSkipped {emoji}");
                     continue;
                 }
+
                 var dd = await wc.DownloadDataTaskAsync(emote.Url);
                 var ms = new MemoryStream(dd);
                 var ae = await Context.Guild.CreateEmoteAsync(emote.Name, new Image(ms));
-                await ems.ModifyAsync(k => k.Content= ems.Content + $"\nSuccessfully added {ae}");
+                await ems.ModifyAsync(k => k.Content = ems.Content + $"\nSuccessfully added {ae}");
                 // Never be in a hurry
                 await Task.Delay(200);
                 await ms.DisposeAsync();
             }
-            
-            await ems.ModifyAsync(k => k.Content= ems.Content + "\nFinished successfully!");
 
+            await ems.ModifyAsync(k => k.Content = ems.Content + "\nFinished successfully!");
         }
     }
 }

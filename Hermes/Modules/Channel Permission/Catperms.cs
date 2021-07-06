@@ -12,7 +12,10 @@ namespace Hermes.Modules.Channel_Permission
         [Alt("catperms")]
         [Alt("catp")]
         [RequiredUserPermissions(GuildPermission.ManageChannels)]
-        [DiscordCommand("categoryperms", commandHelp = "categoryperms <#category> <@role/@user> <Permission> <yes,no,inherit>", description = "Edits the Category-wise perms of the given Role or Member", example = "channelperms @Moderator viewChannel no")]
+        [DiscordCommand("categoryperms",
+            commandHelp = "categoryperms <#category> <@role/@user> <Permission> <yes,no,inherit>",
+            description = "Edits the Category-wise perms of the given Role or Member",
+            example = "channelperms @Moderator viewChannel no")]
         public async Task ChannelPermEdit(params string[] args)
         {
             bool roleOrNot;
@@ -22,11 +25,13 @@ namespace Hermes.Modules.Channel_Permission
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Insufficient Parameters!",
-                    Description = $"Command Syntax: \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}channelperms <#channel> <@role/@member> <Permission> <yes,no,inherit>`",
+                    Description =
+                        $"Command Syntax: \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}channelperms <#channel> <@role/@member> <Permission> <yes,no,inherit>`",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
             }
+
             var channe = GetCategory(args[0]);
             if (channe == null)
             {
@@ -38,17 +43,20 @@ namespace Hermes.Modules.Channel_Permission
                 }.WithCurrentTimestamp());
                 return;
             }
+
             switch (args.Length)
             {
                 case 0 or 1 or 2 or 3:
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "Insufficient Parameters!",
-                        Description = $"Command Syntax: \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}categoryperms <#channel> <@role/@member> <Permission> <yes,no,inherit>`",
+                        Description =
+                            $"Command Syntax: \n`{await SqliteClass.PrefixGetter(Context.Guild.Id)}categoryperms <#channel> <@role/@member> <Permission> <yes,no,inherit>`",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
                     return;
             }
+
             SocketUser sus = await GetUser(args[1]);
             var srl = GetRole(args[1]);
             switch (sus)
@@ -75,7 +83,8 @@ namespace Hermes.Modules.Channel_Permission
                         await ReplyAsync("", false, new EmbedBuilder
                         {
                             Title = "Multiple Possibilities Detected",
-                            Description = $"Given `{args[1]}`, we found both a Role and a User.\n**Role Found:**\n{srl.Mention}\n**User Found**\n{sus.Mention}\nPlease use a mention instead of a search query!",
+                            Description =
+                                $"Given `{args[1]}`, we found both a Role and a User.\n**Role Found:**\n{srl.Mention}\n**User Found**\n{sus.Mention}\nPlease use a mention instead of a search query!",
                             Color = Color.Red
                         }.WithCurrentTimestamp());
                         return;
@@ -111,11 +120,13 @@ namespace Hermes.Modules.Channel_Permission
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "That permission is invalid",
-                    Description = $"Valid permissions include ~ ```{string.Join('\n', Enum.GetNames(typeof(ChannelPermission)))}```",
+                    Description =
+                        $"Valid permissions include ~ ```{string.Join('\n', Enum.GetNames(typeof(ChannelPermission)))}```",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
             }
+
             var prm = prm_.Item1;
             Console.WriteLine(prm);
             var inh = args[3].ToLower();
@@ -134,31 +145,40 @@ namespace Hermes.Modules.Channel_Permission
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "That overwrite type is invalid",
-                        Description = "For assigning the permission, use `y`, `yes`, `positive` or `true`.\nFor Inheriting use `i` or `inherit`\nAnd for revoking use `n`, `no`, `negative` or `false` as the last parameter for the command",
+                        Description =
+                            "For assigning the permission, use `y`, `yes`, `positive` or `true`.\nFor Inheriting use `i` or `inherit`\nAnd for revoking use `n`, `no`, `negative` or `false` as the last parameter for the command",
                         Color = Color.Red
                     }.WithCurrentTimestamp());
                     return;
             }
+
             OverwritePermissions op;
             if (roleOrNot)
             {
-                op = channe.GetPermissionOverwrite(srl) != null ? (OverwritePermissions)channe.GetPermissionOverwrite(srl) : new OverwritePermissions();
+                op = channe.GetPermissionOverwrite(srl) != null
+                    ? (OverwritePermissions) channe.GetPermissionOverwrite(srl)
+                    : new OverwritePermissions();
                 op = GetOP(prm, ovr, op);
                 await channe.AddPermissionOverwriteAsync(srl, op);
             }
             else
             {
-                op = channe.GetPermissionOverwrite(sus) != null ? (OverwritePermissions)channe.GetPermissionOverwrite(sus) : new OverwritePermissions(); ;
+                op = channe.GetPermissionOverwrite(sus) != null
+                    ? (OverwritePermissions) channe.GetPermissionOverwrite(sus)
+                    : new OverwritePermissions();
+                ;
                 op = GetOP(prm, ovr, op);
                 await channe.AddPermissionOverwriteAsync(sus, op);
             }
+
             await ReplyAsync("", false, new EmbedBuilder
-            {
-                Title = "Overwrite added successfully!",
-                Description = $"Channel Overwrite added for <#{channe.Id}>",
-                Color = Blurple
-            }.AddField("Overwrite Details", $"For: {(roleOrNot ? srl.Mention : sus.Mention)}\nPermission: {prm}\nValue: {ovr}")
-            .WithCurrentTimestamp());
+                {
+                    Title = "Overwrite added successfully!",
+                    Description = $"Channel Overwrite added for <#{channe.Id}>",
+                    Color = Blurple
+                }.AddField("Overwrite Details",
+                    $"For: {(roleOrNot ? srl.Mention : sus.Mention)}\nPermission: {prm}\nValue: {ovr}")
+                .WithCurrentTimestamp());
         }
     }
 }

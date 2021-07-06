@@ -22,17 +22,22 @@ namespace Hermes.Modules.Developer
                     return;
                 }
 
-                await ReplyAsync("", false, new EmbedBuilder {Title = guild.Name, Description = await guild.GetInfoString(), Color = Blurple, ThumbnailUrl = guild.IconUrl});
+                await ReplyAsync("", false,
+                    new EmbedBuilder
+                    {
+                        Title = guild.Name, Description = await guild.GetInfoString(), Color = Blurple,
+                        ThumbnailUrl = guild.IconUrl
+                    });
             }
         }
     }
 
     public static class GetInfoStr
+    {
+        public static async Task<string> GetInfoString(this SocketGuild guild)
         {
-            public static async Task<string> GetInfoString(this SocketGuild guild)
-            {
-                await guild.DownloadUsersAsync();
-                return $@"
+            await guild.DownloadUsersAsync();
+            return $@"
 Server Owner: <@{guild.OwnerId}> (ID: `{guild.OwnerId}`)
 Server ID: `{guild.Id}`
 Member Count: {guild.MemberCount}
@@ -48,6 +53,6 @@ Number Of Mods: {guild.Users.Count(Usr => (Usr.GuildPermissions.ManageChannels |
 Number Of Bots: {guild.Users.Count(Usr => Usr.IsBot)}
 Raw Perms: `{(guild.CurrentUser == null ? "None" : guild.CurrentUser.GuildPermissions.RawValue)}`
 ";
-            }
         }
     }
+}

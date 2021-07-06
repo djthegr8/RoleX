@@ -17,7 +17,6 @@ namespace Hermes.Modules.Developer
                 var join = string.Join(' ', args);
                 await Program.Client.SetGameAsync(join);
                 await Context.Message.AddReactionAsync(new Emoji("✔"));
-
             }
         }
     }

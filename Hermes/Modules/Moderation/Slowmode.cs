@@ -12,7 +12,8 @@ namespace Hermes.Modules.Moderation
     public class Slowmode : CommandModuleBase
     {
         [RequiredUserPermissions(GuildPermission.ManageChannels)]
-        [DiscordCommand("slowmode", commandHelp = "slowmode <channel/category> <time>`\n`slowmode <time>", description = "Sets the channel or category slowmode", example = "slowmode 10s")]
+        [DiscordCommand("slowmode", commandHelp = "slowmode <channel/category> <time>`\n`slowmode <time>",
+            description = "Sets the channel or category slowmode", example = "slowmode 10s")]
         public async Task Sm(params string[] args)
         {
             if (args.Length == 0)
@@ -20,11 +21,13 @@ namespace Hermes.Modules.Moderation
                 await ReplyAsync(embed: new EmbedBuilder
                 {
                     Title = "Invalid Parameters",
-                    Description = $"The way to run this command is `{await PrefixGetter(Context.Guild.Id)}slowmode <time>` to set in the current channel, or `{await PrefixGetter(Context.Guild.Id)}slowmode <#channel-or-category> <time>`",
+                    Description =
+                        $"The way to run this command is `{await PrefixGetter(Context.Guild.Id)}slowmode <time>` to set in the current channel, or `{await PrefixGetter(Context.Guild.Id)}slowmode <#channel-or-category> <time>`",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
             }
+
             var xchnl = GetChannel(args[0]);
             var xcatg = GetCategory(args[0]);
             var isChannel = true;
@@ -32,9 +35,8 @@ namespace Hermes.Modules.Moderation
             if (xchnl == null && xcatg == null)
             {
                 // Use the current channel
-                xchnl = (SocketGuildChannel)Context.Channel;
+                xchnl = (SocketGuildChannel) Context.Channel;
                 firstIsTime = true;
-
             }
             else if (xchnl == null)
             {
@@ -61,41 +63,46 @@ namespace Hermes.Modules.Moderation
                 await ReplyAsync(embed: new EmbedBuilder
                 {
                     Title = "Multiple Possibilities detected",
-                    Description = $"Given `{args[0]}`\n**Channel Found:**\n<#{xchnl.Id}>\n**Category Found:**\n{xcatg.Name} (ID: {xcatg.Id})\nTo resolve this conflict, either use the ID, or mention the channel.",
+                    Description =
+                        $"Given `{args[0]}`\n**Channel Found:**\n<#{xchnl.Id}>\n**Category Found:**\n{xcatg.Name} (ID: {xcatg.Id})\nTo resolve this conflict, either use the ID, or mention the channel.",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
             }
+
             bool isValidTime;
-            TimeSpan ts = new TimeSpan();
+            var ts = new TimeSpan();
             var k = firstIsTime ? 0 : 1;
             if (!firstIsTime && args.Length == 1)
             {
                 await ReplyAsync(embed: new EmbedBuilder
                 {
                     Title = "Invalid Parameters",
-                    Description = $"The way to run this command is `{await PrefixGetter(Context.Guild.Id)}slowmode <time>` to set in the current channel, or `{await PrefixGetter(Context.Guild.Id)}slowmode <#channel-or-category> <time>`",
-                    Color = Color.Red
-                }.WithCurrentTimestamp());
-                return;
-            }
-            isValidTime = args[k].Last() switch
-            {
-                'm' or 'M' or 's' or 'S' or 'h' or 'H' => true,
-                _ => false
-            } && int.TryParse(string.Join("", args[k].SkipLast(1)), out int _);
-            if (!isValidTime)
-            {
-                await ReplyAsync("", false, new EmbedBuilder
-                {
-                    Title = "The time parameter is invalid",
-                    Description = $"Couldn't parse `{args[k]}` as time, see key below\n```s => seconds\nm => minutes\nh => hours```",
+                    Description =
+                        $"The way to run this command is `{await PrefixGetter(Context.Guild.Id)}slowmode <time>` to set in the current channel, or `{await PrefixGetter(Context.Guild.Id)}slowmode <#channel-or-category> <time>`",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
             }
 
-            if (int.TryParse(string.Join("", args[k].SkipLast(1)), out int timezar))
+            isValidTime = args[k].Last() switch
+            {
+                'm' or 'M' or 's' or 'S' or 'h' or 'H' => true,
+                _ => false
+            } && int.TryParse(string.Join("", args[k].SkipLast(1)), out var _);
+            if (!isValidTime)
+            {
+                await ReplyAsync("", false, new EmbedBuilder
+                {
+                    Title = "The time parameter is invalid",
+                    Description =
+                        $"Couldn't parse `{args[k]}` as time, see key below\n```s => seconds\nm => minutes\nh => hours```",
+                    Color = Color.Red
+                }.WithCurrentTimestamp());
+                return;
+            }
+
+            if (int.TryParse(string.Join("", args[k].SkipLast(1)), out var timezar))
             {
                 ts = args[k].Last() switch
                 {
@@ -116,22 +123,20 @@ namespace Hermes.Modules.Moderation
                     return;
                 }
             }
+
             if (isChannel)
-            {
                 // Let's go
-                await (xchnl as SocketTextChannel).ModifyAsync(x => x.SlowModeInterval = Convert.ToInt32(ts.TotalSeconds));
-            }
+                await (xchnl as SocketTextChannel).ModifyAsync(x =>
+                    x.SlowModeInterval = Convert.ToInt32(ts.TotalSeconds));
             else
-            {
-                foreach (var irdk in xcatg.Channels.Where(x => (x as SocketTextChannel) != null))
-                {
-                    await (irdk as SocketTextChannel).ModifyAsync(x => x.SlowModeInterval = Convert.ToInt32(ts.TotalSeconds));
-                }
-            }
+                foreach (var irdk in xcatg.Channels.Where(x => x as SocketTextChannel != null))
+                    await (irdk as SocketTextChannel).ModifyAsync(x =>
+                        x.SlowModeInterval = Convert.ToInt32(ts.TotalSeconds));
             await ReplyAsync(embed: new EmbedBuilder
             {
                 Title = "Slowmode set!",
-                Description = $"In {(isChannel ? $"channel <#{xchnl.Id}>" : $"category {xcatg.Name} (ID: {xcatg.Id})")}, a slowmode of {ts.TotalSeconds} seconds is set!",
+                Description =
+                    $"In {(isChannel ? $"channel <#{xchnl.Id}>" : $"category {xcatg.Name} (ID: {xcatg.Id})")}, a slowmode of {ts.TotalSeconds} seconds is set!",
                 Color = Blurple
             }.WithCurrentTimestamp());
         }

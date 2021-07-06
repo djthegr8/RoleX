@@ -12,7 +12,9 @@ namespace Hermes.Modules.Channel_Permission
         [RequiredUserPermissions(GuildPermission.ManageChannels)]
         [Alt("channelcreate")]
         [Alt("chadd")]
-        [DiscordCommand("chcreate", commandHelp = "chcreate <category?> <name>", description = "Creates channel with synced perms in category if given", example = "chcreate general general chat")]
+        [DiscordCommand("chcreate", commandHelp = "chcreate <category?> <name>",
+            description = "Creates channel with synced perms in category if given",
+            example = "chcreate general general chat")]
         public async Task RCreate(params string[] args)
         {
             switch (args.Length)
@@ -73,6 +75,7 @@ namespace Hermes.Modules.Channel_Permission
                         }.WithCurrentTimestamp());
                         return;
                     }
+
                     var _bchname = string.Join('-', args.Skip(1));
                     if (!Regex.IsMatch(_bchname, "[a-zA-Z0-9-_]{2,100}"))
                     {
@@ -87,7 +90,9 @@ namespace Hermes.Modules.Channel_Permission
                     }
 
                     var po = cat.PermissionOverwrites;
-                    var _channel = await Context.Guild.CreateTextChannelAsync(_bchname, properties => properties.CategoryId = cat.Id);
+                    var _channel =
+                        await Context.Guild.CreateTextChannelAsync(_bchname,
+                            properties => properties.CategoryId = cat.Id);
                     await _channel.SyncPermissionsAsync();
                     await ReplyAsync("", false, new EmbedBuilder
                     {
@@ -97,7 +102,6 @@ namespace Hermes.Modules.Channel_Permission
                     }.WithCurrentTimestamp());
                     break;
             }
-
         }
     }
 }

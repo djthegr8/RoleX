@@ -11,7 +11,8 @@ namespace Hermes.Modules.Role_Editor
     {
         [Alt("del")]
         [RequiredUserPermissions(GuildPermission.ManageGuild, GuildPermission.ManageRoles)]
-        [DiscordCommand("delete", commandHelp = "delete <@role/id>", description = "Deletes the mentioned role", example = "delete @DumbRole")]
+        [DiscordCommand("delete", commandHelp = "delete <@role/id>", description = "Deletes the mentioned role",
+            example = "delete @DumbRole")]
         public async Task DelRole(params string[] args)
         {
             SocketRole DeleteRole;
@@ -25,6 +26,7 @@ namespace Hermes.Modules.Role_Editor
                 }.WithCurrentTimestamp());
                 return;
             }
+
             DeleteRole = GetRole(args[0]);
             if (DeleteRole == null)
             {
@@ -36,17 +38,21 @@ namespace Hermes.Modules.Role_Editor
                 }.WithCurrentTimestamp());
                 return;
             }
+
             if (Context.Guild.CurrentUser.Roles.All(idk => idk.CompareTo(DeleteRole) < 0))
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Hey, thats above me",
-                    Description = $"The bot's highest role => {Context.Guild.CurrentUser.Roles.Max().Name}\nThe role you wish to delete => {DeleteRole.Name}",
+                    Description =
+                        $"The bot's highest role => {Context.Guild.CurrentUser.Roles.Max().Name}\nThe role you wish to delete => {DeleteRole.Name}",
                     Color = Color.Red
                 }.WithCurrentTimestamp());
                 return;
             }
-            if (!(Context.User as SocketGuildUser).Roles.Any(rl => rl.Position > DeleteRole.Position) && Context.Guild.OwnerId != Context.User.Id)
+
+            if (!(Context.User as SocketGuildUser).Roles.Any(rl => rl.Position > DeleteRole.Position) &&
+                Context.Guild.OwnerId != Context.User.Id)
             {
                 await ReplyAsync("", false, new EmbedBuilder
                 {

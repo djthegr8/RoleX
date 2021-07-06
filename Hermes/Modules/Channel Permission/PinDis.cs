@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Discord;
-using Discord.WebSocket;
 using Hermes.Modules.Services;
 
 namespace Hermes.Modules.Channel_Permission
@@ -21,7 +17,7 @@ namespace Hermes.Modules.Channel_Permission
         {
             if (Context.Message.Reference == null || Context.Message.Reference.ChannelId != Context.Channel.Id)
             {
-                await ReplyAsync("", false, new EmbedBuilder()
+                await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "No message referenced!",
                     Description = "You gotta reply to a message to pin/unpin it."

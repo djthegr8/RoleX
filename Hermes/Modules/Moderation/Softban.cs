@@ -13,7 +13,8 @@ namespace Hermes.Modules.Moderation
     public class Softban : CommandModuleBase
     {
         [RequiredUserPermissions(GuildPermission.BanMembers)]
-        [DiscordCommand("softban", commandHelp = "softban <@user> <days>", example = "softban @Dumbass 7", description = "Bans the specified user and unbans immediately, for deletion of messages")]
+        [DiscordCommand("softban", commandHelp = "softban <@user> <days>", example = "softban @Dumbass 7",
+            description = "Bans the specified user and unbans immediately, for deletion of messages")]
         public async Task SBanner(params string[] args)
         {
             if (args.Length == 0)
@@ -26,10 +27,9 @@ namespace Hermes.Modules.Moderation
                 }.WithCurrentTimestamp());
                 return;
             }
+
             if (args.Length == 2)
-            {
-                if (ulong.TryParse(args[1], out ulong idkc))
-                {
+                if (ulong.TryParse(args[1], out var idkc))
                     if (idkc > 7)
                     {
                         await ReplyAsync("", false, new EmbedBuilder
@@ -40,15 +40,11 @@ namespace Hermes.Modules.Moderation
                         }.WithCurrentTimestamp());
                         return;
                     }
-                }
-            }
+
             if (await GetUser(args[0]) != null || Context.Message.MentionedUsers.Any())
             {
                 var gUser = await GetUser(args[0]);
-                if (gUser == null)
-                {
-                    gUser = Context.Message.MentionedUsers.First() as SocketGuildUser;
-                }
+                if (gUser == null) gUser = Context.Message.MentionedUsers.First() as SocketGuildUser;
                 if (gUser.Hierarchy < (Context.User as SocketGuildUser).Hierarchy)
                 {
                     if (gUser.Hierarchy >= Context.Guild.CurrentUser.Hierarchy)
@@ -61,10 +57,12 @@ namespace Hermes.Modules.Moderation
                         }.WithCurrentTimestamp());
                         return;
                     }
+
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = $"{gUser.Username}#{gUser.Discriminator} Softbanned Successfully!",
-                        Description = $"Days to delete: {(args.Length == 1 ? "7" : (ulong.TryParse(args[1], out ulong a1) ? a1.ToString() : "7"))}",
+                        Description =
+                            $"Days to delete: {(args.Length == 1 ? "7" : ulong.TryParse(args[1], out var a1) ? a1.ToString() : "7")}",
                         Color = Blurple
                     }.WithCurrentTimestamp());
                     try
@@ -72,13 +70,18 @@ namespace Hermes.Modules.Moderation
                         await gUser.SendMessageAsync("", false, new EmbedBuilder
                         {
                             Title = "Oops, you were softbanned!",
-                            Description = $"You were softbanned from **{Context.Guild.Name}** by {Context.User.Mention}\n[Click here to appeal]({(await AppealGetter(Context.Guild.Id) == "" ? "" : await AppealGetter(Context.Guild.Id))})",
+                            Description =
+                                $"You were softbanned from **{Context.Guild.Name}** by {Context.User.Mention}\n[Click here to appeal]({(await AppealGetter(Context.Guild.Id) == "" ? "" : await AppealGetter(Context.Guild.Id))})",
                             Color = Color.Red
                         }.WithCurrentTimestamp().Build());
                     }
-                    catch { }
+                    catch
+                    {
+                    }
+
                     var gUID = gUser.Id;
-                    await gUser.BanAsync(args.Length == 1 ? 7 : (ulong.TryParse(args[1], out ulong ak47) ? Convert.ToInt32(ak47) : 7));
+                    await gUser.BanAsync(args.Length == 1 ? 7 :
+                        ulong.TryParse(args[1], out var ak47) ? Convert.ToInt32(ak47) : 7);
                     await Context.Guild.RemoveBanAsync(gUID);
                     await AddToModlogs(Context.Guild.Id, gUser.Id, Context.User.Id, Punishment.Softban, DateTime.Now);
                     return;
@@ -94,6 +97,7 @@ namespace Hermes.Modules.Moderation
                     }.WithCurrentTimestamp());
                     return;
                 }
+
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = "Not gonna happen",
@@ -103,7 +107,7 @@ namespace Hermes.Modules.Moderation
                 return;
             }
 
-            if (ulong.TryParse(args[0], out ulong ide))
+            if (ulong.TryParse(args[0], out var ide))
             {
                 var aadrc = new DiscordRestClient();
                 await aadrc.LoginAsync(TokenType.Bot, Program.token);
@@ -118,10 +122,12 @@ namespace Hermes.Modules.Moderation
                     }.WithCurrentTimestamp());
                     return;
                 }
+
                 await ReplyAsync("", false, new EmbedBuilder
                 {
                     Title = $"{aa.Username}#{aa.Discriminator} Softbanned Successfully!",
-                    Description = $"Days to delete: {(args.Length == 1 ? "7" : (ulong.TryParse(args[1], out ulong a1) ? a1.ToString() : "7"))}",
+                    Description =
+                        $"Days to delete: {(args.Length == 1 ? "7" : ulong.TryParse(args[1], out var a1) ? a1.ToString() : "7")}",
                     Color = Blurple
                 }.WithCurrentTimestamp());
                 try
@@ -129,16 +135,22 @@ namespace Hermes.Modules.Moderation
                     await aa.SendMessageAsync("", false, new EmbedBuilder
                     {
                         Title = "Oops, you were banned!",
-                        Description = $"You were banned from **{Context.Guild.Name}** by {Context.User.Mention}\n[Click here to appeal]({(await AppealGetter(Context.Guild.Id) == "" ? "" : await AppealGetter(Context.Guild.Id))})",
+                        Description =
+                            $"You were banned from **{Context.Guild.Name}** by {Context.User.Mention}\n[Click here to appeal]({(await AppealGetter(Context.Guild.Id) == "" ? "" : await AppealGetter(Context.Guild.Id))})",
                         Color = Color.Red
                     }.WithCurrentTimestamp().Build());
                 }
-                catch { }
-                await Context.Guild.AddBanAsync(aa, args.Length == 1 ? 7 : (ulong.TryParse(args[1], out ulong ak47) ? Convert.ToInt32(ak47) : 7));
+                catch
+                {
+                }
+
+                await Context.Guild.AddBanAsync(aa,
+                    args.Length == 1 ? 7 : ulong.TryParse(args[1], out var ak47) ? Convert.ToInt32(ak47) : 7);
                 await Context.Guild.RemoveBanAsync(aa);
                 await AddToModlogs(Context.Guild.Id, aa.Id, Context.User.Id, Punishment.Softban, DateTime.Now);
                 return;
             }
+
             await ReplyAsync("", false, new EmbedBuilder
             {
                 Title = "What user?",
