@@ -1,7 +1,7 @@
 # Rolex
 <a rel="license" href="http://creativecommons.org/licenses/by-nc/3.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/3.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/3.0/">Creative Commons Attribution-NonCommercial 3.0 Unported License</a>.
 ### How to set it up, for running it ###
-Join the support server [here](https://discord.gg/VPxF3HgaWY) for information about developing Hermes
+Join the support server [here](https://discord.gg/VPxF3HgaWY) for information about developing Hermes                              
 [![Discord](https://discord.com/api/guilds/858687271308754985/widget.png)](https://discord.gg/VPxF3HgaWY)
 1. Download repository.
 2. Open in VS, and attempt to run it. It should fail to run, however this setup is neccessary for the folders to be created.
