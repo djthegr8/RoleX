@@ -2,7 +2,7 @@
 <a rel="license" href="http://creativecommons.org/licenses/by-nc/3.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/3.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/3.0/">Creative Commons Attribution-NonCommercial 3.0 Unported License</a>.
 ### How to set it up, for running it ###
 Join the support server [here](https://discord.gg/VPxF3HgaWY) for information about developing Hermes
-<iframe src="https://discord.com/widget?id=858687271308754985&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+[![Discord](https://discord.com/api/guilds/858687271308754985/widget.png)](https://discord.gg/VPxF3HgaWY)
 1. Download repository.
 2. Open in VS, and attempt to run it. It should fail to run, however this setup is neccessary for the folders to be created.
 3. Go to bin -> Debug -> netcoreapp3.1 and create a folder `Data` and put two files in it ~
