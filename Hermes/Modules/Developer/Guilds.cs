@@ -15,7 +15,7 @@ namespace Hermes.Modules.Developer
             if (devids.Any(x => x == Context.User.Id))
             {
                 var st = "```";
-                var vks_bald_head = Program.Client.Guilds.ToList().SortByDescending(k => k.MemberCount);
+                var vks_bald_head = Program.Client.Guilds.ToList().OrderByDescending(k => k.MemberCount);
                 foreach (var srver in vks_bald_head)
                     try
                     {
