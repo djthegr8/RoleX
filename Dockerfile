@@ -16,4 +16,4 @@ RUN dotnet publish -c Release --no-build -o /app && echo "Published successfully
 FROM mcr.microsoft.com/dotnet/runtime:5.0
 WORKDIR /app
 COPY --from=publish /app .
-ENTRYPOINT ["dotnet", "complexapp.dll"]
+ENTRYPOINT ["dotnet", "Hermes.dll"]
