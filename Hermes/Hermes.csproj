@@ -10,9 +10,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Remove="modules\Legacy\**"/>
-        <EmbeddedResource Remove="modules\Legacy\**"/>
-        <None Remove="modules\Legacy\**"/>
+        <Compile Remove="Modules\Legacy\**"/>
+        <EmbeddedResource Remove="Modules\Legacy\**"/>
+        <None Remove="Modules\Legacy\**"/>
         <Compile Remove="bin\**"/>
         <EmbeddedResource Remove="bin\**"/>
         <None Remove="bin\**"/>
