@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 RUN echo ".NET 5 successfully fetched.\nNow restoring..."
 WORKDIR /source
 
-COPY *.csproj .
+COPY Hermes/*.csproj .
 RUN dotnet restore && echo "Restored successfully."
 
 COPY . .
