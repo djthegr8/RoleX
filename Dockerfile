@@ -6,7 +6,7 @@ WORKDIR /source
 COPY Hermes/*.csproj .
 RUN dotnet restore && echo "Restored successfully."
 
-COPY . .
+COPY Hermes/ .
 RUN dotnet build Hermes.csproj -c Release --no-restore && echo "Build successful."
 
 FROM build AS publish
