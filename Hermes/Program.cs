@@ -273,16 +273,15 @@ namespace Hermes
             try
             {
                 await TopGG.topGGUPD(Client.Guilds.Count);
-                var text = await arg.GetInfoString();
+                // TODO: Fix this
+                // var text = await arg.GetInfoString();
                 // <@701029647760097361> or <@615873008959225856>
                 foreach (var devid in CommandModuleBase.devids)
                 {
                     var user = Client.GetUser(devid);
                     await user.SendMessageAsync(
                         $"I joined {arg.Name}, a Guild of {arg.MemberCount} members, making the count at {Client.Guilds.Count}.",
-                        false,
-                        new EmbedBuilder {Title = "Server Info", Url = arg.IconUrl, Description = text}
-                            .WithCurrentTimestamp().Build());
+                        false
 
                     try
                     {
