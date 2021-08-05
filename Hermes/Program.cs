@@ -281,7 +281,7 @@ namespace Hermes
                     var user = Client.GetUser(devid);
                     await user.SendMessageAsync(
                         $"I joined {arg.Name}, a Guild of {arg.MemberCount} members, making the count at {Client.Guilds.Count}.",
-                        false
+                        false);
 
                     try
                     {
