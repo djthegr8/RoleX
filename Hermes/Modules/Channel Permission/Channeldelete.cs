@@ -52,7 +52,7 @@ namespace Hermes.Modules.Channel_Permission
             else
             {
                 await Interaction.AcknowledgeAsync();
-                var isTick = Interaction.Data.ToString().Contains("Tick");
+                var isTick = Interaction.Data.CustomId.Contains("Tick");
                 if (!isTick)
                 {
                     await Context.Channel.SendMessageAsync("", false, new EmbedBuilder
