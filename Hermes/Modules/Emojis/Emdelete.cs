@@ -10,6 +10,7 @@ namespace Hermes.Modules.Emojis
     public class Emdelete : CommandModuleBase
     {
         [RequiredUserPermissions(GuildPermission.ManageEmojis)]
+        [Alt("emdel")]
         [DiscordCommand("emdelete", description = "Deletes given emoji.", example = "emdelete kekw",
             commandHelp = "emrename emoji_name")]
         public async Task EMDEL(params string[] args)
