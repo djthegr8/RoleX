@@ -10,6 +10,7 @@ namespace Hermes.Modules.Emojis
     public class Emrename : CommandModuleBase
     {
         [RequiredUserPermissions(GuildPermission.ManageEmojis)]
+        [Alt("emre")]
         [DiscordCommand("emrename", commandHelp = "emrename :old_emote: new_emote_name",
             description = "Renames provided emoji :)", example = "emrename kek kekw")]
         public async Task EmRename(params string[] args)
