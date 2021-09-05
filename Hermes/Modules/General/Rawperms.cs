@@ -7,6 +7,7 @@ namespace Hermes.Modules.General
     [DiscordCommandClass("General", "General commands for all!")]
     public class Rawperms : CommandModuleBase
     {
+        [Alt("rawp")]
         [DiscordCommand("rawperms", description = "Takes a permission integer and gives the values",
             example = "rawperms 8")]
         public async Task PermRaw(ulong raw)
