@@ -10,47 +10,47 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Remove="Modules\Legacy\**"/>
-        <Content Remove="Modules\Legacy\**"/>
-        <EmbeddedResource Remove="Modules\Legacy\**"/>
-        <None Remove="Modules\Legacy\**"/>
-        <Compile Remove="bin\**"/>
-        <EmbeddedResource Remove="bin\**"/>
-        <None Remove="bin\**"/>
+        <Compile Remove="Modules\Legacy\**" />
+        <Content Remove="Modules\Legacy\**" />
+        <EmbeddedResource Remove="Modules\Legacy\**" />
+        <None Remove="Modules\Legacy\**" />
+        <Compile Remove="bin\**" />
+        <EmbeddedResource Remove="bin\**" />
+        <None Remove="bin\**" />
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="avatar.JPG"/>
+        <None Remove="avatar.JPG" />
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="..\.editorconfig" Link=".editorconfig"/>
+        <None Include="..\.editorconfig" Link=".editorconfig" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Discord.Net.Labs" Version="2.4.2"/>
-        <PackageReference Include="DiscordBotsList.Api" Version="1.4.0"/>
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.10.0-1.final"/>
-        <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.1"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.7"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.7">
+        <PackageReference Include="Discord.Net.Labs" Version="3.0.2" />
+        <PackageReference Include="DiscordBotsList.Api" Version="1.4.0" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.0.0-3.final" />
+        <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.9" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.9" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.9">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="MongoDB.Driver" Version="2.11.6"/>
+        <PackageReference Include="MongoDB.Driver" Version="2.13.1" />
         <PackageReference Include="more.xunit.runner.visualstudio" Version="2.3.1">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="morelinq" Version="3.3.2"/>
-        <PackageReference Include="StackExchange.Redis" Version="2.2.4"/>
-        <PackageReference Include="System.Drawing.Common" Version="6.0.0-preview.5.21301.5"/>
-        <PackageReference Include="System.Reactive" Version="5.0.0"/>
-        <PackageReference Include="System.Runtime.InteropServices" Version="4.3.0"/>
+        <PackageReference Include="morelinq" Version="3.3.2" />
+        <PackageReference Include="StackExchange.Redis" Version="2.2.50" />
+        <PackageReference Include="System.Drawing.Common" Version="6.0.0-preview.7.21377.19" />
+        <PackageReference Include="System.Reactive" Version="5.0.0" />
+        <PackageReference Include="System.Runtime.InteropServices" Version="4.3.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Tests\"/>
+        <Folder Include="Tests\" />
     </ItemGroup>
 
 </Project>

@@ -1,10 +1,10 @@
 #!/bin/bash
 echo "Checking for changes"
-git pull -q
+git -C /home/Hermes/RoleX pull -q
 echo "Changes pulled"
 pm2 stop 0 -s
 echo "Starting build procedure"
-dotnet build >> /dev/null
+dotnet build /home/Hermes/RoleX/Hermes >> /dev/null
 echo "Build successful"
-pm2 restart 0 -s
+pm2 restart 0 --cron "*/20 * * * *" -s
 echo "Restart successful, Good To Go!"
