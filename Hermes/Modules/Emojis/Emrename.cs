@@ -9,7 +9,7 @@ namespace Hermes.Modules.Emojis
     [DiscordCommandClass("Emote Editor", "For complete management of server emotes!")]
     public class Emrename : CommandModuleBase
     {
-        [RequiredUserPermissions(GuildPermission.ManageEmojis)]
+        [RequiredUserPermissions(GuildPermission.ManageEmojisAndStickers)]
         [Alt("emre")]
         [DiscordCommand("emrename", commandHelp = "emrename :old_emote: new_emote_name",
             description = "Renames provided emoji :)", example = "emrename kek kekw")]

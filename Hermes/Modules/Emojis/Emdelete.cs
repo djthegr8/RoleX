@@ -9,7 +9,7 @@ namespace Hermes.Modules.Emojis
     [DiscordCommandClass("Emote Editor", "For complete management of server emotes!")]
     public class Emdelete : CommandModuleBase
     {
-        [RequiredUserPermissions(GuildPermission.ManageEmojis)]
+        [RequiredUserPermissions(GuildPermission.ManageEmojisAndStickers)]
         [Alt("emdel")]
         [DiscordCommand("emdelete", description = "Deletes given emoji.", example = "emdelete kekw",
             commandHelp = "emrename emoji_name")]

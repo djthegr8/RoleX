@@ -10,7 +10,7 @@ namespace Hermes.Modules.Emojis
     [DiscordCommandClass("Emote Editor", "For complete management of server emotes!")]
     public class EmSteal : CommandModuleBase
     {
-        [RequiredUserPermissions(GuildPermission.ManageEmojis)]
+        [RequiredUserPermissions(GuildPermission.ManageEmojisAndStickers)]
         [DiscordCommand("emsteal", description = "Steals given emoji from given server",
             example = "emsteal 8325280985332 285098320958583",
             commandHelp = "emrename <server_id> <emoji/emoji_id>, <emoji2/emoji2_id>, <emoji3/emoji3_id>...")]
