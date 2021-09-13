@@ -230,8 +230,8 @@ namespace Hermes.Modules.Services
                     roleA.Permissions.Modify(kickMembers: add),
                 GuildPermission.ManageChannels =>
                     roleA.Permissions.Modify(manageChannels: add),
-                GuildPermission.ManageEmojis =>
-                    roleA.Permissions.Modify(manageEmojis: add),
+                GuildPermission.ManageEmojisAndStickers =>
+                    roleA.Permissions.Modify(manageEmojisAndStickers: add),
                 GuildPermission.ManageGuild =>
                     roleA.Permissions.Modify(manageGuild: add),
                 GuildPermission.ManageMessages =>
