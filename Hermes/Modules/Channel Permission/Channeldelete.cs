@@ -33,8 +33,8 @@ namespace Hermes.Modules.Channel_Permission
                 return;
             }
 
-            var cros = Emote.Parse("<a:cros:859033035545378826>");
-            var tickk = Emote.Parse("<a:tick:859032462410907649>");
+            var cros = Emote.Parse("<a:cros:859032986166362152>");
+            var tickk = Emote.Parse("<a:tick:782831523400908832>");
             var gc = Guid.NewGuid();
             var cb = new ComponentBuilder().WithButton("", $"{gc}Tick", ButtonStyle.Secondary, tickk)
                 .WithButton("", $"{gc}Cros", ButtonStyle.Secondary, cros);
