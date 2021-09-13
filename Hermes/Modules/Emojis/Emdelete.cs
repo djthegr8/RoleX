@@ -42,11 +42,12 @@ namespace Hermes.Modules.Emojis
             var cros = Emote.Parse("<a:cros:859033035545378826>");
             var tickk = Emote.Parse("<a:tick:859032462410907649>");
             var gc = Guid.NewGuid();
-            var cb = new ComponentBuilder().WithButton("", $"{gc}Tick", ButtonStyle.Secondary, tickk)
-                .WithButton("", $"{gc}Cros", ButtonStyle.Secondary, cros);
+            // var cb = new ComponentBuilder().WithButton("", $"{gc}Tick", ButtonStyle.Secondary, tickk)
+            //    .WithButton("", $"{gc}Cros", ButtonStyle.Secondary, cros);
+            var builder = new ComponentBuilder().WithButton("Yeah!", customId: $"{gc}Tick", ButtonStyle.Secondary, row: 0).WithButton("", $"{gc}Cros", ButtonStyle.Secondary, row: 0);
             await Context.Channel.SendMessageAsync(
                 $"Are you sure you want to delete {i}?\nThis is a potentially destructive action.",
-                component: cb.Build());
+                component: builder.Build());
             var cancelSource = new CancellationTokenSource();
             cancelSource.CancelAfter(15000);
             var Interaction = await InteractionHandler.NextButtonAsync(
