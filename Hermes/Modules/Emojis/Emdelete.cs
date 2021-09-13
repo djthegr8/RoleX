@@ -42,8 +42,8 @@ namespace Hermes.Modules.Emojis
             var cros = Emote.Parse("<a:cros:859033035545378826>");
             var tickk = Emote.Parse("<a:tick:859032462410907649>");
             var gc = Guid.NewGuid();
-            var cb = new ComponentBuilder().WithButton("_", $"{gc}Tick", ButtonStyle.Secondary, tickk)
-                .WithButton("_", $"{gc}Cros", ButtonStyle.Secondary, cros);
+            var cb = new ComponentBuilder().WithButton("why_does_this", $"{gc}Tick", ButtonStyle.Secondary, tickk)
+                .WithButton("not_work", $"{gc}Cros", ButtonStyle.Secondary, cros);
             await Context.Channel.SendMessageAsync(
                 $"Are you sure you want to delete {i}?\nThis is a potentially destructive action.",
                 component: cb.Build());
