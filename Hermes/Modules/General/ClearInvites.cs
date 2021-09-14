@@ -15,7 +15,7 @@ namespace Hermes.Modules.General
         public async Task RPing(params string[] _)
         {
             await Context.Channel.TriggerTypingAsync();
-			foreach (var invite in Context.Guild.Invites) {
+			foreach (var invite in (await Context.Guild.GetInvitesAsync())) {
 				await invite.DeleteAsync();
 			}
             await ReplyAsync(
