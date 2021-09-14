@@ -1,5 +1,7 @@
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading.Tasks;
+using Discord;
+using Discord.WebSocket;
 using Hermes.Modules.Services;
 
 namespace Hermes.Modules.General
