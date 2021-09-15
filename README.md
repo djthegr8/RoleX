@@ -9,7 +9,7 @@ Join the support server [here](https://discord.gg/VPxF3HgaWY) for information ab
      1. A token.txt containing the Bot token. This can be found from [this site](https://discord.com/developers/)
      2. A sqlite file called `rolex.db` (If not present, EF Core should auto-generate it)
 # Documentation and Features
-All of that is [here](https://docs.isaacindia.tech)
+We dont have much doc anymore :(
 ### License
 We are licensed with Attribution-NonCommercial 3.0, which simply means ~    
 #### You are free to -      
