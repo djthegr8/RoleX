@@ -199,23 +199,23 @@ namespace Hermes
 
         private async Task LeftGuildAsync(SocketGuild arg)
         {
-            try
-            {
-                foreach (var devid in CommandModuleBase.devids)
-                    await Client.GetUser(devid)
-                        .SendMessageAsync(
-                            $"I left {arg.Name}, a Guild of {arg.MemberCount} members, current count is at {Client.Guilds.Count}",
-                            false, new EmbedBuilder
-                            {
-                                Title = "We left this dump",
-                                Description = await arg.GetInfoString(),
-                                Color = Color.Red
-                            }.WithCurrentTimestamp().Build());
-                await TopGG.topGGUPD(Client.Guilds.Count);
-            }
-            catch
-            {
-            }
+//             try
+//             {
+//                 foreach (var devid in CommandModuleBase.devids)
+//                     await Client.GetUser(devid)
+//                         .SendMessageAsync(
+//                             $"I left {arg.Name}, a Guild of {arg.MemberCount} members, current count is at {Client.Guilds.Count}",
+//                             false, new EmbedBuilder
+//                             {
+//                                 Title = "We left this dump",
+//                                 Description = await arg.GetInfoString(),
+//                                 Color = Color.Red
+//                             }.WithCurrentTimestamp().Build());
+//                 await TopGG.topGGUPD(Client.Guilds.Count);
+//             }
+//             catch
+//             {
+//             }
         }
 
         private async Task AltAlertAsync(SocketGuildUser arg)
