@@ -65,7 +65,7 @@ namespace Hermes.Modules.Moderation
                     {
                     }
 
-                    await gUser.BanAsync(7,
+                    await gUser.BanAsync(0,
                         args.Length > 1
                             ? string.Join(' ', args.Skip(1))
                             : $"Requested by {Context.User.Username}#{Context.User.Discriminator}");
@@ -131,7 +131,7 @@ namespace Hermes.Modules.Moderation
                 {
                 }
 
-                await Context.Guild.AddBanAsync(aa, 7,
+                await Context.Guild.AddBanAsync(aa, 0,
                     args.Length > 1
                         ? string.Join(' ', args.Skip(1))
                         : $"Requested by {Context.User.Username}#{Context.User.Discriminator}");
