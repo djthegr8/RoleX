@@ -9,7 +9,7 @@ namespace Hermes.Modules.General
         [DiscordCommand("react", commandHelp = "react <emote>", description = "Reacts with the given emote to replied msg")]
         public async Task RReact(string em, params string[] args)
         {
-            isemoji = Emote.TryParse(em, out var emoji)
+            isemoji = Emote.TryParse(em, out var emoji);
             var emote = isemoji ? emoji : (await GetEmote(em));
             var mes = Context.Message.ReferencedMessage;
             if (emote == null || mes == null){
