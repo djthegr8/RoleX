@@ -9,8 +9,8 @@ namespace Hermes.Modules.General
         [DiscordCommand("react", commandHelp = "react <emote>", description = "Reacts with the given emote to replied msg")]
         public async Task RReact(string em, params string[] args)
         {
-            emote = await GetEmote(em);
-            mes = Context.Message.ReferencedMessage;
+            var emote = await GetEmote(em);
+            var mes = Context.Message.ReferencedMessage;
             if (emote == null || mes == null){
                 await ReplyAsync("-_-");
                 return;
