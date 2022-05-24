@@ -10,7 +10,7 @@ namespace Hermes.Modules.General
         public async Task RReact(string em, params string[] args)
         {
             var isemoji = new Emoji(em);
-            var emote = isemoji != null ? isemoji : (await GetEmote(em));
+            var emote = isemoji != null ? (IEmote)isemoji : (IEmote)(await GetEmote(em));
             var mes = Context.Message.ReferencedMessage;
             if (emote == null || mes == null){
                 await ReplyAsync("-_-");
