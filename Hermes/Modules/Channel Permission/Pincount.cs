@@ -63,7 +63,7 @@ namespace Hermes.Modules.Channel_Permission
                     ? $"Out of these, the top 3 are ~ \n{string.Join('\n', loa.Select((k, l) => $"{(l == 0 ? "🥇" : l == 1 ? "🥈" : "🥉")} **{k.Item1}** with {k.Item2} pins"))}"
                     : "No pins eh",
                 Color = Blurple,
-            }.WithFooter("Channel created at").WithTimestamp(axSTC.CreatedAt)));
+            }.WithFooter("Channel created at").WithTimestamp(axSTC.CreatedAt));
         }
     }
 }
