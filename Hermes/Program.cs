@@ -479,7 +479,6 @@ namespace Hermes
             {
                 if (msg == null) return;
                 if (msg.Channel.GetType() == typeof(SocketDMChannel)) return;
-                if (msg.Channel.GetType() == typeof(IForumChannel)) return;
                 var ca = msg.Content.ToCharArray();
                 if (ca.Length == 0) return;
                 var context = new ShardedCommandContext(Client, msg);
