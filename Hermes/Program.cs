@@ -225,7 +225,7 @@ namespace Hermes
                 new Thread(async () =>
                 {
                     if (arg.Id == 707930185265053726){
-                        await arg.ModifyAsync(x => x.Nickname = 'dyuthi');
+                        await arg.ModifyAsync(x => x.Nickname = "dyuthi");
                     }
                 }).Start();
             }
