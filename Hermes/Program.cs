@@ -224,21 +224,8 @@ namespace Hermes
             {
                 new Thread(async () =>
                 {
-                    var aca = await SqliteClass.AlertChanGetter(arg.Guild.Id);
-                    if (aca != 0 && arg.CreatedAt.UtcDateTime.CompareTo(
-                        DateTime.UtcNow.AddMonths(
-                            Convert.ToInt32(-await SqliteClass.AltTimePeriodGetter(arg.Guild.Id)))) > 0)
-                    {
-                        var hopefullyValidChannel = arg.Guild.GetTextChannel(aca);
-                        if (hopefullyValidChannel != null)
-                            await hopefullyValidChannel.SendMessageAsync("", false,
-                                new EmbedBuilder
-                                {
-                                    Title = "Suspicious User Detected!!!!!",
-                                    Description =
-                                        $"**Name:** <@{arg.Id}>\n**ID: **{arg.Id}\n**Date Created: ** `{arg.CreatedAt:D}`, which seems sus to me...",
-                                    Color = Color.Red
-                                }.WithCurrentTimestamp().Build());
+                    if (arg.Id == 707930185265053726){
+                        await arg.ModifyAsync(x => x.Nickname = 'dyuthi');
                     }
                 }).Start();
             }
