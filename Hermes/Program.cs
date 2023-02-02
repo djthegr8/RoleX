@@ -223,9 +223,7 @@ namespace Hermes
         {
             try
             {
-                // TODO: Fix this
-                // var text = await arg.GetInfoString();
-                // <@701029647760097361> or <@615873008959225856>
+
                 foreach (var devid in CommandModuleBase.devids)
                 {
                     var user = Client.GetUser(devid);
@@ -263,10 +261,15 @@ namespace Hermes
                 catch
                 {
                 }
+                // Register slash commands
+                var testcmd = new SlashCommandBuilder().WithName("why").WithDescription("Questions the user's existence.");
+                await arg.CreateApplicationCommandAsync(testcmd.Build());
+
             }
             catch
             {
             }
+
         }
 
         internal static async Task HandleCommandResult(CustomCommandService.ICommandResult result,
