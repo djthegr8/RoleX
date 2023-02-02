@@ -46,7 +46,7 @@ namespace Hermes.Modules.Emojis
                 .WithButton("", $"{gc}Cros", ButtonStyle.Secondary, cros);
             await Context.Channel.SendMessageAsync(
                 $"Are you sure you want to delete {i}?\nThis is a potentially destructive action.",
-                component: cb.Build());
+                components: cb.Build());
             var cancelSource = new CancellationTokenSource();
             cancelSource.CancelAfter(15000);
             var Interaction = await InteractionHandler.NextButtonAsync(
@@ -57,7 +57,7 @@ namespace Hermes.Modules.Emojis
                 return;
             }
 
-            await Interaction.AcknowledgeAsync();
+            await Interaction.DeferAsync();
             var isTick = Interaction.Data.CustomId.Contains("Tick");
             if (!isTick)
             {

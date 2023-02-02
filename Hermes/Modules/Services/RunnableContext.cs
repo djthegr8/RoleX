@@ -123,7 +123,7 @@ namespace Hermes.Modules.Services
 
         public async Task<IUser> GetBannedUser(string uname)
         {
-            var alr = await Context.Guild.GetBansAsync();
+            var alr = await Context.Guild.GetBansAsync().FlattenAsync();
             var regex = new Regex(@"(\d{18}|\d{17})");
             if (regex.IsMatch(uname)) return alr.FirstOrDefault(aa => aa.User.Id == ulong.Parse(uname))?.User;
             return alr.FirstOrDefault(x => x.User.Username.ToLower().Contains(uname.ToLower()))?.User;

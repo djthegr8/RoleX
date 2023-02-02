@@ -29,7 +29,7 @@ namespace Hermes.Modules.Role_Editor
                     }.WithCurrentTimestamp());
                     return;
                 case 1:
-                    var role = await Context.Guild.CreateRoleAsync(args[0], null, null, false, null);
+                    var role = await Context.Guild.CreateRoleAsync(args[0]);
                     await ReplyAsync("", false, new EmbedBuilder
                     {
                         Title = "Role creation successful!",
@@ -38,7 +38,7 @@ namespace Hermes.Modules.Role_Editor
                     }.WithCurrentTimestamp());
                     return;
                 case 2:
-                    var rle = await Context.Guild.CreateRoleAsync(args[0], null, null, false, null);
+                    var rle = await Context.Guild.CreateRoleAsync(args[0]);
                     var c = new ColorConverter();
                     var col = new System.Drawing.Color();
                     var hasC = false;

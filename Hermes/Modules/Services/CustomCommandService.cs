@@ -147,7 +147,6 @@ namespace Hermes.Modules.Services
         /// <returns>The <see cref="ICommandResult" /> containing what the status of the execution is </returns>
         public async Task<ICommandResult> ExecuteAsync(SocketCommandContext context, string pref)
         {
-            var IsMentionCommand = false;
             var msgcontent = context.Message.Content;
             var hasN = msgcontent.Split(' ').Any(k => k == "-n");
             var ignoreAlias = msgcontent.Split(' ')[0].Contains("alias") || hasN;

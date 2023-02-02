@@ -38,7 +38,7 @@ namespace Hermes.Modules.Moderation
                     Color = Blurple
                 }.WithCurrentTimestamp());
                 var rl = await Context.Guild.CreateRoleAsync("Muted by Hermes", new GuildPermissions(),
-                    new Color(0, 0, 0), false, null);
+                    new Color(0, 0, 0), false);
                 foreach (var chnl in Context.Guild.Channels)
                     await chnl.AddPermissionOverwriteAsync(rl,
                         new OverwritePermissions(sendMessages: PermValue.Deny, speak: PermValue.Deny));

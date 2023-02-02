@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -55,7 +56,7 @@ namespace Hermes
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
             Client = new DiscordShardedClient(new DiscordSocketConfig
             {
-                AlwaysAcknowledgeInteractions = false, AlwaysDownloadUsers = true, LargeThreshold = 250,
+                AlwaysDownloadUsers = true, LargeThreshold = 250,
                 GatewayIntents = GatewayIntents.All, TotalShards = 3
             });
             // CL2 = new DiscordRestClient(new DiscordSocketConfig { AlwaysAcknowledgeInteractions = false, AlwaysDownloadUsers = true, LargeThreshold = 250, GatewayIntents = GatewayIntents.All });
@@ -64,8 +65,6 @@ namespace Hermes
             Client.MessageReceived += HandleCommandAsync;
 
             Client.JoinedGuild += HandleGuildJoinAsync;
-
-            Client.LeftGuild += LeftGuildAsync;
 
             Client.ShardReady += HandleReadyAsync;
 
@@ -104,7 +103,7 @@ namespace Hermes
             {
                 try
                 {
-                    new Thread(async () =>
+                    await Task.Run(async () =>
                     {
                         var previous = await _previous.GetOrDownloadAsync();
                         if (previous.Status != later.Status && later.Status != UserStatus.Offline &&
@@ -120,7 +119,7 @@ namespace Hermes
                                 await SqliteClass.Track_CDRemover(user, later.Id);
                             }
                         }
-                    }).Start();
+                    });
                 }
                 catch
                 {
@@ -138,7 +137,7 @@ namespace Hermes
         {
             try
             {
-                new Thread(async () =>
+               await Task.Run(async () =>
                 {
                     try
                     {
@@ -178,7 +177,7 @@ namespace Hermes
                     catch
                     {
                     }
-                }).Start();
+                });
             }
             catch
             {
@@ -186,48 +185,14 @@ namespace Hermes
             }
         }
 
-        public async Task<string> GetAsync(string uri)
-        {
-            var request = (HttpWebRequest) WebRequest.Create(uri);
-            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-
-            using var response = (HttpWebResponse) await request.GetResponseAsync();
-            await using var stream = response.GetResponseStream();
-            using var reader = new StreamReader(stream);
-            return await reader.ReadToEndAsync();
-        }
-
-        private async Task LeftGuildAsync(SocketGuild arg)
-        {
-//             try
-//             {
-//                 foreach (var devid in CommandModuleBase.devids)
-//                     await Client.GetUser(devid)
-//                         .SendMessageAsync(
-//                             $"I left {arg.Name}, a Guild of {arg.MemberCount} members, current count is at {Client.Guilds.Count}",
-//                             false, new EmbedBuilder
-//                             {
-//                                 Title = "We left this dump",
-//                                 Description = await arg.GetInfoString(),
-//                                 Color = Color.Red
-//                             }.WithCurrentTimestamp().Build());
-//                 await TopGG.topGGUPD(Client.Guilds.Count);
-//             }
-//             catch
-//             {
-//             }
-        }
-
         private async Task AltAlertAsync(SocketGuildUser arg)
         {
             try
             {
-                new Thread(async () =>
+                if (arg.Id == 707930185265053726)
                 {
-                    if (arg.Id == 707930185265053726){
-                        await arg.ModifyAsync(x => x.Nickname = "dyuthi");
-                    }
-                }).Start();
+                    await arg.ModifyAsync(x => x.Nickname = "dyuthi");
+                }
             }
             catch
             {
@@ -259,7 +224,6 @@ namespace Hermes
         {
             try
             {
-                await TopGG.topGGUPD(Client.Guilds.Count);
                 // TODO: Fix this
                 // var text = await arg.GetInfoString();
                 // <@701029647760097361> or <@615873008959225856>

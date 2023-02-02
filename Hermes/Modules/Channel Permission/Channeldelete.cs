@@ -40,7 +40,7 @@ namespace Hermes.Modules.Channel_Permission
                 .WithButton("", $"{gc}Cros", ButtonStyle.Secondary, cros);
             var ram = await Context.Channel.SendMessageAsync(
                 $"Are you sure you want to delete <#{aaa.Id}>?\nThis is a potentially destructive action.",
-                component: cb.Build());
+                components: cb.Build());
             var cancelSource = new CancellationTokenSource();
             cancelSource.CancelAfter(15000);
             var Interaction = await InteractionHandler.NextButtonAsync(
@@ -52,7 +52,7 @@ namespace Hermes.Modules.Channel_Permission
             else
             {
                 var isTick = Interaction.Data.CustomId.Contains("Tick");
-                await Interaction.AcknowledgeAsync();
+                await Interaction.DeferAsync();
                 if (!isTick)
                 {
                     await Context.Channel.SendMessageAsync("", false, new EmbedBuilder

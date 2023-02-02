@@ -18,7 +18,7 @@ namespace Hermes.Modules.Moderation
                 Title = "List of bans in the server",
                 Color = Blurple
             }.WithCurrentTimestamp();
-            var listwherenotnull = (await Context.Guild.GetBansAsync()).ToList();
+            var listwherenotnull = (await Context.Guild.GetBansAsync().FlattenAsync()).ToList();
             listwherenotnull.RemoveAll(k => k == null);
             var efb = listwherenotnull.Select((r5, idx) => new EmbedFieldBuilder
             {

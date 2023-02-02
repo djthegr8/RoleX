@@ -33,7 +33,7 @@ namespace Hermes.Utilities
             Task.Run(async () =>
             {
                 await Task.Delay(span);
-                message.SafeDelete();
+                await message.SafeDelete();
             });
         }
 
