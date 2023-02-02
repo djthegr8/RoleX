@@ -57,7 +57,7 @@ namespace Hermes
             Client = new DiscordShardedClient(new DiscordSocketConfig
             {
                 AlwaysDownloadUsers = true, LargeThreshold = 250,
-                GatewayIntents = GatewayIntents.GuildMessageReactions|GatewayIntents.GuildMembers|GatewayIntents.GuildMessages|GatewayIntents.Guilds, TotalShards = 1
+                GatewayIntents = GatewayIntents.GuildMessageReactions|GatewayIntents.GuildMembers|GatewayIntents.GuildMessages|GatewayIntents.Guilds|GatewayIntents.MessageContent, TotalShards = 1
             });
             // CL2 = new DiscordRestClient(new DiscordSocketConfig { AlwaysAcknowledgeInteractions = false, AlwaysDownloadUsers = true, LargeThreshold = 250, GatewayIntents = GatewayIntents.All });
             Client.Log += Log;
