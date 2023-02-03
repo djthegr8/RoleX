@@ -71,6 +71,8 @@ namespace Hermes
             Client.UserJoined += AltAlertAsync;
 
             Client.ReactionAdded += HandleReactionAsync;
+            
+            Client.SlashCommandExecuted += SlashCommandHandler;
             var __ = new Timer(async _ =>
             {
                 if (Client.LoginState != LoginState.LoggedIn) return;
@@ -130,7 +132,10 @@ namespace Hermes
             await Client.SetGameAsync("Supervising Roles!");
             await Task.Delay(-1);
         }
-
+        private async Task SlashCommandHandler(SocketSlashCommand command)
+        {
+            await command.RespondAsync($"You executed {command.Data.Name}");
+        }
         private async Task HandleReactionAsync(Cacheable<IUserMessage, ulong> arg1,
             Cacheable<IMessageChannel, ulong> _arg2, SocketReaction arg3)
         {
