@@ -138,6 +138,7 @@ namespace Hermes.Modules.Services
             Channel = context.Channel;
             User = context.User;
             Message = context.Message;
+            Context = context;
         }
 
         public SocketGuild Guild { get; }
