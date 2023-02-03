@@ -148,5 +148,7 @@ namespace Hermes.Modules.Services
         public SocketUser User { get; }
 
         public SocketUserMessage Message { get; }
+        
+        public SocketCommandContext Context {get;}
     }
 }
