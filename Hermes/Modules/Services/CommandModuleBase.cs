@@ -109,16 +109,9 @@ namespace Hermes.Modules.Services
         public SocketGuildChannel GetChannel(string name)
         {
             if (string.IsNullOrEmpty(name)) return null;
-            var regex = new Regex(@"(\d{18}|\d{17})");
-            if (regex.IsMatch(name))
-            {
-                Console.WriteLine("doger");
-                var u = Context.Guild.GetChannel(ulong.Parse(regex.Match(name).Groups[0].Value));
-                return u is SocketCategoryChannel ? null : u;
-            }
-
             if (ulong.TryParse(name, out var res))
             {
+                Console.WriteLine('a');
                 var x = Context.Guild?.Channels?.FirstOrDefault(ch => ch.Id == res);
                 return x is SocketCategoryChannel ? null : x;
             }
