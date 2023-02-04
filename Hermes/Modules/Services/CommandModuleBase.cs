@@ -112,7 +112,8 @@ namespace Hermes.Modules.Services
             var regex = new Regex(@"(\d{18}|\d{17})");
             if (regex.IsMatch(name))
             {
-                var u = Context.Guild.GetChannel(ulong.Parse(regex.Match(name).Groups[1].Value));
+                Console.WriteLine("doger");
+                var u = Context.Guild.GetChannel(ulong.Parse(regex.Match(name).Groups[0].Value));
                 return u is SocketCategoryChannel ? null : u;
             }
 
