@@ -134,7 +134,7 @@ namespace Hermes
         }
         private async Task SlashCommandHandler(SocketSlashCommand command)
         {
-            await command.RespondAsync($"You executed {command.Data.Name}");
+            await command.RespondAsync($"Bro stop just stop. Ur as worthless as this command.");
         }
         private async Task HandleReactionAsync(Cacheable<IUserMessage, ulong> arg1,
             Cacheable<IMessageChannel, ulong> _arg2, SocketReaction arg3)
@@ -191,16 +191,7 @@ namespace Hermes
 
         private async Task AltAlertAsync(SocketGuildUser arg)
         {
-            try
-            {
-                if (arg.Id == 707930185265053726)
-                {
-                    await arg.ModifyAsync(x => x.Nickname = "dyuthi");
-                }
-            }
-            catch
-            {
-            }
+            // i dont know what is going on
         }
 
         private async Task HandleReadyAsync(DiscordSocketClient _)
