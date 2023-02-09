@@ -157,7 +157,7 @@ La la la la".Split('\n');
             
             Client.SlashCommandExecuted += SlashCommandHandler;
 
-            var tname = new System.Timers.Timer(45000);
+            var tname = new System.Timers.Timer(600000);
             tname.AutoReset = true;
             tname.Elapsed += LyricUpdater;
             tname.Start();
