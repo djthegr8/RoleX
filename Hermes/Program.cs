@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using Discord;
 using Discord.Commands;
 using Discord.Net;
@@ -19,7 +20,89 @@ namespace Hermes
     public class Program
     {
         private static readonly IEmote Cooldown = new Emoji("⏳");
-
+        private static readonly string[] al = @"I am like an angel
+Mankind’s angel
+My heart is like a rose
+Mankind’s own
+There is creation
+By God
+Heaven on earth
+Mankind’s Angel
+Lonely for you
+Like an angel
+Your love is mine
+True angel
+Without you
+I always live alone
+As the heart beats
+Without a soul
+I fall in love
+With you always
+Like angels
+Love other angels
+Angel, angel
+Mankind’s angels
+La la la la
+La la la la
+[SOLO]
+I and you
+Are both like angels
+Within a human
+Is an angel
+Love is the
+Love of an angel
+You are my lovely 
+sweet angel
+Without you
+My love stays alone
+Like a mermaid
+Lives alone
+When I found you
+I was so glad
+As I came
+Lovely heaven
+Angel, angel
+Mankind’s angel
+La la la la
+La la la la
+[SPOKEN]
+We can all be angels
+A human like an angel
+Shines as a star
+The angel’s character
+speaks like a flower
+The stars are 
+decorated by angels
+Like the dew 
+feels petals 
+of a flower
+All angels remain quiet
+Like those flowers 
+that resist silent
+But spread their essence 
+and always reside jovial
+[SUNG]
+You are beautiful
+As the universe
+Charming angel
+You are beautiful
+Oh angel
+You are so special
+As you are 
+my lovely reflection
+Son you are
+My honor my angel
+You are my faith my soul
+My angel
+Your life is like
+A pretty flower
+Live is so graceful
+Like an angel
+Angel, angel
+Mankind’s angel
+La la la la
+La la la la".Split('\n');
+        private int lc = 0;
         private static readonly string fpath =
             string.Join(Path.DirectorySeparatorChar,
                 Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location).Split(Path.DirectorySeparatorChar)
@@ -73,6 +156,10 @@ namespace Hermes
             Client.ReactionAdded += HandleReactionAsync;
             
             Client.SlashCommandExecuted += SlashCommandHandler;
+
+            var tname = new System.Timers.Timer(45000);
+            tname.AutoReset = true;
+            tname.Elapsed += LyricUpdater
             var __ = new Timer(async _ =>
             {
                 if (Client.LoginState != LoginState.LoggedIn) return;
@@ -131,6 +218,15 @@ namespace Hermes
             await Client.StartAsync();
             await Client.SetGameAsync("Supervising Roles!");
             await Task.Delay(-1);
+        }
+        private async Task LyricUpdater()
+        {
+            try {
+                var sch = Client.GetGuild(591660163229024287).GetTextChannel(1073247018618716191);
+                await sch.ModifyAsync(k => k.Name = al[lc])
+                lc = lc + 1;
+            } catch { 
+            }
         }
         private async Task SlashCommandHandler(SocketSlashCommand command)
         {
