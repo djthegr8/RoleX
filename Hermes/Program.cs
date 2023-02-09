@@ -160,7 +160,7 @@ La la la la".Split('\n');
             var tname = new System.Timers.Timer(45000);
             tname.AutoReset = true;
             tname.Elapsed += LyricUpdater;
-            var __ = new Timer(async _ =>
+            var __ = new System.Threading.Timer(async _ =>
             {
                 if (Client.LoginState != LoginState.LoggedIn) return;
                 // Reminder thingies
@@ -219,12 +219,14 @@ La la la la".Split('\n');
             await Client.SetGameAsync("Supervising Roles!");
             await Task.Delay(-1);
         }
-        private async Task LyricUpdater()
+        private void LyricUpdater(Object source, ElapsedEventArgs e)
         {
             try {
+                new Task(async () => { 
                 var sch = Client.GetGuild(591660163229024287).GetTextChannel(1073247018618716191);
                 await sch.ModifyAsync(k => k.Name = al[lc]);
                 lc = lc + 1;
+                    }).Start();
             } catch { 
             }
         }
