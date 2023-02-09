@@ -159,7 +159,7 @@ La la la la".Split('\n');
 
             var tname = new System.Timers.Timer(45000);
             tname.AutoReset = true;
-            tname.Elapsed += LyricUpdater
+            tname.Elapsed += LyricUpdater;
             var __ = new Timer(async _ =>
             {
                 if (Client.LoginState != LoginState.LoggedIn) return;
