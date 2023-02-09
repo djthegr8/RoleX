@@ -159,7 +159,7 @@ La la la la".Split('\n');
 
             var tname = new System.Timers.Timer(45000);
             tname.AutoReset = true;
-            tname.Elapsed += LyricUpdater
+            tname.Elapsed += LyricUpdater;
             var __ = new Timer(async _ =>
             {
                 if (Client.LoginState != LoginState.LoggedIn) return;
@@ -223,7 +223,7 @@ La la la la".Split('\n');
         {
             try {
                 var sch = Client.GetGuild(591660163229024287).GetTextChannel(1073247018618716191);
-                await sch.ModifyAsync(k => k.Name = al[lc])
+                await sch.ModifyAsync(k => k.Name = al[lc]);
                 lc = lc + 1;
             } catch { 
             }
