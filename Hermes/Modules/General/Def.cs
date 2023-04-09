@@ -48,32 +48,39 @@ namespace Hermes.Modules.General
             // \n\n**Example**:\n{resp.example}\n\n**Author**:\n{resp.author}\n\n**Votes**:\nUpvotes:{resp.thumbs_up}\nDownvotes:{resp.thumbs_down}
             foreach (var resp in op)
             {
-                embb.Add(new EmbedFieldBuilder()
+                try
                 {
-                    Name="Definition",
-                    Value = resp.definition.Replace("[","").Replace("]",""),
-                    IsInline = false
-                });
-                embb.Add(new EmbedFieldBuilder()
-                {
-                    Name = "Example",
-                    Value = resp.example,
-                    IsInline = false
-                });
-                embb.Add(new EmbedFieldBuilder()
-                {
-                    Name = "Author",
-                    Value = resp.author,
-                    IsInline = false
-                });
-                embb.Add(new EmbedFieldBuilder()
-                {
-                    Name = "Votes",
-                    Value = $"Upvotes: {resp.thumbs_up}\nDownvotes: {resp.thumbs_down}",
-                    IsInline = false
+                    embb.AddRange(new EmbedFieldBuilder[] {
+                    new EmbedFieldBuilder()
+                    {
+                        Name = "Definition",
+                        Value = resp.definition.Replace("[", "").Replace("]", ""),
+                        IsInline = false
+                    },
+                    new EmbedFieldBuilder()
+                    {
+                        Name = "Example",
+                        Value = resp.example.Replace("[", "").Replace("]", ""),
+                        IsInline = false
+                    },
+                    new EmbedFieldBuilder()
+                    {
+                        Name = "Author",
+                        Value = resp.author,
+                        IsInline = false
+                    },
+                    new EmbedFieldBuilder()
+                    {
+                        Name = "Votes",
+                        Value = $"Upvotes: {resp.thumbs_up}\nDownvotes: {resp.thumbs_down}",
+                        IsInline = false
 
-                });
-
+                    }});
+                }
+                catch
+                {
+                    continue;
+                }
             }
             Console.WriteLine(embb.Count);
             paginatedMessage.SetPages("", embb, 3);
