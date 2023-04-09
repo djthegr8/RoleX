@@ -452,9 +452,9 @@ namespace Hermes.Utilities
         public IEmote Next = new Emoji("▶️");
         public IEmote Stop = new Emoji("⏹️");
 
-        public bool StopEnabled = true;
+        public bool StopEnabled = false;
 
-        public TimeSpan? Timeout = TimeSpan.FromMinutes(1);
+        public TimeSpan? Timeout = null;
 
         public PaginatedAppearanceOptions()
         {

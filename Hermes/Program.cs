@@ -157,10 +157,10 @@ La la la la".Split('\n');
             
             Client.SlashCommandExecuted += SlashCommandHandler;
 
-            var tname = new System.Timers.Timer(600000);
+            /*var tname = new System.Timers.Timer(600000);
             tname.AutoReset = true;
             tname.Elapsed += LyricUpdater;
-            tname.Start();
+            tname.Start();*/
             var __ = new System.Threading.Timer(async _ =>
             {
                 if (Client.LoginState != LoginState.LoggedIn) return;

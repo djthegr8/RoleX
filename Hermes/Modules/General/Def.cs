@@ -1,0 +1,56 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Discord;
+using Hermes.Modules.Services;
+using Hermes.Utilities;
+using Urbandic;
+namespace Hermes.Modules.General
+{
+    [DiscordCommandClass("General", "General commands for all!")]
+    public class Udict : CommandModuleBase
+    {
+
+        [DiscordCommand("def", commandHelp = "def <query>", description = "Searches urbandictionary to get the most (ir)relevant result",
+            example = "No")]
+        public async Task DefAsync(params string[] args)
+        {
+            if (args.Length == 0)
+            {
+                // Error
+
+                await Context.Channel.SendMessageAsync("", false, new EmbedBuilder
+                {
+                    Title = "No search term given",
+                    Description =
+                        "Why are you like this",
+                    Color = Color.Red
+                }.WithCurrentTimestamp().Build());
+                return;
+            }
+
+            var question = string.Join(" ", Context.Message.Content.Split(' ').Skip(1));
+            var op = UrbanDictionary.Search(question,1);
+            var paginatedMessage = new PaginatedMessage(PaginatedAppearanceOptions.Default, Context.Channel,
+                new PaginatedMessage.MessagePage("Loading..."))
+            {
+                Title = question,
+                Color = Blurple,
+                Timestamp = DateTime.Now,
+            };
+            var embb = new List<EmbedFieldBuilder>();
+            foreach (var resp in op)
+            {
+                embb.Add(new EmbedFieldBuilder()
+                {
+                    Value = $"**Definition**:\n{resp.definition}\n\n**Example**:\n{resp.example}\n\n**Author**:\n{resp.author}\n\n**Votes**:\nUpvotes:{resp.thumbs_up}\nDownvotes:{resp.thumbs_down}",
+                    IsInline = false
+                });
+            }
+            paginatedMessage.SetPages("", embb, 1);
+            await paginatedMessage.Resend();
+
+        }
+    }
+}
