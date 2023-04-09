@@ -49,6 +49,7 @@ namespace Hermes.Modules.General
             {
                 embb.Add(new EmbedFieldBuilder()
                 {
+                    Name="",
                     Value = $"**Definition**:\n{resp.definition}\n\n**Example**:\n{resp.example}\n\n**Author**:\n{resp.author}\n\n**Votes**:\nUpvotes:{resp.thumbs_up}\nDownvotes:{resp.thumbs_down}",
                     IsInline = false
                 });
