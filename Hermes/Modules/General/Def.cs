@@ -11,8 +11,8 @@ namespace Hermes.Modules.General
     [DiscordCommandClass("General", "General commands for all!")]
     public class Udict : CommandModuleBase
     {
-
-        [DiscordCommand("def", commandHelp = "def <query>", description = "Searches urbandictionary to get the most (ir)relevant result",
+        [Alt("define")]
+        [DiscordCommand("df", commandHelp = "df <query>", description = "Searches urbandictionary to get the most (ir)relevant result",
             example = "No")]
         public async Task DefAsync(params string[] args)
         {
@@ -32,6 +32,11 @@ namespace Hermes.Modules.General
 
             var question = string.Join(" ", Context.Message.Content.Split(' ').Skip(1));
             var op = UrbanDictionary.Search(question,1);
+            if (op == null)
+            {
+                // Embed saying no results found
+                await ReplyAsync("No result :(");
+            }
             var paginatedMessage = new PaginatedMessage(PaginatedAppearanceOptions.Default, Context.Channel,
                 new PaginatedMessage.MessagePage("Loading..."))
             {
@@ -48,6 +53,7 @@ namespace Hermes.Modules.General
                     IsInline = false
                 });
             }
+            Console.WriteLine(embb.Count);
             paginatedMessage.SetPages("", embb, 1);
             await paginatedMessage.Resend();
 
