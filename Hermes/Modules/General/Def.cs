@@ -45,17 +45,38 @@ namespace Hermes.Modules.General
                 Timestamp = DateTime.Now,
             };
             var embb = new List<EmbedFieldBuilder>();
+            // \n\n**Example**:\n{resp.example}\n\n**Author**:\n{resp.author}\n\n**Votes**:\nUpvotes:{resp.thumbs_up}\nDownvotes:{resp.thumbs_down}
             foreach (var resp in op)
             {
                 embb.Add(new EmbedFieldBuilder()
                 {
-                    Name="",
-                    Value = $"**Definition**:\n{resp.definition}\n\n**Example**:\n{resp.example}\n\n**Author**:\n{resp.author}\n\n**Votes**:\nUpvotes:{resp.thumbs_up}\nDownvotes:{resp.thumbs_down}",
+                    Name="Definition",
+                    Value = resp.definition,
                     IsInline = false
                 });
+                embb.Add(new EmbedFieldBuilder()
+                {
+                    Name = "Example",
+                    Value = resp.example,
+                    IsInline = false
+                });
+                embb.Add(new EmbedFieldBuilder()
+                {
+                    Name = "Author",
+                    Value = resp.author,
+                    IsInline = false
+                });
+                embb.Add(new EmbedFieldBuilder()
+                {
+                    Name = "Votes",
+                    Value = $"Upvotes: {resp.thumbs_up}\nDownvotes: {resp.thumbs_down}",
+                    IsInline = false
+
+                });
+
             }
             Console.WriteLine(embb.Count);
-            paginatedMessage.SetPages("", embb, 1);
+            paginatedMessage.SetPages("", embb, 4);
             await paginatedMessage.Resend();
 
         }
