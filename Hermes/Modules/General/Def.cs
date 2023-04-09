@@ -51,7 +51,7 @@ namespace Hermes.Modules.General
                 embb.Add(new EmbedFieldBuilder()
                 {
                     Name="Definition",
-                    Value = resp.definition,
+                    Value = resp.definition.Replace("[","").Replace("]",""),
                     IsInline = false
                 });
                 embb.Add(new EmbedFieldBuilder()
@@ -76,7 +76,7 @@ namespace Hermes.Modules.General
 
             }
             Console.WriteLine(embb.Count);
-            paginatedMessage.SetPages("", embb, 4);
+            paginatedMessage.SetPages("", embb, 3);
             await paginatedMessage.Resend();
 
         }
