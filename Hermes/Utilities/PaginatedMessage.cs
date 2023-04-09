@@ -264,6 +264,7 @@ namespace Hermes.Utilities
             {
                 await Message!.AddReactionAsync(Options.First);
                 await Message!.AddReactionAsync(Options.Back);
+                await Task.Delay(2000);
                 await Message!.AddReactionAsync(Options.Next);
                 await Message!.AddReactionAsync(Options.Last);
                 var manageMessages = Channel is IGuildChannel guildChannel &&
@@ -454,7 +455,7 @@ namespace Hermes.Utilities
 
         public bool StopEnabled = false;
 
-        public TimeSpan? Timeout = null;
+        public TimeSpan? Timeout = TimeSpan.FromMilliseconds(-1);
 
         public PaginatedAppearanceOptions()
         {
