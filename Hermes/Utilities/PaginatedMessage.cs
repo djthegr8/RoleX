@@ -263,9 +263,11 @@ namespace Hermes.Utilities
             _ = Task.Run(async () =>
             {
                 await Message!.AddReactionAsync(Options.First);
+                await Task.Delay(1000);
                 await Message!.AddReactionAsync(Options.Back);
-                await Task.Delay(2000);
+                await Task.Delay(1000);
                 await Message!.AddReactionAsync(Options.Next);
+                await Task.Delay(1000);
                 await Message!.AddReactionAsync(Options.Last);
                 var manageMessages = Channel is IGuildChannel guildChannel &&
                                      (await guildChannel.GetUserAsync(Program.Client.CurrentUser.Id))
