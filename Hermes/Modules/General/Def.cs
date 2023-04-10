@@ -50,13 +50,16 @@ namespace Hermes.Modules.General
             var rgx = new Regex("\"\\[(.+)\\]\"gm");
             foreach (var resp in op)
             {
+                var v = rgx.Replace(resp.definition, "[$1](https://www.urbandictionary.com/define.php?term=$1)");
+                Console.WriteLine(v);
+              
                 try
                 {
                     embb.AddRange(new EmbedFieldBuilder[] {
                     new EmbedFieldBuilder()
                     {
                         Name = "Definition",
-                        Value = rgx.Replace(resp.definition, "[$1](https://www.urbandictionary.com/define.php?term=$1)"),
+                        Value = v,
                         IsInline = false
                     },
                     new EmbedFieldBuilder()
