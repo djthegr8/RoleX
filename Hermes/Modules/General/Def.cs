@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
 using Hermes.Modules.Services;
@@ -47,25 +46,21 @@ namespace Hermes.Modules.General
             };
             var embb = new List<EmbedFieldBuilder>();
             // \n\n**Example**:\n{resp.example}\n\n**Author**:\n{resp.author}\n\n**Votes**:\nUpvotes:{resp.thumbs_up}\nDownvotes:{resp.thumbs_down}
-            var rgx = new Regex(@"\[(.+)\]");
             foreach (var resp in op)
             {
-                var v = rgx.Replace(resp.definition, "[$1](https://www.urbandictionary.com/define.php?term=$1)");
-                Console.WriteLine(v);
-              
                 try
                 {
                     embb.AddRange(new EmbedFieldBuilder[] {
                     new EmbedFieldBuilder()
                     {
                         Name = "Definition",
-                        Value = v,
+                        Value = resp.definition.Replace("[", "").Replace("]", ""),
                         IsInline = false
                     },
                     new EmbedFieldBuilder()
                     {
                         Name = "Example",
-                        Value = rgx.Replace(resp.example, "[$1](https://www.urbandictionary.com/define.php?term=$1)"),
+                        Value = resp.example.Replace("[", "").Replace("]", ""),
                         IsInline = false
                     },
                     new EmbedFieldBuilder()
