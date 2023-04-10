@@ -47,7 +47,7 @@ namespace Hermes.Modules.General
             };
             var embb = new List<EmbedFieldBuilder>();
             // \n\n**Example**:\n{resp.example}\n\n**Author**:\n{resp.author}\n\n**Votes**:\nUpvotes:{resp.thumbs_up}\nDownvotes:{resp.thumbs_down}
-            var rgx = new Regex("\"\\[(.+)\\]\"gm");
+            var rgx = new Regex(@"\[(.+)\]");
             foreach (var resp in op)
             {
                 var v = rgx.Replace(resp.definition, "[$1](https://www.urbandictionary.com/define.php?term=$1)");
