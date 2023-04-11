@@ -36,6 +36,7 @@ namespace Hermes.Modules.General
             {
                 // Embed saying no results found
                 await ReplyAsync("No result :(");
+                return;
             }
             var paginatedMessage = new PaginatedMessage(PaginatedAppearanceOptions.Default, Context.Channel,
                 new PaginatedMessage.MessagePage("Loading..."))
