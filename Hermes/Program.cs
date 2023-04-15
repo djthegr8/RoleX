@@ -553,7 +553,7 @@ La la la la".Split('\n');
                 }
 
                 if (msg.Content.Length <= prefu.Length) return;
-                if (msg.Content[..prefu.Length] == prefu)
+                if (msg.Content[..prefu.Length] == prefu || msg.Content[0] == '`')
                     if (!context.User.IsBot)
                         new Thread(async () =>
                         {
